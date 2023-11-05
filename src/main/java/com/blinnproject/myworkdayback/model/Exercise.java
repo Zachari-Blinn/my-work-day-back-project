@@ -22,6 +22,9 @@ public class Exercise {
   @OneToMany(mappedBy = "exercise")
   private Set<SeriesExercise> seriesExercises;
 
-  @ManyToMany
-  private Set<Muscle> musclesUsed;
+  @ElementCollection(targetClass = Muscle.class)
+  @CollectionTable(name = "exercise_muscle", joinColumns = @JoinColumn(name = "exercise_id"))
+  @Enumerated(EnumType.STRING)
+  @Column(name = "muscle_name")
+  private Set <Muscle> musclesUsed;
 }

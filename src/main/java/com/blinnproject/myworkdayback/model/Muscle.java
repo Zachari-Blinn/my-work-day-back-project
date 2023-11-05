@@ -1,24 +1,21 @@
 package com.blinnproject.myworkdayback.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.Set;
-
-@Entity
-@Getter
-@Setter
-@AllArgsConstructor
-public class Muscle {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  @Column(length = 150)
-  private String name;
-
-  @ManyToMany
-  private Set<Muscle> exerciseMuscles;
+public enum Muscle {
+  PECTORALIS_MAJOR,
+  FINGER_FLEXORS,
+  DELTOID,
+  TRICEPS,
+  ABDOMINALS,
+  GASTROCNEMIUS,
+  SARTORIUS,
+  ABDUCTORS,
+  STERNOCLEIDOMASTOID,
+  QUADRICEPS,
+  BRACHIORADIALIS,
+  TRAPEZIUS,
+  BICEPS,
+  PERONEUS_LONGUS,
+  EXTERNAL_OBLIQUE,
+  ABSUCTORS,
+  TIBIALIS_ANTERIOR,
 }
