@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan(basePackages = "com.blinnproject.myworkdayback")
+//@ComponentScan(basePackages = "com.blinnproject.myworkdayback")
 @SpringBootApplication
 public class MyWorkDayBackApplication {
 
