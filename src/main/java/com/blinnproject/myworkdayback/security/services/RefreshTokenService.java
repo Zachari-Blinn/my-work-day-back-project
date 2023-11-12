@@ -1,14 +1,13 @@
 package com.blinnproject.myworkdayback.security.services;
 
-import com.blinnproject.myworkdayback.exception.TokenRefreshException;
-import com.blinnproject.myworkdayback.model.RefreshToken;
-import com.blinnproject.myworkdayback.repository.RefreshTokenRepository;
-import com.blinnproject.myworkdayback.repository.UserRepository;
-import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.blinnproject.myworkdayback.exception.TokenRefreshException;
+import com.blinnproject.myworkdayback.model.RefreshToken;
+import com.blinnproject.myworkdayback.repository.RefreshTokenRepository;
+import com.blinnproject.myworkdayback.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,14 +29,22 @@ public class RefreshTokenService {
   }
 
   public RefreshToken createRefreshToken(Long userId) {
-    RefreshToken refreshToken = new RefreshToken();
+    Optional<RefreshToken> existingToken = refreshTokenRepository.findByUserId(userId);
 
-    refreshToken.setUser(userRepository.findById(userId).get());
+    RefreshToken refreshToken;
+
+    if (existingToken.isPresent()) {
+      refreshToken = existingToken.get();
+
+    } else {
+      refreshToken = new RefreshToken();
+      refreshToken.setUser(userRepository.findById(userId).orElse(null));
+    }
+
     refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
     refreshToken.setToken(UUID.randomUUID().toString());
 
-    refreshToken = refreshTokenRepository.save(refreshToken);
-    return refreshToken;
+    return refreshTokenRepository.save(refreshToken);
   }
 
   public RefreshToken verifyExpiration(RefreshToken token) {

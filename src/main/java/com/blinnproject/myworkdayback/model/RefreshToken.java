@@ -11,8 +11,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Entity(name = "refresh_token")
+@Entity(name = "refreshtoken")
 public class RefreshToken {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,4 +26,20 @@ public class RefreshToken {
 
   @Column(nullable = false)
   private Instant expiryDate;
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public void setExpiryDate(Instant expiryDate) {
+    this.expiryDate = expiryDate;
+  }
 }

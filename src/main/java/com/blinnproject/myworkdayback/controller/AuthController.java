@@ -1,37 +1,29 @@
 package com.blinnproject.myworkdayback.controller;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.RefreshToken;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.payload.request.LoginRequest;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
+import com.blinnproject.myworkdayback.payload.request.TokenRefreshRequest;
+import com.blinnproject.myworkdayback.payload.response.JwtResponse;
 import com.blinnproject.myworkdayback.payload.response.MessageResponse;
-import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
+import com.blinnproject.myworkdayback.payload.response.TokenRefreshResponse;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
 import com.blinnproject.myworkdayback.service.user_details.UserDetailsImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth/")
@@ -61,23 +53,15 @@ public class AuthController {
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+    String jwt = jwtUtils.generateJwtToken(userDetails);
 
-    List<String> roles = userDetails.getAuthorities().stream()
-      .map(GrantedAuthority::getAuthority)
+    List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
       .collect(Collectors.toList());
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-    ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
-
-    return ResponseEntity.ok()
-      .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-      .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-      .body(new UserInfoResponse(userDetails.getId(),
-        userDetails.getUsername(),
-        userDetails.getEmail(),
-        roles));
+    return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
+      userDetails.getUsername(), userDetails.getEmail(), roles));
   }
 
   @PostMapping("/signup")
@@ -90,8 +74,7 @@ public class AuthController {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
     }
 
-    User user = new User(signUpRequest.getUsername(),
-      signUpRequest.getEmail(),
+    User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
       encoder.encode(signUpRequest.getPassword()));
 
     userRepository.save(user);
@@ -99,42 +82,26 @@ public class AuthController {
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
 
-  @PostMapping("signout")
+  @PostMapping("/signout")
   public ResponseEntity<?> logoutUser() {
-    Object principle = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (!Objects.equals(principle.toString(), "anonymousUser")) {
-      Long userId = ((UserDetailsImpl) principle).getId();
-      refreshTokenService.deleteByUserId(userId);
-    }
-
-    ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
-    ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
-
-    return ResponseEntity.ok()
-      .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-      .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
-      .body(new MessageResponse("You've been signed out!"));
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long userId = userDetails.getId();
+    refreshTokenService.deleteByUserId(userId);
+    return ResponseEntity.ok(new MessageResponse("Log out successful!"));
   }
 
-  @PostMapping("refreshtoken")
-  public ResponseEntity<?> refreshToken(HttpServletRequest request) {
-    String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
+  @PostMapping("/refreshtoken")
+  public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+    String requestRefreshToken = request.getRefreshToken();
 
-    if ((refreshToken != null) && (!refreshToken.isEmpty())) {
-      return refreshTokenService.findByToken(refreshToken)
-        .map(refreshTokenService::verifyExpiration)
-        .map(RefreshToken::getUser)
-        .map(user -> {
-          ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(user);
-
-          return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-            .body(new MessageResponse("Token is refreshed successfully!"));
-        })
-        .orElseThrow(() -> new TokenRefreshException(refreshToken,
-          "Refresh token is not in database!"));
-    }
-
-    return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
+    return refreshTokenService.findByToken(requestRefreshToken)
+      .map(refreshTokenService::verifyExpiration)
+      .map(RefreshToken::getUser)
+      .map(user -> {
+        String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+        return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+      })
+      .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+        "Refresh token is not in database!"));
   }
 }
