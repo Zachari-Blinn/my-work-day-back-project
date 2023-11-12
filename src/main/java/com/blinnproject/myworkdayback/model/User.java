@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -58,5 +59,9 @@ public class User {
 
   @UpdateTimestamp
   private Instant lastUpdatedOn;
+
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  private Set<Training> trainings;
 }
 

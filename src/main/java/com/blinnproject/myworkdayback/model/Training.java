@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Training {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false)
   private String name;
 
   private String sportPreset;
@@ -42,4 +44,19 @@ public class Training {
 
   @OneToMany(mappedBy = "training")
   private Set<SeriesExercise> seriesExercises;
+
+  @ManyToOne()
+  @JoinColumn(name = "user_id", nullable = true)
+  @JsonIgnore
+  private User user;
+
+  public Training(String name, String sportPreset, DayOfWeek[] trainingDays, String description, Boolean hasWarpUp, Boolean hasStretching, User user) {
+    this.name = name;
+    this.sportPreset = sportPreset;
+    this.trainingDays = trainingDays;
+    this.description = description;
+    this.hasWarpUp = hasWarpUp;
+    this.hasStretching = hasStretching;
+    this.user = user;
+  }
 }

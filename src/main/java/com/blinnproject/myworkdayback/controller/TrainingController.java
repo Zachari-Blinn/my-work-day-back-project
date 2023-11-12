@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/training")
 public class TrainingController {
@@ -21,10 +23,26 @@ public class TrainingController {
   public ResponseEntity<Training> create(@Valid @RequestBody Training trainingRequest) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long userId = userDetails.getId();
-    System.out.println("USER_ID: " + userId);
     try {
-      Training _training = trainingService.create(trainingRequest);
+      Training _training = trainingService.create(userId, trainingRequest);
       return new ResponseEntity<>(_training, HttpStatus.CREATED);
+    } catch (Exception exception) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @GetMapping("/current-user")
+  public ResponseEntity<List<Training>> getCurrentUserTrainings() {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long userId = userDetails.getId();
+    try {
+      List<Training> trainings = trainingService.getAllTrainingsByUserId(userId);
+
+      if (trainings.isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      }
+
+      return new ResponseEntity<>(trainings, HttpStatus.OK);
     } catch (Exception exception) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
