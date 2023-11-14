@@ -9,13 +9,13 @@ public class UserInfoResponse {
   private Long id;
   private String username;
   private String email;
-  private final List<String> roles;
+  private final String role;
 
-  public UserInfoResponse(Long id, String username, String email, List<String> roles) {
+  public UserInfoResponse(Long id, String username, String email, String role) {
     this.id = id;
     this.username = username;
     this.email = email;
-    this.roles = roles;
+    this.role = role;
   }
 
   public void setId(Long id) {

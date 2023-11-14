@@ -6,10 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -33,19 +30,18 @@ public class User {
   @Enumerated(EnumType.ORDINAL)
   private Gender gender;
 
-  @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
-    flags = Pattern.Flag.CASE_INSENSITIVE)
+  @Email(flags = Pattern.Flag.CASE_INSENSITIVE)
   @Column(nullable=false, unique=true)
   private String email;
 
   @Column(nullable=false)
   private String password;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "user_roles",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<Role> roles = new HashSet<>();
+  @Enumerated(EnumType.STRING)
+  private Role role;
+
+  @Enumerated(EnumType.STRING)
+  private Provider provider;
 
   public User(String username, String email, String password) {
     this.username = username;

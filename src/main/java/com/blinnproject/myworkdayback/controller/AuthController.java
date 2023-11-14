@@ -1,9 +1,5 @@
 package com.blinnproject.myworkdayback.controller;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.RefreshToken;
 import com.blinnproject.myworkdayback.model.User;
@@ -11,21 +7,20 @@ import com.blinnproject.myworkdayback.payload.request.LoginRequest;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
 import com.blinnproject.myworkdayback.payload.response.MessageResponse;
 import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
-import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
+import com.blinnproject.myworkdayback.service.user.UserService;
 import com.blinnproject.myworkdayback.service.user_details.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,14 +28,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/auth/")
 public class AuthController {
   @Autowired
   AuthenticationManager authenticationManager;
-
-  @Autowired
-  UserRepository userRepository;
 
   @Autowired
   PasswordEncoder encoder;
@@ -50,6 +44,9 @@ public class AuthController {
 
   @Autowired
   RefreshTokenService refreshTokenService;
+
+  @Autowired
+  UserService userService;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -63,9 +60,7 @@ public class AuthController {
 
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-    List<String> roles = userDetails.getAuthorities().stream()
-      .map(GrantedAuthority::getAuthority)
-      .collect(Collectors.toList());
+    String role = userDetails.getAuthorities().toString();
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
@@ -77,26 +72,23 @@ public class AuthController {
       .body(new UserInfoResponse(userDetails.getId(),
         userDetails.getUsername(),
         userDetails.getEmail(),
-        roles));
+        role
+      ));
   }
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+    if (userService.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
     }
 
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+    if (userService.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
     }
 
-    User user = new User(signUpRequest.getUsername(),
-      signUpRequest.getEmail(),
-      encoder.encode(signUpRequest.getPassword()));
+    User user = userService.createLocal(signUpRequest.getUsername(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-    userRepository.save(user);
-
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return new ResponseEntity<>(new UserInfoResponse(user.getId(), user.getUsername(), user.getEmail(), user.getRole().toString()), HttpStatus.CREATED);
   }
 
   @PostMapping("signout")

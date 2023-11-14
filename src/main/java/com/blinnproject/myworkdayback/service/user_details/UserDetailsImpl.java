@@ -1,11 +1,14 @@
 package com.blinnproject.myworkdayback.service.user_details;
 
+import java.io.Serial;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.blinnproject.myworkdayback.model.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,18 +16,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserDetailsImpl implements UserDetails {
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  @Getter
   private Long id;
 
-  private String username;
+  private final String username;
 
+  @Getter
   private String email;
 
   @JsonIgnore
   private String password;
 
-  private Collection<? extends GrantedAuthority> authorities;
+  private final Collection<? extends GrantedAuthority> authorities;
 
   public UserDetailsImpl(Long id, String username, String email, String password,
                          Collection<? extends GrantedAuthority> authorities) {
@@ -36,10 +42,8 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   public static UserDetailsImpl build(User user) {
-    List<GrantedAuthority> authorities = user.getRoles().stream()
-      .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-      .collect(Collectors.toList());
-
+    List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+    authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
     return new UserDetailsImpl(
       user.getId(),
       user.getUsername(),
@@ -51,14 +55,6 @@ public class UserDetailsImpl implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return authorities;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public String getEmail() {
-    return email;
   }
 
   @Override

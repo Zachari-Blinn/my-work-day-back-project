@@ -20,11 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
-//@EnableWebSecurity
 @EnableMethodSecurity
-//(securedEnabled = true,
-//jsr250Enabled = true,
-//prePostEnabled = true) // by default
 public class WebSecurityConfig {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
@@ -62,11 +58,12 @@ public class WebSecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
       .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .authorizeHttpRequests(auth ->
-        auth
-          .requestMatchers(antMatcher("/api/auth/**")).permitAll()
-          .anyRequest().authenticated()
-      );
+      .authorizeHttpRequests(auth -> {
+        auth.requestMatchers(antMatcher("/api/**")).hasRole("USER");
+        auth.requestMatchers(antMatcher("/api/auth/**")).permitAll();
+        auth.requestMatchers(antMatcher("/api/oauth/**")).permitAll();
+        auth.anyRequest().authenticated();
+      });
 
     http.authenticationProvider(authenticationProvider());
 
