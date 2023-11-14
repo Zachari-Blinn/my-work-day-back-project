@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.Instant;
 
 @Entity
 @Getter
@@ -19,16 +16,13 @@ import java.time.Instant;
     @UniqueConstraint(columnNames = "username"),
     @UniqueConstraint(columnNames = "email")
   })
-public class User {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
+public class User extends BaseEntityAudit {
   @Column(nullable=false, length = 20)
   private String username;
 
+  @Column(nullable=false)
   @Enumerated(EnumType.ORDINAL)
-  private Gender gender;
+  private Gender gender = Gender.NOT_SPECIFIED;
 
   @Email(flags = Pattern.Flag.CASE_INSENSITIVE)
   @Column(nullable=false, unique=true)
@@ -37,22 +31,18 @@ public class User {
   @Column(nullable=false)
   private String password;
 
+  @Column(nullable=false)
   @Enumerated(EnumType.STRING)
-  private Role role;
+  private Role role = Role.ROLE_USER;
 
+  @Column(nullable=false)
   @Enumerated(EnumType.STRING)
-  private Provider provider;
+  private Provider provider = Provider.LOCAL;
 
   public User(String username, String email, String password) {
     this.username = username;
     this.email = email;
     this.password = password;
   }
-
-  @CreationTimestamp
-  private Instant createdOn;
-
-  @UpdateTimestamp
-  private Instant lastUpdatedOn;
 }
 
