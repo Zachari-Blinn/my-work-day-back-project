@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/training")
@@ -45,6 +45,17 @@ public class TrainingController {
       return new ResponseEntity<>(trainings, HttpStatus.OK);
     } catch (Exception exception) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Training> getTrainingById(@PathVariable("id") Long id) {
+    Optional<Training> trainingData = trainingService.findById(id);
+
+    if (trainingData.isPresent()) {
+      return new ResponseEntity<>(trainingData.get(), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 }
