@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class UserData {
 
@@ -20,16 +23,18 @@ public class UserData {
   @Autowired
   PasswordEncoder encoder;
 
-  public void loadUserData() {
+  public void load() {
     if (userRepository.count() == 0) {
       logger.info("Seeding users...");
 
-      User user1 = new User("jean-sebastien", "jean-sebastien@fake-email.fr", encoder.encode("Toto@123*"));
-      User user2 = new User("jean-baptiste", "jean-baptiste@fake-email.fr", encoder.encode("Toto@123*"));
+      List<User> userList = new ArrayList<User>();
 
-      userRepository.save(user1);
-      userRepository.save(user2);
+      userList.add(new User("jean-sebastien", "jean-sebastien@fake-email.fr", encoder.encode("Toto@123*")));
+      userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", encoder.encode("Toto@123*")));
+      // Add more user here
+
+      userRepository.saveAll(userList);
+      logger.info(String.valueOf(userRepository.count()) + " user successfully loaded!");
     }
-    logger.info(String.valueOf(userRepository.count()) + " successfully loaded!");
   }
 }

@@ -1,30 +1,29 @@
 package com.blinnproject.myworkdayback.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
-public class Exercise {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+@NoArgsConstructor
+public class Exercise extends BaseEntityAudit {
 
-  @Column(length = 150)
+  @Column(length = 150, nullable = false)
   private String name;
 
+  @Column(nullable = true)
   @OneToMany(mappedBy = "exercise")
-  private Set<SeriesExercise> seriesExercises;
+  Set<TrainingExercises> trainingExercises;
 
   @ElementCollection(targetClass = Muscle.class)
   @CollectionTable(name = "exercise_muscle", joinColumns = @JoinColumn(name = "exercise_id"))
   @Enumerated(EnumType.STRING)
   @Column(name = "muscle_name")
   private Set <Muscle> musclesUsed;
+
 }

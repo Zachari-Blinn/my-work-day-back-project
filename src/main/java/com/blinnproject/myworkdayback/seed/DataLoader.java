@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.seed;
 
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.UserRepository;
+import com.blinnproject.myworkdayback.seed.models.ExerciseData;
 import com.blinnproject.myworkdayback.seed.models.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,14 @@ public class DataLoader implements CommandLineRunner {
   @Autowired
   UserData userData;
 
+  @Autowired
+  ExerciseData exerciseData;
+
   @Override
   public void run(String... args) throws Exception {
     logger.info("Seeding database in progress...");
-    userData.loadUserData();
+
+    userData.load();
+    exerciseData.load();
   }
 }

@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -19,8 +20,11 @@ public class Series {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "series_exercise_id", nullable = false)
-  private SeriesExercise seriesExercise;
+  @JoinColumns({
+    @JoinColumn(name = "training_id", referencedColumnName = "training_id"),
+    @JoinColumn(name = "exercise_id", referencedColumnName = "exercise_id")
+  })
+  private TrainingExercises trainingExercises;
 
   @Min(0)
   @Max(150)
