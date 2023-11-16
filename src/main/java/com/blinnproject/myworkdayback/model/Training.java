@@ -18,10 +18,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Training {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class Training extends BaseEntityAudit {
 
   @Column(nullable = false)
   private String name;
@@ -35,12 +32,6 @@ public class Training {
   private Boolean hasWarpUp;
 
   private Boolean hasStretching;
-
-  @CreationTimestamp
-  private Instant createdOn;
-
-  @UpdateTimestamp
-  private Instant lastUpdatedOn;
 
   @OneToMany(mappedBy = "training")
   private Set<SeriesExercise> seriesExercises;

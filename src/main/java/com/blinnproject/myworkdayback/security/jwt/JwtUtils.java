@@ -1,23 +1,15 @@
 package com.blinnproject.myworkdayback.security.jwt;
 
-import java.security.Key;
 import java.util.Date;
 
-import com.blinnproject.myworkdayback.model.User;
-import com.blinnproject.myworkdayback.service.user_details.UserDetailsImpl;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtils {

@@ -2,7 +2,7 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
-import com.blinnproject.myworkdayback.service.user_details.UserDetailsImpl;
+import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

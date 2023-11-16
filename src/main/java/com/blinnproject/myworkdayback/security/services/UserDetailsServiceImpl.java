@@ -1,7 +1,8 @@
-package com.blinnproject.myworkdayback.service.user_details;
+package com.blinnproject.myworkdayback.security.services;
 
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.UserRepository;
+import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -2,7 +2,7 @@ package com.blinnproject.myworkdayback.security.jwt;
 
 import java.io.IOException;
 
-import com.blinnproject.myworkdayback.service.user_details.UserDetailsServiceImpl;
+import com.blinnproject.myworkdayback.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

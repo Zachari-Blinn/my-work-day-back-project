@@ -14,7 +14,7 @@ import com.blinnproject.myworkdayback.payload.response.TokenRefreshResponse;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
-import com.blinnproject.myworkdayback.service.user_details.UserDetailsImpl;
+import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -61,8 +61,10 @@ public class AuthController {
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+
     return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-      userDetails.getUsername(), userDetails.getEmail(), roles));
+      userDetails.getUsername(), userDetails.getEmail(), roles, user));
   }
 
   @PostMapping("/signup")

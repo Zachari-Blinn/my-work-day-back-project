@@ -1,11 +1,14 @@
 package com.blinnproject.myworkdayback.payload.response;
 
+import com.blinnproject.myworkdayback.model.User;
 import lombok.Getter;
 
 import java.util.List;
 
 public class JwtResponse {
   private String token;
+  @Getter
+  private User user;
   private String type = "Bearer";
   private String refreshToken;
   @Getter
@@ -17,13 +20,14 @@ public class JwtResponse {
   @Getter
   private final List<String> roles;
 
-  public JwtResponse(String accessToken, String refreshToken, Long id, String username, String email, List<String> roles) {
+  public JwtResponse(String accessToken, String refreshToken, Long id, String username, String email, List<String> roles, User user) {
     this.token = accessToken;
     this.refreshToken = refreshToken;
     this.id = id;
     this.username = username;
     this.email = email;
     this.roles = roles;
+    this.user = user;
   }
 
   public String getAccessToken() {

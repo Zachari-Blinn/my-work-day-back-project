@@ -1,4 +1,4 @@
-package com.blinnproject.myworkdayback.service.user_details;
+package com.blinnproject.myworkdayback.security.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

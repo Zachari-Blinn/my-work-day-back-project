@@ -2,10 +2,8 @@ package com.blinnproject.myworkdayback.security;
 
 import com.blinnproject.myworkdayback.security.jwt.AuthEntryPointJwt;
 import com.blinnproject.myworkdayback.security.jwt.AuthTokenFilter;
-import com.blinnproject.myworkdayback.service.user_details.UserDetailsServiceImpl;
+import com.blinnproject.myworkdayback.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
-import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
