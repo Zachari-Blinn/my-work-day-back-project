@@ -21,5 +21,4 @@ public class AddExerciseRequest {
     private String notes;
 
     private ArrayList<Series> series;
-
 }

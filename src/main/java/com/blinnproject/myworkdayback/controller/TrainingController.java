@@ -73,16 +73,19 @@ public class TrainingController {
 
   @PostMapping("/{trainingId}/add-exercise")
   public ResponseEntity<?> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest addExerciseRequest) {
-    Training trainingData = trainingService.findById(trainingId).orElse(null);
-    Exercise exerciseData = exerciseService.findById(addExerciseRequest.getExerciseId()).orElse(null);
-    // add trainingExercise
-    TrainingExercisesKey trainingExercisesKey = new TrainingExercisesKey(trainingId, addExerciseRequest.getExerciseId());
-    TrainingExercises trainingExercises = new TrainingExercises(trainingExercisesKey, addExerciseRequest.getNotes(), addExerciseRequest.getNumberOfWarmUpSeries());
-    trainingExercises.setTraining(trainingData);
-    trainingExercises.setExercise(exerciseData);
+    try {
+      TrainingExercisesKey trainingExercisesKey = new TrainingExercisesKey(trainingId, addExerciseRequest.getExerciseId());
+      TrainingExercises trainingExercises = new TrainingExercises(trainingExercisesKey, addExerciseRequest.getNotes(), addExerciseRequest.getNumberOfWarmUpSeries());
 
-    trainingExercisesRepository.save(trainingExercises);
+      trainingExercises.setTraining(trainingService.findById(trainingId).orElse(null));
+      trainingExercises.setExercise(exerciseService.findById(addExerciseRequest.getExerciseId()).orElse(null));
 
-    return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
+      trainingExercises.addSeries(new HashSet<>(addExerciseRequest.getSeries()));
+      TrainingExercises createdTrainingExercises = trainingExercisesRepository.save(trainingExercises);
+
+      return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>("Failed to save TrainingExercises", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

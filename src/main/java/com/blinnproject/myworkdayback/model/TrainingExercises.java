@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -46,5 +47,12 @@ public class TrainingExercises {
 
   public TrainingExercises() {
 
+  }
+
+  public void addSeries(Set<Series> newSeries) {
+    if (this.series == null) {
+      this.series = new HashSet<>();
+    }
+    this.series.addAll(newSeries);
   }
 }

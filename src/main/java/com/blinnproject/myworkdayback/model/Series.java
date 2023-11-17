@@ -37,8 +37,7 @@ public class Series {
   @Max(150)
   private int weight;
 
-  @Temporal(TemporalType.TIME)
-  private Duration restTime;
+  private String restTime;
 
   @Lob
   private String notes;
