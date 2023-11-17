@@ -35,7 +35,6 @@ public class ExerciseController {
 
       return new ResponseEntity<>(exercises, HttpStatus.OK);
     } catch (Exception exception) {
-      System.out.println("----------------------" + exception);
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

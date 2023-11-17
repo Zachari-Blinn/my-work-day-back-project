@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -22,5 +23,10 @@ public class ExerciseServiceImpl implements ExerciseService {
   @Override
   public List<Exercise> findAll() {
     return exerciseRepository.findAll();
+  }
+
+  @Override
+  public Optional<Exercise> findById(Long id) {
+    return exerciseRepository.findById(id);
   }
 }

@@ -64,7 +64,7 @@ public class AuthController {
     User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
 
     return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-      userDetails.getUsername(), userDetails.getEmail(), roles, user));
+      userDetails.getUsername(), userDetails.getEmail(), roles));
   }
 
   @PostMapping("/signup")

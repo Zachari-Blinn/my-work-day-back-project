@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class Exercise extends BaseEntityAudit {
 
   @Column(nullable = true)
   @OneToMany(mappedBy = "exercise")
+  @JsonManagedReference(value = "training-exercises-exercise")
   Set<TrainingExercises> trainingExercises;
 
   @ElementCollection(targetClass = Muscle.class)

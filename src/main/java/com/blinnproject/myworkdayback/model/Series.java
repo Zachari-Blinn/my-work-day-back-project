@@ -6,18 +6,25 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.time.Duration;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Series {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Min(0)
+  @Column(nullable = false)
+  private int positionIndex;
 
   @ManyToOne
   @JoinColumns({
@@ -31,7 +38,7 @@ public class Series {
   private int weight;
 
   @Temporal(TemporalType.TIME)
-  private Time restTime;
+  private Duration restTime;
 
   @Lob
   private String notes;

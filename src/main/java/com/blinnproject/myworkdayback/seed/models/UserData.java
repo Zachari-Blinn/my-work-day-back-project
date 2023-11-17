@@ -23,7 +23,8 @@ public class UserData {
   @Autowired
   PasswordEncoder encoder;
 
-  public void load() {
+  public List<User> load() {
+    List<User> result = null;
     if (userRepository.count() == 0) {
       logger.info("Seeding users...");
 
@@ -33,8 +34,9 @@ public class UserData {
       userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", encoder.encode("Toto@123*")));
       // Add more user here
 
-      userRepository.saveAll(userList);
+      result = userRepository.saveAll(userList);
       logger.info(String.valueOf(userRepository.count()) + " user successfully loaded!");
     }
+    return result;
   }
 }
