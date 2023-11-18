@@ -3,8 +3,7 @@ package com.blinnproject.myworkdayback.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -15,15 +14,18 @@ import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@EqualsAndHashCode(callSuper = false)
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntityAudit extends BaseEntity implements Serializable {
   @CreatedBy
-  private String createdBy;
+  private Long createdBy;
 
   @LastModifiedBy
-  private String lastUpdatedBy;
+  private Long lastUpdatedBy;
 
   @CreationTimestamp
   @Column(name = "created_on", updatable = false)
