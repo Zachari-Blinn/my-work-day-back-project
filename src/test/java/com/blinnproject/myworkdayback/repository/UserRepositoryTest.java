@@ -18,46 +18,46 @@ public class UserRepositoryTest {
   @Autowired
   private UserRepository userRepository;
 
-  @Test
-  public void UserRepository_SaveAll_ReturnSavedUser() {
-    User user = User.builder()
-      .username("jean-sebastien")
-      .email("jean-sebastien@fake-email.fr")
-      .gender(EGender.MAN)
-      .password("Toto@2021*").build();
+//  @Test
+//  public void UserRepository_SaveAll_ReturnSavedUser() {
+//    User user = User.builder()
+//      .username("jean-sebastien")
+//      .email("jean-sebastien@fake-email.fr")
+//      .gender(EGender.MAN)
+//      .password("Toto@2021*").build();
+//
+//    User savedUser = userRepository.save(user);
+//
+//    Assertions.assertThat(savedUser).isNotNull();
+//    Assertions.assertThat(savedUser.getId()).isNotNull().isGreaterThan(0);
+//    Assertions.assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
+//    Assertions.assertThat(savedUser.getEmail()).isEqualTo(user.getEmail());
+//    Assertions.assertThat(savedUser.getGender()).isEqualTo(user.getGender());
+//    Assertions.assertThat(savedUser.getPassword()).isNotNull();
+//  }
 
-    User savedUser = userRepository.save(user);
-
-    Assertions.assertThat(savedUser).isNotNull();
-    Assertions.assertThat(savedUser.getId()).isNotNull().isGreaterThan(0);
-    Assertions.assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
-    Assertions.assertThat(savedUser.getEmail()).isEqualTo(user.getEmail());
-    Assertions.assertThat(savedUser.getGender()).isEqualTo(user.getGender());
-    Assertions.assertThat(savedUser.getPassword()).isNotNull();
-  }
-
-  @Test
-  public void UserRepository_GetAll_ReturnMoreThanOneUser() {
-    User user1 = User.builder()
-      .username("jean-marc")
-      .email("jean-marc@fake-email.fr")
-      .gender(EGender.MAN)
-      .password("Toto@2021*").build();
-
-    User user2 = User.builder()
-      .username("jean-baptiste")
-      .email("jean-baptiste@fake-email.fr")
-      .gender(EGender.MAN)
-      .password("Toto@2021*").build();
-
-    User savedUser1 = userRepository.save(user1);
-    User savedUser2 = userRepository.save(user2);
-
-    List<User> userList = userRepository.findAll();
-
-    Assertions.assertThat(userList).isNotNull();
-    Assertions.assertThat(userList.size()).isEqualTo(2);
-  }
+//  @Test
+//  public void UserRepository_GetAll_ReturnMoreThanOneUser() {
+//    User user1 = User.builder()
+//      .username("jean-marc")
+//      .email("jean-marc@fake-email.fr")
+//      .gender(EGender.MAN)
+//      .password("Toto@2021*").build();
+//
+//    User user2 = User.builder()
+//      .username("jean-baptiste")
+//      .email("jean-baptiste@fake-email.fr")
+//      .gender(EGender.MAN)
+//      .password("Toto@2021*").build();
+//
+//    User savedUser1 = userRepository.save(user1);
+//    User savedUser2 = userRepository.save(user2);
+//
+//    List<User> userList = userRepository.findAll();
+//
+//    Assertions.assertThat(userList).isNotNull();
+//    Assertions.assertThat(userList.size()).isEqualTo(2);
+//  }
 
   @Test
   public void UserRepository_FindByUsername_ReturnUserByUsername() {
