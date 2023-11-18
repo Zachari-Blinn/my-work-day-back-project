@@ -1,14 +1,11 @@
 package com.blinnproject.myworkdayback.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +25,7 @@ public class User extends BaseEntityAudit {
   private String username;
 
   @Enumerated(EnumType.ORDINAL)
-  private Gender gender;
+  private EGender gender;
 
   @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
     flags = Pattern.Flag.CASE_INSENSITIVE)
@@ -49,9 +46,5 @@ public class User extends BaseEntityAudit {
     this.email = email;
     this.password = password;
   }
-
-  @OneToMany(mappedBy = "user")
-  @JsonIgnore
-  private Set<Training> trainings;
 }
 

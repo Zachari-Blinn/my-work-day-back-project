@@ -1,10 +1,10 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,10 +22,10 @@ public class Exercise extends BaseEntityAudit {
   @JsonManagedReference(value = "training-exercises-exercise")
   Set<TrainingExercises> trainingExercises;
 
-  @ElementCollection(targetClass = Muscle.class)
+  @ElementCollection(targetClass = EMuscle.class)
   @CollectionTable(name = "exercise_muscle", joinColumns = @JoinColumn(name = "exercise_id"))
   @Enumerated(EnumType.STRING)
   @Column(name = "muscle_name")
-  private Set <Muscle> musclesUsed;
+  private Set <EMuscle> musclesUsed;
 
 }

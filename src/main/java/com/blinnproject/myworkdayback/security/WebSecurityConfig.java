@@ -21,7 +21,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(
+        securedEnabled = true,
+        prePostEnabled = true,
+        jsr250Enabled = true
+)
 //(securedEnabled = true,
 //jsr250Enabled = true,
 //prePostEnabled = true) // by default

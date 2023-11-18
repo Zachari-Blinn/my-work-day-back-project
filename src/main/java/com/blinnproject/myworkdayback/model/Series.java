@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -9,19 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Time;
-import java.time.Duration;
-
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Series {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
+public class Series extends BaseEntityAudit {
   @Min(0)
   @Column(nullable = false)
   private int positionIndex;
@@ -46,5 +39,5 @@ public class Series {
   @Max(100)
   private int repsCount;
 
-  private Difficulty difficulty;
+  private EDifficulty difficulty;
 }

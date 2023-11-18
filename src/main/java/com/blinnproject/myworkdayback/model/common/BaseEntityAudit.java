@@ -1,4 +1,4 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -25,15 +25,13 @@ public class TrainingServiceImpl implements TrainingService {
   private UserRepository userRepository;
 
   @Override
-  public Training create(Long userId, Training training) {
-    User user = userRepository.findById(userId).orElse(null);
-    training.setUser(user);
+  public Training create(Training training) {
     return trainingRepository.save(training);
   }
 
   @Override
-  public List<Training> getAllTrainingsByUserId(Long userId) {
-    return trainingRepository.findAllByUserId(userId);
+  public List<Training> getAllTrainingsByCreatedBy(Long createdBy) {
+    return trainingRepository.findAllByCreatedBy(createdBy);
   }
 
   @Override

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
+@PreAuthorize("isAuthenticated()")
 @RequestMapping("/api/training")
 public class TrainingController {
 
@@ -33,10 +35,8 @@ public class TrainingController {
 
   @PostMapping()
   public ResponseEntity<Training> create(@Valid @RequestBody Training trainingRequest) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long userId = userDetails.getId();
     try {
-      Training _training = trainingService.create(userId, trainingRequest);
+      Training _training = trainingService.create(trainingRequest);
       return new ResponseEntity<>(_training, HttpStatus.CREATED);
     } catch (Exception exception) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -46,9 +46,9 @@ public class TrainingController {
   @GetMapping("/current-user")
   public ResponseEntity<List<Training>> getCurrentUserTrainings() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long userId = userDetails.getId();
+    Long createdBy = userDetails.getId();
     try {
-      List<Training> trainings = trainingService.getAllTrainingsByUserId(userId);
+      List<Training> trainings = trainingService.getAllTrainingsByCreatedBy(createdBy);
 
       if (trainings.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

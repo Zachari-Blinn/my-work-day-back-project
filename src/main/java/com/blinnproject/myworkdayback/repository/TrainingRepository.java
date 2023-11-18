@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface TrainingRepository extends JpaRepository<Training, Long> {
 
-  List<Training> findAllByUserId(Long userId);
+  List<Training> findAllByCreatedBy(Long createdId);
 }

@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.Gender;
+import com.blinnproject.myworkdayback.model.EGender;
 import com.blinnproject.myworkdayback.model.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class UserRepositoryTest {
     User user = User.builder()
       .username("jean-sebastien")
       .email("jean-sebastien@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser = userRepository.save(user);
@@ -41,13 +41,13 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("jean-marc")
       .email("jean-marc@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User user2 = User.builder()
       .username("jean-baptiste")
       .email("jean-baptiste@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);
@@ -64,13 +64,13 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("Jean-Adam")
       .email("Jean-Adam@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User user2 = User.builder()
       .username("Jean-Alexandre")
       .email("Jean-Alexandre@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);
@@ -88,7 +88,7 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("Jean-André")
       .email("Jean-Andre@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);
@@ -103,7 +103,7 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("Jean-Antoine")
       .email("Jean-Antoine@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);
@@ -118,7 +118,7 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("Jean-Arthur")
       .email("Jean-Arthur@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);
@@ -133,7 +133,7 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("Jean-Augustin")
       .email("Jean-Antoine@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);
@@ -148,7 +148,7 @@ public class UserRepositoryTest {
     User user1 = User.builder()
       .username("Jean-Auguste")
       .email("Jean-Arthur@fake-email.fr")
-      .gender(Gender.MAN)
+      .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
     User savedUser1 = userRepository.save(user1);

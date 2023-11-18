@@ -1,17 +1,15 @@
 package com.blinnproject.myworkdayback.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.DayOfWeek;
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Set;
 
 @Entity
@@ -28,9 +26,9 @@ public class Training extends BaseEntityAudit {
   private String sportPreset;
 
   @Column
-  private DayOfWeek[] trainingDays;
+  private ArrayList<DayOfWeek> trainingDays;
 
-  @Column
+  @Lob
   private String description;
 
   @Column
@@ -42,10 +40,4 @@ public class Training extends BaseEntityAudit {
   @OneToMany(mappedBy = "training")
   @JsonManagedReference(value = "training-exercises-training")
   Set<TrainingExercises> trainingExercises;
-
-  @ManyToOne()
-  @JoinColumn(name = "user_id", nullable = true)
-  @JsonIgnore
-  private User user;
-
 }
