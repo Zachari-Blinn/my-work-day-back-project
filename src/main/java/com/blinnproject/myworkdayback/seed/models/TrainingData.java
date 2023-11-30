@@ -55,13 +55,22 @@ public class TrainingData {
   }
 
   private void loadExercisesAndCreateTraining() {
-    Training hautDuCorpsTraining = new Training();
-    hautDuCorpsTraining.setName("Haut du corps");
-    hautDuCorpsTraining.setCreatedBy(this.user.getId());
+    Training hautDuCorpsTraining = createTraining("Haut du corps", this.user.getId());
     this.trainingList.add(hautDuCorpsTraining);
+
+    Training basDuCorpsTraining = createTraining("Bas du corps", this.user.getId());
+    this.trainingList.add(basDuCorpsTraining);
+
     // Add more exercise here
 
-    trainingRepository.save(hautDuCorpsTraining);
+    trainingRepository.saveAll(this.trainingList);
+  }
+
+  private Training createTraining(String name, Long userID) {
+    Training training = new Training();
+    training.setName(name);
+    training.setCreatedBy(userID);
+    return training;
   }
 
   public Training getTrainingByName(String name) throws ChangeSetPersister.NotFoundException {
@@ -69,48 +78,53 @@ public class TrainingData {
   }
 
   private void loadTrainingExercises() throws ChangeSetPersister.NotFoundException {
-    Training training1 = this.getTrainingByName("Haut du corps");
-    Exercise exercise1 = this.exerciseData.getExerciseByName("Bench press");
-
-    TrainingExercisesKey trainingExercisesKey = new TrainingExercisesKey(training1.getId(), exercise1.getId());
-    TrainingExercises trainingExercises = new TrainingExercises(trainingExercisesKey, "Lorem ipsum note", 2);
-
-    trainingExercises.setTraining(training1);
-    trainingExercises.setExercise(exercise1);
-
     this.loadSeries();
 
-    trainingExercises.addSeriesList(this.seriesList);
+    Training hautDuCorpsTraining = this.getTrainingByName("Haut du corps");
+    Exercise benchPressExercise = this.exerciseData.getExerciseByName("Bench press");
 
-    TrainingExercises createdTrainingExercises = this.trainingExercisesRepository.save(trainingExercises);
-    this.trainingExercisesList.add(createdTrainingExercises);
+    // Training basDuCorpsTraining = this.getTrainingByName("Bas du corps");
+    // todo add squat exercise
+
+    TrainingExercises hautDuCorpsTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, benchPressExercise, "Lorem ipsum note");
+    this.trainingExercisesList.add(hautDuCorpsTrainingExercises);
+
+//    TrainingExercises basDuCorpsTrainingExercises = this.createTrainingExercises(basDuCorpsTraining, benchPressExercise, "Lorem ipsum note"); // this line crash
+//    this.trainingExercisesList.add(basDuCorpsTrainingExercises);
+
+    this.trainingExercisesRepository.saveAll(this.trainingExercisesList);
+  }
+
+  private TrainingExercises createTrainingExercises(Training training, Exercise exercise, String notes) {
+    TrainingExercises trainingExercises = new TrainingExercises();
+
+    trainingExercises.setTraining(training);
+    trainingExercises.setExercise(exercise);
+    trainingExercises.setNotes(notes);
+    trainingExercises.setNumberOfWarmUpSeries(2);
+
+    trainingExercises.addSeriesList(this.seriesList);
+    return trainingExercises;
   }
 
   private void loadSeries() {
-    Series series1 = new Series();
-    series1.setPositionIndex(1);
-    series1.setRepsCount(8);
-    series1.setRestTime("02:00");
-    series1.setWeight(50);
-    series1.setCreatedBy(this.user.getId());
+    Series series1 = createSeries(1, 8, 50, "01:00", this.user.getId());
     this.seriesList.add(series1);
 
-    Series series2 = new Series();
-    series2.setPositionIndex(2);
-    series2.setRepsCount(10);
-    series2.setRestTime("02:00");
-    series2.setWeight(60);
-    series2.setCreatedBy(this.user.getId());
+    Series series2 = createSeries(2, 10, 60, "02:00", this.user.getId());
     this.seriesList.add(series2);
 
-    Series series3 = new Series();
-    series3.setPositionIndex(2);
-    series3.setRepsCount(10);
-    series3.setRestTime("02:00");
-    series3.setWeight(60);
-    series3.setCreatedBy(this.user.getId());
+    Series series3 = createSeries(2, 10, 60, "02:00", this.user.getId());
     this.seriesList.add(series3);
+  }
 
-    seriesRepository.saveAll(this.seriesList);
+  private Series createSeries(int positionIndex, int repsCount, int weight, String restTime, Long userId) {
+    Series series = new Series();
+    series.setPositionIndex(positionIndex);
+    series.setRepsCount(repsCount);
+    series.setRestTime(restTime);
+    series.setWeight(weight);
+    series.setCreatedBy(userId);
+    return series;
   }
 }

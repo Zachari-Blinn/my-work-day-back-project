@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
@@ -18,23 +19,22 @@ import java.util.Set;
 @Getter
 @Setter
 public class TrainingExercises {
-  @EmbeddedId
-  TrainingExercisesKey id = new TrainingExercisesKey();
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @ManyToOne
-  @JsonBackReference(value = "training-exercises-training")
-  @MapsId("trainingId")
   @JoinColumn(name = "training_id")
+  @JsonIgnore
   Training training;
 
   @ManyToOne
-  @JsonBackReference(value = "training-exercises-exercise")
-  @MapsId("exerciseId")
   @JoinColumn(name = "exercise_id")
+  @JsonIgnore
   Exercise exercise;
 
-  @OneToMany(mappedBy = "trainingExercises", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonManagedReference
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  @JoinColumn(name = "training_exercises_id")
   private List<Series> seriesList = new ArrayList<>();
 
   @Column
@@ -43,8 +43,9 @@ public class TrainingExercises {
   @Column
   private int numberOfWarmUpSeries;
 
-  public TrainingExercises(TrainingExercisesKey id, String notes, int numberOfWarmUpSeries) {
-    this.id = id;
+  public TrainingExercises(Training training, Exercise exercise, String notes, int numberOfWarmUpSeries) {
+    this.training = training;
+    this.exercise = exercise;
     this.notes = notes;
     this.numberOfWarmUpSeries = numberOfWarmUpSeries;
   }
@@ -55,7 +56,6 @@ public class TrainingExercises {
 
   public void addSeries(Series series) {
     this.seriesList.add(series);
-    series.setTrainingExercises(this);
   }
 
   public void addSeriesList(List<Series> seriesList) {
@@ -63,5 +63,4 @@ public class TrainingExercises {
       addSeries(series);
     }
   }
-
 }

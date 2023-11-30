@@ -75,20 +75,19 @@ public class TrainingController {
   }
 
   @PostMapping("/{trainingId}/add-exercise")
-  public ResponseEntity<?> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest addExerciseRequest) {
+  public ResponseEntity<?> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
     try {
-      TrainingExercisesKey trainingExercisesKey = new TrainingExercisesKey(trainingId, addExerciseRequest.getExerciseId());
-      TrainingExercises trainingExercises = new TrainingExercises(trainingExercisesKey, addExerciseRequest.getNotes(), addExerciseRequest.getNumberOfWarmUpSeries());
+      TrainingExercises trainingExercises = new TrainingExercises();
 
       trainingExercises.setTraining(trainingService.findById(trainingId).orElse(null));
-      trainingExercises.setExercise(exerciseService.findById(addExerciseRequest.getExerciseId()).orElse(null));
+      trainingExercises.setExercise(exerciseService.findById(requestBody.getExerciseId()).orElse(null));
+      trainingExercises.setNotes(requestBody.getNotes());
+      trainingExercises.setNumberOfWarmUpSeries(requestBody.getNumberOfWarmUpSeries());
 
-      List<Series> seriesList = addExerciseRequest.getSeries();
-
-//      trainingExercises.addSeries(new HashSet<>(seriesList));
+      List<Series> seriesList = requestBody.getSeries();
+      trainingExercises.addSeriesList(seriesList);
 
       TrainingExercises createdTrainingExercises = trainingExercisesRepository.save(trainingExercises);
-      seriesRepository.saveAll(seriesList);
 
       return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
     } catch (Exception e) {

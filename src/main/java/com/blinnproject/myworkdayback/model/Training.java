@@ -37,7 +37,7 @@ public class Training extends BaseEntityAudit {
   @Column
   private Boolean hasStretching;
 
-//  @OneToMany(mappedBy = "training")
+  @OneToMany(mappedBy = "training")
 //  @JsonManagedReference(value = "training-exercises-training")
-//  Set<TrainingExercises> trainingExercises;
+  Set<TrainingExercises> trainingExercises;
 }

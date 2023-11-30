@@ -20,13 +20,10 @@ public class Series extends BaseEntityAudit {
   @Column(nullable = false)
   private int positionIndex;
 
-  @ManyToOne
-  @JoinColumns({
-    @JoinColumn(name = "training_id", referencedColumnName = "training_id"),
-    @JoinColumn(name = "exercise_id", referencedColumnName = "exercise_id")
-  })
-  @JsonBackReference
-  private TrainingExercises trainingExercises;
+//  @ManyToOne
+//  @JoinColumn(name = "training_exercises_id")
+////  @JsonBackReference
+//  private TrainingExercises trainingExercises;
 
   @Min(0)
   @Max(150)
