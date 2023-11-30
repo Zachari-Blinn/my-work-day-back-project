@@ -2,13 +2,16 @@ package com.blinnproject.myworkdayback.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,14 +33,15 @@ public class TrainingExercises {
   @JoinColumn(name = "exercise_id")
   Exercise exercise;
 
+  @OneToMany(mappedBy = "trainingExercises", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  private List<Series> seriesList = new ArrayList<>();
+
   @Column
   private String notes;
 
   @Column
   private int numberOfWarmUpSeries;
-
-  @OneToMany(mappedBy = "trainingExercises", fetch = FetchType.EAGER)
-  private Set<Series> series;
 
   public TrainingExercises(TrainingExercisesKey id, String notes, int numberOfWarmUpSeries) {
     this.id = id;
@@ -49,10 +53,15 @@ public class TrainingExercises {
 
   }
 
-  public void addSeries(Set<Series> newSeries) {
-    if (this.series == null) {
-      this.series = new HashSet<>();
-    }
-    this.series.addAll(newSeries);
+  public void addSeries(Series series) {
+    this.seriesList.add(series);
+    series.setTrainingExercises(this);
   }
+
+  public void addSeriesList(List<Series> seriesList) {
+    for (Series series : seriesList) {
+      addSeries(series);
+    }
+  }
+
 }

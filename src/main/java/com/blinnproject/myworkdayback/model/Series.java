@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -24,6 +25,7 @@ public class Series extends BaseEntityAudit {
     @JoinColumn(name = "training_id", referencedColumnName = "training_id"),
     @JoinColumn(name = "exercise_id", referencedColumnName = "exercise_id")
   })
+  @JsonBackReference
   private TrainingExercises trainingExercises;
 
   @Min(0)

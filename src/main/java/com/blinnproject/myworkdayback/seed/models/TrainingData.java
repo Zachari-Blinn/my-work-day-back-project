@@ -35,6 +35,8 @@ public class TrainingData {
   @Autowired
   ExerciseData exerciseData;
 
+  public User user;
+
   List<Training> trainingList = new ArrayList<Training>();
   List<TrainingExercises> trainingExercisesList = new ArrayList<TrainingExercises>();
   List<Series> seriesList = new ArrayList<>();
@@ -43,6 +45,8 @@ public class TrainingData {
     if (trainingRepository.count() == 0) {
       logger.info("Seeding training...");
 
+      this.user = this.userData.findUserByUsername("jean-sebastien");
+
       this.loadExercisesAndCreateTraining();
       this.loadTrainingExercises();
 
@@ -50,12 +54,10 @@ public class TrainingData {
     }
   }
 
-  private void loadExercisesAndCreateTraining() throws ChangeSetPersister.NotFoundException {
-    User user1 = this.userData.findUserByUsername("jean-sebastien");
-
+  private void loadExercisesAndCreateTraining() {
     Training hautDuCorpsTraining = new Training();
     hautDuCorpsTraining.setName("Haut du corps");
-    hautDuCorpsTraining.setCreatedBy(user1.getId());
+    hautDuCorpsTraining.setCreatedBy(this.user.getId());
     this.trainingList.add(hautDuCorpsTraining);
     // Add more exercise here
 
@@ -78,7 +80,7 @@ public class TrainingData {
 
     this.loadSeries();
 
-    trainingExercises.addSeries(new HashSet<>(this.seriesList));
+    trainingExercises.addSeriesList(this.seriesList);
 
     TrainingExercises createdTrainingExercises = this.trainingExercisesRepository.save(trainingExercises);
     this.trainingExercisesList.add(createdTrainingExercises);
@@ -90,20 +92,23 @@ public class TrainingData {
     series1.setRepsCount(8);
     series1.setRestTime("02:00");
     series1.setWeight(50);
+    series1.setCreatedBy(this.user.getId());
     this.seriesList.add(series1);
 
     Series series2 = new Series();
-    series1.setPositionIndex(2);
-    series1.setRepsCount(10);
-    series1.setRestTime("02:00");
-    series1.setWeight(60);
+    series2.setPositionIndex(2);
+    series2.setRepsCount(10);
+    series2.setRestTime("02:00");
+    series2.setWeight(60);
+    series2.setCreatedBy(this.user.getId());
     this.seriesList.add(series2);
 
     Series series3 = new Series();
-    series1.setPositionIndex(2);
-    series1.setRepsCount(10);
-    series1.setRestTime("02:00");
-    series1.setWeight(60);
+    series3.setPositionIndex(2);
+    series3.setRepsCount(10);
+    series3.setRestTime("02:00");
+    series3.setWeight(60);
+    series3.setCreatedBy(this.user.getId());
     this.seriesList.add(series3);
 
     seriesRepository.saveAll(this.seriesList);

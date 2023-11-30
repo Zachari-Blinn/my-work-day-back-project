@@ -85,7 +85,7 @@ public class TrainingController {
 
       List<Series> seriesList = addExerciseRequest.getSeries();
 
-      trainingExercises.addSeries(new HashSet<>(seriesList));
+//      trainingExercises.addSeries(new HashSet<>(seriesList));
 
       TrainingExercises createdTrainingExercises = trainingExercisesRepository.save(trainingExercises);
       seriesRepository.saveAll(seriesList);
@@ -97,17 +97,9 @@ public class TrainingController {
   }
 
   @GetMapping("/{trainingId}/exercises")
-  public ResponseEntity<List<ExerciseWithSeriesResponse>> getExercisesByTrainingId(@PathVariable("trainingId") Long trainingId) {
+  public ResponseEntity<List<TrainingExercises>> getExercisesByTrainingId(@PathVariable("trainingId") Long trainingId) {
     List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
 
-    List<ExerciseWithSeriesResponse> exercisesWithSeries = trainingExercises.stream()
-            .map(trainingExercise -> {
-              Exercise exercise = trainingExercise.getExercise();
-              Set<Series> series = trainingExercise.getSeries();
-              return new ExerciseWithSeriesResponse(exercise, series);
-            })
-            .toList();
-
-    return new ResponseEntity<>(exercisesWithSeries, HttpStatus.OK);
+    return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
   }
 }

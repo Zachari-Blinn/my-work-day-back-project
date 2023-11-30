@@ -5,15 +5,16 @@ import com.blinnproject.myworkdayback.model.Series;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 public class ExerciseWithSeriesResponse {
     private Exercise exercise;
-    private Set<Series> series;
+    private List<Series> series;
 
-    public ExerciseWithSeriesResponse(Exercise exercise, Set<Series> series) {
+    public ExerciseWithSeriesResponse(Exercise exercise, List<Series> series) {
         this.exercise = exercise;
         this.series = series;
     }
