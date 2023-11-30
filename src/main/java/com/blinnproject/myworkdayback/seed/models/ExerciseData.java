@@ -2,8 +2,10 @@ package com.blinnproject.myworkdayback.seed.models;
 
 import com.blinnproject.myworkdayback.model.Exercise;
 import com.blinnproject.myworkdayback.model.EMuscle;
+import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.ExerciseRepository;
+import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.seed.DataLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +29,8 @@ public class ExerciseData {
   @Autowired
   UserData userData;
 
+  List<Exercise> exerciseList = new ArrayList<Exercise>();
+
   public void load() throws ChangeSetPersister.NotFoundException {
     if (exerciseRepository.count() == 0) {
       logger.info("Seeding exercise...");
@@ -36,10 +41,15 @@ public class ExerciseData {
       benchPressExercise.setName("Bench press");
       benchPressExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.PECTORALIS_MAJOR, EMuscle.TRICEPS)));
       benchPressExercise.setCreatedBy(user1.getId());
+      this.exerciseList.add(benchPressExercise);
       // Add more exercise here
 
       exerciseRepository.save(benchPressExercise);
       logger.info(String.valueOf(exerciseRepository.count()) + " exercise successfully loaded!");
     }
+  }
+
+  public Exercise getExerciseByName(String name) throws ChangeSetPersister.NotFoundException {
+    return this.exerciseList.stream().filter(exercise -> exercise.getName().equals(name)).findFirst().orElseThrow(ChangeSetPersister.NotFoundException::new);
   }
 }

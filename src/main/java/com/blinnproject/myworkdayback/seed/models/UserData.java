@@ -41,6 +41,6 @@ public class UserData {
   }
 
   public User findUserByUsername(String username) throws ChangeSetPersister.NotFoundException {
-    return this.userList.stream().filter(user -> user.getUsername().equals("jean-sebastien")).findFirst().orElseThrow(ChangeSetPersister.NotFoundException::new);
+    return this.userList.stream().filter(user -> user.getUsername().equals(username)).findFirst().orElseThrow(ChangeSetPersister.NotFoundException::new);
   }
 }
