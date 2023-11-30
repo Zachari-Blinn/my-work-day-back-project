@@ -4,6 +4,7 @@ import com.blinnproject.myworkdayback.security.jwt.AuthEntryPointJwt;
 import com.blinnproject.myworkdayback.security.jwt.AuthTokenFilter;
 import com.blinnproject.myworkdayback.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,11 +64,13 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.headers().frameOptions().disable();
     http.csrf(AbstractHttpConfigurer::disable)
       .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth ->
         auth
+          .requestMatchers(PathRequest.toH2Console()).permitAll()
           .requestMatchers(antMatcher("/api/auth/**")).permitAll()
           .requestMatchers(antMatcher("/api/training/**")).permitAll()
           .requestMatchers(antMatcher("/api/exercise/**")).permitAll()

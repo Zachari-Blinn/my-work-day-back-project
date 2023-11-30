@@ -17,10 +17,10 @@ public class Exercise extends BaseEntityAudit {
   @Column(length = 150, nullable = false)
   private String name;
 
-  @Column(nullable = true)
-  @OneToMany(mappedBy = "exercise")
-  @JsonManagedReference(value = "training-exercises-exercise")
-  Set<TrainingExercises> trainingExercises;
+//  @Column(nullable = true)
+//  @OneToMany(mappedBy = "exercise")
+//  @JsonManagedReference(value = "training-exercises-exercise")
+//  Set<TrainingExercises> trainingExercises;
 
   @ElementCollection(targetClass = EMuscle.class)
   @CollectionTable(name = "exercise_muscle", joinColumns = @JoinColumn(name = "exercise_id"))

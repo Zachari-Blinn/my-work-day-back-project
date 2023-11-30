@@ -2,6 +2,8 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
+import com.blinnproject.myworkdayback.payload.response.ExerciseWithSeriesResponse;
+import com.blinnproject.myworkdayback.repository.SeriesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
@@ -14,10 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -32,6 +32,9 @@ public class TrainingController {
 
   @Autowired
   TrainingExercisesRepository trainingExercisesRepository;
+
+  @Autowired
+  SeriesRepository seriesRepository;
 
   @PostMapping()
   public ResponseEntity<Training> create(@Valid @RequestBody Training trainingRequest) {
@@ -80,12 +83,31 @@ public class TrainingController {
       trainingExercises.setTraining(trainingService.findById(trainingId).orElse(null));
       trainingExercises.setExercise(exerciseService.findById(addExerciseRequest.getExerciseId()).orElse(null));
 
-      trainingExercises.addSeries(new HashSet<>(addExerciseRequest.getSeries()));
+      List<Series> seriesList = addExerciseRequest.getSeries();
+
+      trainingExercises.addSeries(new HashSet<>(seriesList));
+
       TrainingExercises createdTrainingExercises = trainingExercisesRepository.save(trainingExercises);
+      seriesRepository.saveAll(seriesList);
 
       return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>("Failed to save TrainingExercises", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @GetMapping("/{trainingId}/exercises")
+  public ResponseEntity<List<ExerciseWithSeriesResponse>> getExercisesByTrainingId(@PathVariable("trainingId") Long trainingId) {
+    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
+
+    List<ExerciseWithSeriesResponse> exercisesWithSeries = trainingExercises.stream()
+            .map(trainingExercise -> {
+              Exercise exercise = trainingExercise.getExercise();
+              Set<Series> series = trainingExercise.getSeries();
+              return new ExerciseWithSeriesResponse(exercise, series);
+            })
+            .toList();
+
+    return new ResponseEntity<>(exercisesWithSeries, HttpStatus.OK);
   }
 }

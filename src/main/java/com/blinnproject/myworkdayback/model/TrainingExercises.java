@@ -36,7 +36,7 @@ public class TrainingExercises {
   @Column
   private int numberOfWarmUpSeries;
 
-  @OneToMany(mappedBy = "trainingExercises")
+  @OneToMany(mappedBy = "trainingExercises", fetch = FetchType.EAGER)
   private Set<Series> series;
 
   public TrainingExercises(TrainingExercisesKey id, String notes, int numberOfWarmUpSeries) {
