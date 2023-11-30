@@ -21,6 +21,7 @@ import java.time.Instant;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntityAudit extends BaseEntity implements Serializable {
+  @Setter
   @CreatedBy
   private Long createdBy;
 

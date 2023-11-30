@@ -6,6 +6,7 @@ import com.blinnproject.myworkdayback.seed.DataLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,20 +24,23 @@ public class UserData {
   @Autowired
   PasswordEncoder encoder;
 
-  public List<User> load() {
+  public List<User> userList = new ArrayList<User>();
+
+  public void load() {
     List<User> result = null;
     if (userRepository.count() == 0) {
       logger.info("Seeding users...");
 
-      List<User> userList = new ArrayList<User>();
-
-      userList.add(new User("jean-sebastien", "jean-sebastien@fake-email.fr", encoder.encode("Toto@123*")));
-      userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", encoder.encode("Toto@123*")));
+      this.userList.add(new User("jean-sebastien", "jean-sebastien@fake-email.fr", encoder.encode("Toto@123*")));
+      this.userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", encoder.encode("Toto@123*")));
       // Add more user here
 
-      result = userRepository.saveAll(userList);
+      userRepository.saveAll(this.userList);
       logger.info(String.valueOf(userRepository.count()) + " user successfully loaded!");
     }
-    return result;
+  }
+
+  public User findUserByUsername(String username) throws ChangeSetPersister.NotFoundException {
+    return this.userList.stream().filter(user -> user.getUsername().equals("jean-sebastien")).findFirst().orElseThrow(ChangeSetPersister.NotFoundException::new);
   }
 }
