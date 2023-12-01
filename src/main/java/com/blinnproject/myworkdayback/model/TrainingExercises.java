@@ -25,12 +25,12 @@ public class TrainingExercises {
 
   @ManyToOne
   @JoinColumn(name = "training_id")
-  @JsonIgnore
+//  @JsonIgnore
   Training training;
 
   @ManyToOne
   @JoinColumn(name = "exercise_id")
-  @JsonIgnore
+//  @JsonIgnore
   Exercise exercise;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

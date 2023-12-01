@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +37,6 @@ public class Training extends BaseEntityAudit {
   @Column
   private Boolean hasStretching;
 
-  @OneToMany(mappedBy = "training")
-//  @JsonManagedReference(value = "training-exercises-training")
-  Set<TrainingExercises> trainingExercises;
+//  @OneToMany(mappedBy = "training")
+//  Set<TrainingExercises> trainingExercises;
 }

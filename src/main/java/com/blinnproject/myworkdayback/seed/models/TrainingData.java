@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +71,10 @@ public class TrainingData {
     Training training = new Training();
     training.setName(name);
     training.setCreatedBy(userID);
+    ArrayList<DayOfWeek> days = new ArrayList<>();
+    days.add(DayOfWeek.TUESDAY);
+    days.add(DayOfWeek.THURSDAY);
+    training.setTrainingDays(days);
     return training;
   }
 
