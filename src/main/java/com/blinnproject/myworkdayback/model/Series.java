@@ -15,15 +15,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Series extends BaseEntityAudit {
+public class Series extends BaseEntityAudit implements Cloneable {
   @Min(0)
   @Column(nullable = false)
   private int positionIndex;
-
-//  @ManyToOne
-//  @JoinColumn(name = "training_exercises_id")
-////  @JsonBackReference
-//  private TrainingExercises trainingExercises;
 
   @Min(0)
   @Max(150)
@@ -39,4 +34,17 @@ public class Series extends BaseEntityAudit {
   private int repsCount;
 
   private EDifficulty difficulty;
+
+  public Series(Series that) {
+    this(that.getPositionIndex(), that.getWeight(), that.getRestTime(), that.getNotes(), that.getRepsCount(), that.getDifficulty());
+  }
+
+  @Override
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException("Error cloning Series", e);
+    }
+  }
 }

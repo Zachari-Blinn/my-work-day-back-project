@@ -10,28 +10,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
-public class TrainingExercises {
+public class TrainingExercises implements Cloneable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne
+  @JoinColumn(referencedColumnName = "id")
+  private TrainingExercises parent;
+
+  @ManyToOne
   @JoinColumn(name = "training_id")
-//  @JsonIgnore
-  Training training;
+  private Training training;
 
   @ManyToOne
   @JoinColumn(name = "exercise_id")
-//  @JsonIgnore
-  Exercise exercise;
+  private Exercise exercise;
 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   @JoinColumn(name = "training_exercises_id")
@@ -43,11 +42,22 @@ public class TrainingExercises {
   @Column
   private int numberOfWarmUpSeries;
 
+  @Temporal(TemporalType.DATE)
+  private Date trainingDay;
+
   public TrainingExercises(Training training, Exercise exercise, String notes, int numberOfWarmUpSeries) {
     this.training = training;
     this.exercise = exercise;
     this.notes = notes;
     this.numberOfWarmUpSeries = numberOfWarmUpSeries;
+  }
+
+  public TrainingExercises(Training training, Exercise exercise, String notes, int numberOfWarmUpSeries, List<Series> seriesList) {
+    this.training = training;
+    this.exercise = exercise;
+    this.notes = notes;
+    this.numberOfWarmUpSeries = numberOfWarmUpSeries;
+    this.seriesList.addAll(seriesList);
   }
 
   public TrainingExercises() {
@@ -62,5 +72,37 @@ public class TrainingExercises {
     for (Series series : seriesList) {
       addSeries(series);
     }
+  }
+
+  // Constructor used for clone to new entity TrainingExercises and series associated
+  public TrainingExercises(TrainingExercises that) {
+    this(that.getTraining(), that.getExercise(), that.getNotes(), that.getNumberOfWarmUpSeries());
+
+    List<Series> clonedSeriesList = new ArrayList<>();
+    for (Series originalSeries : that.getSeriesList()) {
+      Series clonedSeries = new Series(originalSeries);
+      clonedSeriesList.add(clonedSeries);
+    }
+    this.setSeriesList(clonedSeriesList);
+    this.setParent(that);
+  }
+
+  @Override
+  public TrainingExercises clone() {
+    try {
+      TrainingExercises cloned = (TrainingExercises) super.clone();
+      cloned.setSeriesList(cloneSeriesList(this.seriesList));
+      return cloned;
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException("Cloning failed", e);
+    }
+  }
+
+  private List<Series> cloneSeriesList(List<Series> originalList) {
+    List<Series> clonedList = new ArrayList<>(originalList.size());
+    for (Series original : originalList) {
+      clonedList.add((Series) original.clone());
+    }
+    return clonedList;
   }
 }

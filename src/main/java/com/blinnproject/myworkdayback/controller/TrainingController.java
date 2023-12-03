@@ -101,4 +101,18 @@ public class TrainingController {
 
     return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
   }
+
+  @PostMapping("/{trainingId}/validate")
+  public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId) {
+    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
+    // todo set day of exercise
+    List<TrainingExercises> clonedExercises = new ArrayList<>();
+    for (TrainingExercises original : trainingExercises) {
+      TrainingExercises cloned = new TrainingExercises(original);
+      clonedExercises.add(cloned);
+    }
+    List<TrainingExercises> createdTrainingExercises = trainingExercisesRepository.saveAll(clonedExercises);
+
+    return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
+  }
 }
