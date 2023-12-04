@@ -2,12 +2,14 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
+import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseWithSeriesResponse;
 import com.blinnproject.myworkdayback.repository.SeriesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -103,16 +109,34 @@ public class TrainingController {
   }
 
   @PostMapping("/{trainingId}/validate")
-  public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId) {
+  public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {
+
+    // Authorization and checkup
+    Training training = trainingService.findById(trainingId).orElseThrow(() -> new Exception("Training not found with id " + trainingId));
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Long createdBy = userDetails.getId();
+    Assert.state(Objects.equals(training.getCreatedBy(), createdBy), "Training with id " + trainingId + " does not belong to current user");
+
+    // Check if trainingDay day is included in training trainingDays and if not already set
+    Format formatter = new SimpleDateFormat("u");
+    DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(formatter.format(requestBody.getTrainingDay())));
+    Assert.state(training.getTrainingDays().contains(currentDay), "The day: " + currentDay + " is not in training days list: " + training.getTrainingDays());
+
     List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
-    // todo set day of exercise
+
     List<TrainingExercises> clonedExercises = new ArrayList<>();
     for (TrainingExercises original : trainingExercises) {
       TrainingExercises cloned = new TrainingExercises(original);
+      cloned.setTrainingDay(requestBody.getTrainingDay());
       clonedExercises.add(cloned);
     }
     List<TrainingExercises> createdTrainingExercises = trainingExercisesRepository.saveAll(clonedExercises);
 
     return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
   }
+
+  // todo validate patch
+
+  // todo return all template of TrainingExercises and trainingDay = today if exist
+  // or return true if series or exercise are done for each exercise and series
 }

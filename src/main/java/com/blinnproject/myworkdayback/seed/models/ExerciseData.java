@@ -42,9 +42,16 @@ public class ExerciseData {
       benchPressExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.PECTORALIS_MAJOR, EMuscle.TRICEPS)));
       benchPressExercise.setCreatedBy(user1.getId());
       this.exerciseList.add(benchPressExercise);
+
+      Exercise militaryPressExercise = new Exercise();
+      militaryPressExercise.setName("Military Press");
+      militaryPressExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.DELTOID)));
+      militaryPressExercise.setCreatedBy(user1.getId());
+      this.exerciseList.add(militaryPressExercise);
+
       // Add more exercise here
 
-      exerciseRepository.save(benchPressExercise);
+      exerciseRepository.saveAll(this.exerciseList);
       logger.info(String.valueOf(exerciseRepository.count()) + " exercise successfully loaded!");
     }
   }

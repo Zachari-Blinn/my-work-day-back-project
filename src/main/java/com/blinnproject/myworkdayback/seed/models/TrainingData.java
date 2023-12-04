@@ -40,7 +40,6 @@ public class TrainingData {
 
   List<Training> trainingList = new ArrayList<Training>();
   List<TrainingExercises> trainingExercisesList = new ArrayList<TrainingExercises>();
-  List<Series> seriesList = new ArrayList<>();
 
   public void load() throws ChangeSetPersister.NotFoundException {
     if (trainingRepository.count() == 0) {
@@ -75,6 +74,7 @@ public class TrainingData {
     days.add(DayOfWeek.TUESDAY);
     days.add(DayOfWeek.THURSDAY);
     training.setTrainingDays(days);
+
     return training;
   }
 
@@ -83,16 +83,32 @@ public class TrainingData {
   }
 
   private void loadTrainingExercises() throws ChangeSetPersister.NotFoundException {
-    this.loadSeries();
-
     Training hautDuCorpsTraining = this.getTrainingByName("Haut du corps");
+
     Exercise benchPressExercise = this.exerciseData.getExerciseByName("Bench press");
+    Exercise militaryPressExercise = this.exerciseData.getExerciseByName("Military Press");
 
     // Training basDuCorpsTraining = this.getTrainingByName("Bas du corps");
     // todo add squat exercise
 
-    TrainingExercises hautDuCorpsTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, benchPressExercise, "Lorem ipsum note");
-    this.trainingExercisesList.add(hautDuCorpsTrainingExercises);
+    List<Series> benchPressSeriesList = new ArrayList<>();
+    Series benchPressSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
+    benchPressSeriesList.add(benchPressSeries1);
+    Series benchPressSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    benchPressSeriesList.add(benchPressSeries2);
+    Series benchPressSeries3 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    benchPressSeriesList.add(benchPressSeries3);
+
+    List<Series> militaryPressSeriesList = new ArrayList<>();
+    Series militaryPressSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
+    militaryPressSeriesList.add(militaryPressSeries1);
+    Series militaryPressSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    militaryPressSeriesList.add(militaryPressSeries2);
+
+    TrainingExercises benchPressTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, benchPressExercise, "Bench press note", benchPressSeriesList);
+    this.trainingExercisesList.add(benchPressTrainingExercises);
+    TrainingExercises militaryPressTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, militaryPressExercise, "Military press note", militaryPressSeriesList);
+    this.trainingExercisesList.add(militaryPressTrainingExercises);
 
 //    TrainingExercises basDuCorpsTrainingExercises = this.createTrainingExercises(basDuCorpsTraining, benchPressExercise, "Lorem ipsum note"); // this line crash
 //    this.trainingExercisesList.add(basDuCorpsTrainingExercises);
@@ -100,27 +116,16 @@ public class TrainingData {
     this.trainingExercisesRepository.saveAll(this.trainingExercisesList);
   }
 
-  private TrainingExercises createTrainingExercises(Training training, Exercise exercise, String notes) {
+  private TrainingExercises createTrainingExercises(Training training, Exercise exercise, String notes, List<Series> seriesList) {
     TrainingExercises trainingExercises = new TrainingExercises();
 
     trainingExercises.setTraining(training);
     trainingExercises.setExercise(exercise);
     trainingExercises.setNotes(notes);
     trainingExercises.setNumberOfWarmUpSeries(2);
+    trainingExercises.addSeriesList(seriesList);
 
-    trainingExercises.addSeriesList(this.seriesList);
     return trainingExercises;
-  }
-
-  private void loadSeries() {
-    Series series1 = createSeries(1, 8, 50, "01:00", this.user.getId());
-    this.seriesList.add(series1);
-
-    Series series2 = createSeries(2, 10, 60, "02:00", this.user.getId());
-    this.seriesList.add(series2);
-
-    Series series3 = createSeries(2, 10, 60, "02:00", this.user.getId());
-    this.seriesList.add(series3);
   }
 
   private Series createSeries(int positionIndex, int repsCount, int weight, String restTime, Long userId) {
@@ -130,6 +135,7 @@ public class TrainingData {
     series.setRestTime(restTime);
     series.setWeight(weight);
     series.setCreatedBy(userId);
+
     return series;
   }
 }
