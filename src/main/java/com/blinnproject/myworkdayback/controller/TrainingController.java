@@ -3,13 +3,8 @@ package com.blinnproject.myworkdayback.controller;
 import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
-import com.blinnproject.myworkdayback.payload.response.ExerciseWithSeriesResponse;
-import com.blinnproject.myworkdayback.repository.SeriesRepository;
-import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
-import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
-import io.jsonwebtoken.lang.Assert;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,13 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -32,15 +21,6 @@ public class TrainingController {
 
   @Autowired
   TrainingService trainingService;
-
-  @Autowired
-  ExerciseService exerciseService;
-
-  @Autowired
-  TrainingExercisesRepository trainingExercisesRepository;
-
-  @Autowired
-  SeriesRepository seriesRepository;
 
   @PostMapping()
   public ResponseEntity<Training> create(@Valid @RequestBody Training trainingRequest) {
@@ -71,29 +51,19 @@ public class TrainingController {
 
   @GetMapping("/{id}")
   public ResponseEntity<Training> getTrainingById(@PathVariable("id") Long id) {
-    Optional<Training> trainingData = trainingService.findById(id);
+    try {
+      Optional<Training> trainingData = trainingService.findById(id);
 
-    if (trainingData.isPresent()) {
-      return new ResponseEntity<>(trainingData.get(), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return trainingData.map(training -> new ResponseEntity<>(training, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    } catch (Exception e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PostMapping("/{trainingId}/add-exercise")
   public ResponseEntity<?> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
     try {
-      TrainingExercises trainingExercises = new TrainingExercises();
-
-      trainingExercises.setTraining(trainingService.findById(trainingId).orElse(null));
-      trainingExercises.setExercise(exerciseService.findById(requestBody.getExerciseId()).orElse(null));
-      trainingExercises.setNotes(requestBody.getNotes());
-      trainingExercises.setNumberOfWarmUpSeries(requestBody.getNumberOfWarmUpSeries());
-
-      List<Series> seriesList = requestBody.getSeries();
-      trainingExercises.addSeriesList(seriesList);
-
-      TrainingExercises createdTrainingExercises = trainingExercisesRepository.save(trainingExercises);
+      TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, requestBody);
 
       return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
     } catch (Exception e) {
@@ -103,36 +73,26 @@ public class TrainingController {
 
   @GetMapping("/{trainingId}/exercises")
   public ResponseEntity<List<TrainingExercises>> getExercisesByTrainingId(@PathVariable("trainingId") Long trainingId) {
-    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
+    try {
+      List<TrainingExercises> trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId);
 
-    return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
+      return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
+
+
 
   @PostMapping("/{trainingId}/validate")
   public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {
+    try {
+      List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, requestBody);
 
-    // Authorization and checkup
-    Training training = trainingService.findById(trainingId).orElseThrow(() -> new Exception("Training not found with id " + trainingId));
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long createdBy = userDetails.getId();
-    Assert.state(Objects.equals(training.getCreatedBy(), createdBy), "Training with id " + trainingId + " does not belong to current user");
-
-    // Check if trainingDay day is included in training trainingDays and if not already set
-    Format formatter = new SimpleDateFormat("u");
-    DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(formatter.format(requestBody.getTrainingDay())));
-    Assert.state(training.getTrainingDays().contains(currentDay), "The day: " + currentDay + " is not in training days list: " + training.getTrainingDays());
-
-    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
-
-    List<TrainingExercises> clonedExercises = new ArrayList<>();
-    for (TrainingExercises original : trainingExercises) {
-      TrainingExercises cloned = new TrainingExercises(original);
-      cloned.setTrainingDay(requestBody.getTrainingDay());
-      clonedExercises.add(cloned);
+      return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    List<TrainingExercises> createdTrainingExercises = trainingExercisesRepository.saveAll(clonedExercises);
-
-    return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
   }
 
   // todo validate patch
