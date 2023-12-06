@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.controller;
 import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -106,4 +107,22 @@ public class TrainingController {
 
   // todo return all template of TrainingExercises and trainingDay = today if exist
   // or return true if series or exercise are done for each exercise and series
+
+  @PostMapping("/{trainingId}/validate-training-day")
+  public ResponseEntity<List<TrainingExercisesSeriesInfo>> checkIfTrainingExercisesSeriesIsCompleted(@PathVariable("trainingId") Long trainingId) {
+    try {
+//        set training day date at tomorrow
+        Date trainingDay = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(trainingDay);
+        c.add(Calendar.DATE, 1);
+        trainingDay = c.getTime();
+
+        List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
+
+      return new ResponseEntity<>(trainingExercisesSeriesInfoList, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

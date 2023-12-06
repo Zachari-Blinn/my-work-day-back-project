@@ -4,6 +4,9 @@ import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +25,6 @@ public interface TrainingService {
   List<TrainingExercises> getExercisesByTrainingId(Long trainingId);
 
   List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId);
+
+  List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date trainingDay);
 }

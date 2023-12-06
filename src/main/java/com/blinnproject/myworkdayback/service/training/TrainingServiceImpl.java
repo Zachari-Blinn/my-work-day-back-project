@@ -5,6 +5,7 @@ import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
@@ -18,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -98,5 +96,9 @@ public class TrainingServiceImpl implements TrainingService {
 
   public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId) {
     return trainingExercisesRepository.findTemplateByTrainingId(trainingId);
+  }
+
+  public List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date trainingDay) {
+    return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId);
   }
 }
