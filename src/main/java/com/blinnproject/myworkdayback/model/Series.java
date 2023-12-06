@@ -1,7 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

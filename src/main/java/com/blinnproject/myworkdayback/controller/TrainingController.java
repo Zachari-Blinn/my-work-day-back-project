@@ -72,17 +72,24 @@ public class TrainingController {
   }
 
   @GetMapping("/{trainingId}/exercises")
-  public ResponseEntity<List<TrainingExercises>> getExercisesByTrainingId(@PathVariable("trainingId") Long trainingId) {
+  public ResponseEntity<List<TrainingExercises>> getExercisesByTrainingId(
+          @RequestParam(defaultValue = "false") Boolean fetchTemplate,
+          @PathVariable("trainingId") Long trainingId
+  ) {
     try {
-      List<TrainingExercises> trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId);
+      List<TrainingExercises> trainingExercises;
+
+      if (fetchTemplate) {
+        trainingExercises = this.trainingService.getTemplateExercisesByTrainingId(trainingId);
+      } else {
+        trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId);
+      }
 
       return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-
 
   @PostMapping("/{trainingId}/validate")
   public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {

@@ -3,9 +3,7 @@ package com.blinnproject.myworkdayback.service.training;
 import com.blinnproject.myworkdayback.model.Series;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
-import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
-import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
@@ -13,13 +11,10 @@ import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import io.jsonwebtoken.lang.Assert;
-import io.swagger.v3.core.util.Json;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -71,7 +66,7 @@ public class TrainingServiceImpl implements TrainingService {
     DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(formatter.format(requestBody.getTrainingDay())));
     Assert.state(training.getTrainingDays().contains(currentDay), "The day: " + currentDay + " is not in training days list: " + training.getTrainingDays());
 
-    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findByTrainingId(trainingId);
+    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingId(trainingId);
 
     List<TrainingExercises> clonedExercises = new ArrayList<>();
     for (TrainingExercises original : trainingExercises) {
@@ -99,5 +94,9 @@ public class TrainingServiceImpl implements TrainingService {
 
   public List<TrainingExercises> getExercisesByTrainingId(Long trainingId) {
       return trainingExercisesRepository.findByTrainingId(trainingId);
+  }
+
+  public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId) {
+    return trainingExercisesRepository.findTemplateByTrainingId(trainingId);
   }
 }

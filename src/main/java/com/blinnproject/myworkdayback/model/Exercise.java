@@ -1,11 +1,8 @@
 package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Set;
 
 @Entity

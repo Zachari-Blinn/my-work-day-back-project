@@ -2,17 +2,14 @@ package com.blinnproject.myworkdayback.seed.models;
 
 import com.blinnproject.myworkdayback.model.Exercise;
 import com.blinnproject.myworkdayback.model.EMuscle;
-import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.ExerciseRepository;
-import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.seed.DataLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

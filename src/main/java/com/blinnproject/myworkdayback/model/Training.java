@@ -1,16 +1,13 @@
 package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.Set;
 
 @Entity
 @Getter

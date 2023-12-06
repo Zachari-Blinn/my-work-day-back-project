@@ -3,9 +3,7 @@ package com.blinnproject.myworkdayback.service.training;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
-import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +20,6 @@ public interface TrainingService {
   TrainingExercises addExercise(Long trainingId, AddExerciseRequest requestBody);
 
   List<TrainingExercises> getExercisesByTrainingId(Long trainingId);
+
+  List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId);
 }
