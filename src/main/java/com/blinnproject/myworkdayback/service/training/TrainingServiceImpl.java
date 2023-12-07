@@ -8,52 +8,49 @@ import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
-import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import io.jsonwebtoken.lang.Assert;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.util.*;
 
 @Service
-@AllArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
 
-  @Autowired
-  private TrainingRepository trainingRepository;
+  private final TrainingRepository trainingRepository;
+  private final TrainingExercisesRepository trainingExercisesRepository;
+  private final ExerciseService exerciseService;
 
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  TrainingExercisesRepository trainingExercisesRepository;
-
-  @Autowired
-  ExerciseService exerciseService;
+  public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingExercisesRepository trainingExercisesRepository, ExerciseService exerciseService) {
+    this.trainingRepository = trainingRepository;
+    this.trainingExercisesRepository = trainingExercisesRepository;
+    this.exerciseService = exerciseService;
+  }
 
   @Override
+  @Transactional(readOnly = false)
   public Training create(Training training) {
     return trainingRepository.save(training);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<Training> getAllTrainingsByCreatedBy(Long createdBy) {
     return trainingRepository.findAllByCreatedBy(createdBy);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Optional<Training> findById(Long id) {
     return trainingRepository.findById(id);
   }
 
+  @Transactional(readOnly = false)
   public List<TrainingExercises> validateTrainingExercises(Long trainingId, ValidateTrainingRequest requestBody) throws Exception {
     // Authorization and checkup
     Training training = this.findById(trainingId).orElseThrow(() -> new Exception("Training not found with id " + trainingId));
@@ -78,6 +75,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
+  @Transactional(readOnly = false)
   public TrainingExercises addExercise(Long trainingId, AddExerciseRequest requestBody) {
     TrainingExercises trainingExercises = new TrainingExercises();
 
@@ -92,16 +90,18 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.save(trainingExercises);
   }
 
+  @Transactional(readOnly = true)
   public List<TrainingExercises> getExercisesByTrainingId(Long trainingId) {
       return trainingExercisesRepository.findByTrainingId(trainingId);
   }
 
+  @Transactional(readOnly = true)
   public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId) {
     return trainingExercisesRepository.findTemplateByTrainingId(trainingId);
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date trainingDay) {
+  public List<TrainingExercisesSeriesInfo> getSeriesStatus(Long trainingId, Date trainingDay) {
     return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
   }
 }

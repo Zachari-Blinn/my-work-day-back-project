@@ -13,11 +13,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.AntPathMatcher;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -27,15 +30,26 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
         prePostEnabled = true,
         jsr250Enabled = true
 )
-//(securedEnabled = true,
-//jsr250Enabled = true,
-//prePostEnabled = true) // by default
 public class WebSecurityConfig {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
+
+  private static final AntPathRequestMatcher[] SWAGGER_REQUEST_WHITE_LIST = {
+          antMatcher("/swagger-ui.html"),
+          antMatcher("/v3/api-docs/**"),
+          antMatcher("/swagger-ui/**"),
+          antMatcher("/v2/api-docs/**"),
+          antMatcher("/swagger-resources/**")
+  };
+
+  private static final AntPathRequestMatcher[] API_REQUEST_WHITE_LIST = {
+          antMatcher("/api/auth/**"),
+          antMatcher("/api/training/**"),
+          antMatcher("/api/exercise/**")
+  };
 
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -63,22 +77,23 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.headers().frameOptions().disable();
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+      .headers(headers -> headers
+          .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin
+          )
+      );
     http.csrf(AbstractHttpConfigurer::disable)
       .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .authorizeHttpRequests(auth ->
-        auth
+      .authorizeHttpRequests((authz) -> authz
           .requestMatchers(PathRequest.toH2Console()).permitAll()
-          .requestMatchers(antMatcher("/api/auth/**")).permitAll()
-          .requestMatchers(antMatcher("/api/training/**")).permitAll()
-          .requestMatchers(antMatcher("/api/exercise/**")).permitAll()
+          .requestMatchers(SWAGGER_REQUEST_WHITE_LIST).permitAll()
+          .requestMatchers(API_REQUEST_WHITE_LIST).permitAll()
           .anyRequest().authenticated()
       );
 
     http.authenticationProvider(authenticationProvider());
-
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

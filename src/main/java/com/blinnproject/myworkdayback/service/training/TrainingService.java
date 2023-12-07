@@ -26,5 +26,5 @@ public interface TrainingService {
 
   List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId);
 
-  List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date trainingDay);
+  List<TrainingExercisesSeriesInfo> getSeriesStatus(Long trainingId, Date trainingDay);
 }

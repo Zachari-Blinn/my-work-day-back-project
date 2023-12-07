@@ -111,7 +111,7 @@ public class TrainingController {
           @Valid @RequestBody ValidateTrainingRequest requestBody
   ) {
     try {
-        List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.checkIfTrainingExercisesSeriesIsCompleted(trainingId, requestBody.getTrainingDay());
+        List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
 
       return new ResponseEntity<>(trainingExercisesSeriesInfoList, HttpStatus.OK);
     } catch (Exception e) {
