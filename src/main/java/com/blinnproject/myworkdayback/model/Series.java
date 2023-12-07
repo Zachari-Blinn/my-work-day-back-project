@@ -19,6 +19,10 @@ public class Series extends BaseEntityAudit implements Cloneable {
   @Column(nullable = false)
   private int positionIndex;
 
+  @ManyToOne
+  @JoinColumn(referencedColumnName = "id")
+  private Series parent;
+
   @Min(0)
   @Max(150)
   private int weight;
@@ -35,7 +39,8 @@ public class Series extends BaseEntityAudit implements Cloneable {
   private EDifficulty difficulty;
 
   public Series(Series that) {
-    this(that.getPositionIndex(), that.getWeight(), that.getRestTime(), that.getNotes(), that.getRepsCount(), that.getDifficulty());
+    this(that.getPositionIndex(), null, that.getWeight(), that.getRestTime(), that.getNotes(), that.getRepsCount(), that.getDifficulty());
+    this.setParent(that);
   }
 
   @Override

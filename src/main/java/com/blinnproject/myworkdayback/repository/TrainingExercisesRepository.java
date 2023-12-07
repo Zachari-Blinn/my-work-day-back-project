@@ -36,6 +36,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
                     AND trainingExercises.parent.id IS NOT NULL
                     AND trainingExercises.trainingDay IS NOT NULL
                     AND trainingExercises.parent.id = trainingExercisesTemplate.id
+                    AND series.parent.id = seriesTemplate.id
                 ) THEN true ELSE false END
             )
             FROM TrainingExercises trainingExercisesTemplate
