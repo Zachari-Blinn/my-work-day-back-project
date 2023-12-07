@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -98,7 +100,8 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.findTemplateByTrainingId(trainingId);
   }
 
+  @Transactional(readOnly = true)
   public List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date trainingDay) {
-    return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId);
+    return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
   }
 }

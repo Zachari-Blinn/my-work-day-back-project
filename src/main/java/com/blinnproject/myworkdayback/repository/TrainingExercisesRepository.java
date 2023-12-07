@@ -37,6 +37,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
                     AND trainingExercises.trainingDay IS NOT NULL
                     AND trainingExercises.parent.id = trainingExercisesTemplate.id
                     AND series.parent.id = seriesTemplate.id
+                    AND trainingExercises.trainingDay = :selectedTrainingDay
                 ) THEN true ELSE false END
             )
             FROM TrainingExercises trainingExercisesTemplate
@@ -46,6 +47,6 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             AND trainingExercisesTemplate.parent IS NULL
             ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
     """)
-    List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId);
+    List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date selectedTrainingDay);
 }
 //todo ajouter parent_id a series également

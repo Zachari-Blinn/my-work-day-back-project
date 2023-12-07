@@ -11,8 +11,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ValidateTrainingRequest {
-
     @NotNull(message = "Training day cannot be null")
     private Date trainingDay;
-
 }

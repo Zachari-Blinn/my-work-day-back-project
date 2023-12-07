@@ -105,20 +105,13 @@ public class TrainingController {
 
   // todo validate patch
 
-  // todo return all template of TrainingExercises and trainingDay = today if exist
-  // or return true if series or exercise are done for each exercise and series
-
   @PostMapping("/{trainingId}/validate-training-day")
-  public ResponseEntity<List<TrainingExercisesSeriesInfo>> checkIfTrainingExercisesSeriesIsCompleted(@PathVariable("trainingId") Long trainingId) {
+  public ResponseEntity<List<TrainingExercisesSeriesInfo>> checkIfTrainingExercisesSeriesIsCompleted(
+          @PathVariable("trainingId") Long trainingId,
+          @Valid @RequestBody ValidateTrainingRequest requestBody
+  ) {
     try {
-//        set training day date at tomorrow
-        Date trainingDay = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(trainingDay);
-        c.add(Calendar.DATE, 1);
-        trainingDay = c.getTime();
-
-        List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
+        List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.checkIfTrainingExercisesSeriesIsCompleted(trainingId, requestBody.getTrainingDay());
 
       return new ResponseEntity<>(trainingExercisesSeriesInfoList, HttpStatus.OK);
     } catch (Exception e) {
