@@ -3,6 +3,13 @@ package com.blinnproject.myworkdayback.security;
 import com.blinnproject.myworkdayback.security.jwt.AuthEntryPointJwt;
 import com.blinnproject.myworkdayback.security.jwt.AuthTokenFilter;
 import com.blinnproject.myworkdayback.security.services.UserDetailsServiceImpl;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -20,36 +27,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.util.AntPathMatcher;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableMethodSecurity(
-        securedEnabled = true,
-        prePostEnabled = true,
-        jsr250Enabled = true
+    securedEnabled = true,
+    prePostEnabled = true,
+    jsr250Enabled = true
 )
 public class WebSecurityConfig {
+  private static final AntPathRequestMatcher[] SWAGGER_REQUEST_WHITE_LIST = {
+      antMatcher("/swagger-ui.html"),
+      antMatcher("/v3/api-docs/**"),
+      antMatcher("/swagger-ui/**"),
+      antMatcher("/v2/api-docs/**"),
+      antMatcher("/swagger-resources/**")
+  };
+  private static final AntPathRequestMatcher[] API_REQUEST_WHITE_LIST = {
+      antMatcher("/api/auth/**"),
+      antMatcher("/api/training/**"),
+      antMatcher("/api/exercise/**")
+  };
   @Autowired
   UserDetailsServiceImpl userDetailsService;
-
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
-
-  private static final AntPathRequestMatcher[] SWAGGER_REQUEST_WHITE_LIST = {
-          antMatcher("/swagger-ui.html"),
-          antMatcher("/v3/api-docs/**"),
-          antMatcher("/swagger-ui/**"),
-          antMatcher("/v2/api-docs/**"),
-          antMatcher("/swagger-resources/**")
-  };
-
-  private static final AntPathRequestMatcher[] API_REQUEST_WHITE_LIST = {
-          antMatcher("/api/auth/**"),
-          antMatcher("/api/training/**"),
-          antMatcher("/api/exercise/**")
-  };
 
   @Bean
   public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -79,23 +82,43 @@ public class WebSecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-      .headers(headers -> headers
-          .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin
-          )
-      );
+        .headers(headers -> headers
+            .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin
+            )
+        );
     http.csrf(AbstractHttpConfigurer::disable)
-      .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-      .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .authorizeHttpRequests((authz) -> authz
-          .requestMatchers(PathRequest.toH2Console()).permitAll()
-          .requestMatchers(SWAGGER_REQUEST_WHITE_LIST).permitAll()
-          .requestMatchers(API_REQUEST_WHITE_LIST).permitAll()
-          .anyRequest().authenticated()
-      );
+        .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests((authz) -> authz
+            .requestMatchers(PathRequest.toH2Console()).permitAll()
+            .requestMatchers(SWAGGER_REQUEST_WHITE_LIST).permitAll()
+            .requestMatchers(API_REQUEST_WHITE_LIST).permitAll()
+            .anyRequest().authenticated()
+        );
 
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
+  }
+
+  private SecurityScheme createAPIKeyScheme() {
+    return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+        .bearerFormat("JWT")
+        .scheme("bearer");
+  }
+
+  @Bean
+  public OpenAPI openAPI() {
+    return new OpenAPI().addSecurityItem(new SecurityRequirement().
+            addList("Bearer Authentication"))
+        .components(new Components().addSecuritySchemes
+            ("Bearer Authentication", createAPIKeyScheme()))
+        .info(new Info().title("My REST API")
+            .description("Some custom description of API.")
+            .version("1.0").contact(new Contact().name("Sallo Szrajbman")
+                .email("www.baeldung.com").url("salloszraj@gmail.com"))
+            .license(new License().name("License of API")
+                .url("API license URL")));
   }
 }

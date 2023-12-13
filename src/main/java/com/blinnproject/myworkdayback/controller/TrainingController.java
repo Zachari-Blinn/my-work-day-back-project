@@ -1,11 +1,12 @@
 package com.blinnproject.myworkdayback.controller;
 
-import com.blinnproject.myworkdayback.model.*;
+import com.blinnproject.myworkdayback.model.Training;
+import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
-import com.blinnproject.myworkdayback.service.training.TrainingService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
+import com.blinnproject.myworkdayback.service.training.TrainingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -74,8 +77,8 @@ public class TrainingController {
 
   @GetMapping("/{trainingId}/exercises")
   public ResponseEntity<List<TrainingExercises>> getExercisesByTrainingId(
-          @RequestParam(defaultValue = "false") Boolean fetchTemplate,
-          @PathVariable("trainingId") Long trainingId
+      @RequestParam(defaultValue = "false") Boolean fetchTemplate,
+      @PathVariable("trainingId") Long trainingId
   ) {
     try {
       List<TrainingExercises> trainingExercises;
@@ -107,11 +110,11 @@ public class TrainingController {
 
   @PostMapping("/{trainingId}/validate-training-day")
   public ResponseEntity<List<TrainingExercisesSeriesInfo>> checkIfTrainingExercisesSeriesIsCompleted(
-          @PathVariable("trainingId") Long trainingId,
-          @Valid @RequestBody ValidateTrainingRequest requestBody
+      @PathVariable("trainingId") Long trainingId,
+      @Valid @RequestBody ValidateTrainingRequest requestBody
   ) {
     try {
-        List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
+      List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
 
       return new ResponseEntity<>(trainingExercisesSeriesInfoList, HttpStatus.OK);
     } catch (Exception e) {
