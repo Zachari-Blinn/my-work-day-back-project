@@ -94,7 +94,7 @@ public class TrainingData {
     benchPressSeriesList.add(benchPressSeries1);
     Series benchPressSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
     benchPressSeriesList.add(benchPressSeries2);
-    Series benchPressSeries3 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    Series benchPressSeries3 = createSeries(3, 10, 60, "02:00", this.user.getId());
     benchPressSeriesList.add(benchPressSeries3);
 
     List<Series> militaryPressSeriesList = new ArrayList<>();
