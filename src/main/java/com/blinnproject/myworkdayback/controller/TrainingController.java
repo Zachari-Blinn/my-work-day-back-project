@@ -4,6 +4,7 @@ import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
@@ -27,17 +28,17 @@ public class TrainingController {
   TrainingService trainingService;
 
   @PostMapping()
-  public ResponseEntity<Training> create(@Valid @RequestBody Training trainingRequest) {
+  public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody Training trainingRequest) {
     try {
       Training _training = trainingService.create(trainingRequest);
-      return new ResponseEntity<>(_training, HttpStatus.CREATED);
+      return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(_training, "Training was successfully created!"));
     } catch (Exception exception) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @GetMapping("/current-user")
-  public ResponseEntity<List<Training>> getCurrentUserTrainings() {
+  public ResponseEntity<GenericResponse<List<Training>>> getCurrentUserTrainings() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     Long createdBy = userDetails.getId();
     try {
@@ -47,36 +48,36 @@ public class TrainingController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(trainings, HttpStatus.OK);
+      return ResponseEntity.ok(GenericResponse.success(trainings, "Return all trainings of current user successfully!"));
     } catch (Exception exception) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Training> getTrainingById(@PathVariable("id") Long id) {
+  public ResponseEntity<GenericResponse<Training>> getTrainingById(@PathVariable("id") Long id) {
     try {
       Optional<Training> trainingData = trainingService.findById(id);
 
-      return trainingData.map(training -> new ResponseEntity<>(training, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+      return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, "Return training by id successfully!"))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PostMapping("/{trainingId}/add-exercise")
-  public ResponseEntity<?> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
+  public ResponseEntity<GenericResponse<?>> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
     try {
       TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, requestBody);
 
-      return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
+      return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));
     } catch (Exception e) {
-      return new ResponseEntity<>("Failed to save TrainingExercises", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @GetMapping("/{trainingId}/exercises")
-  public ResponseEntity<List<TrainingExercises>> getExercisesByTrainingId(
+  public ResponseEntity<GenericResponse<List<TrainingExercises>>> getExercisesByTrainingId(
       @RequestParam(defaultValue = "false") Boolean fetchTemplate,
       @PathVariable("trainingId") Long trainingId
   ) {
@@ -89,34 +90,32 @@ public class TrainingController {
         trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId);
       }
 
-      return new ResponseEntity<>(trainingExercises, HttpStatus.OK);
+      return ResponseEntity.ok(GenericResponse.success(trainingExercises, "Return all exercises by training successfully!"));
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PostMapping("/{trainingId}/validate")
-  public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {
+  public ResponseEntity<GenericResponse<List<TrainingExercises>>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {
     try {
       List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, requestBody);
 
-      return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
+      return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  // todo validate patch
-
   @PostMapping("/{trainingId}/validate-training-day")
-  public ResponseEntity<List<TrainingExercisesSeriesInfo>> checkIfTrainingExercisesSeriesIsCompleted(
+  public ResponseEntity<GenericResponse<List<TrainingExercisesSeriesInfo>>> checkIfTrainingExercisesSeriesIsCompleted(
       @PathVariable("trainingId") Long trainingId,
       @Valid @RequestBody ValidateTrainingRequest requestBody
   ) {
     try {
       List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
 
-      return new ResponseEntity<>(trainingExercisesSeriesInfoList, HttpStatus.OK);
+      return ResponseEntity.ok(GenericResponse.success(trainingExercisesSeriesInfoList, "Return training session info of selected day successfully!"));
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }

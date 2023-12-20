@@ -4,17 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.RefreshToken;
-import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.payload.request.LoginRequest;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
 import com.blinnproject.myworkdayback.payload.request.TokenRefreshRequest;
-import com.blinnproject.myworkdayback.payload.response.JwtResponse;
-import com.blinnproject.myworkdayback.payload.response.MessageResponse;
-import com.blinnproject.myworkdayback.payload.response.TokenRefreshResponse;
-import com.blinnproject.myworkdayback.repository.UserRepository;
+import com.blinnproject.myworkdayback.payload.response.*;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
+import com.blinnproject.myworkdayback.service.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +30,6 @@ public class AuthController {
   AuthenticationManager authenticationManager;
 
   @Autowired
-  UserRepository userRepository;
-
-  @Autowired
   PasswordEncoder encoder;
 
   @Autowired
@@ -44,9 +38,11 @@ public class AuthController {
   @Autowired
   RefreshTokenService refreshTokenService;
 
-  @PostMapping("/signin")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  @Autowired
+  UserService userService;
 
+  @PostMapping("/signin")
+  public ResponseEntity<GenericResponse<?>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     Authentication authentication = authenticationManager
       .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -61,36 +57,25 @@ public class AuthController {
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-    User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
-
-    return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-      userDetails.getUsername(), userDetails.getEmail(), roles));
+    return ResponseEntity.ok(GenericResponse.success(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
+      userDetails.getUsername(), userDetails.getEmail(), roles), "User logged in successfully!"));
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-    }
+  public ResponseEntity<GenericResponse<UserInfoResponse>> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    this.userService.throwExceptionIfUsernameIsAlreadyTaken(signUpRequest.getUsername());
+    this.userService.throwExceptionIfEmailIsAlreadyTaken(signUpRequest.getEmail());
 
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-    }
+    UserInfoResponse createdUser = this.userService.signUp(signUpRequest);
 
-    User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
-      encoder.encode(signUpRequest.getPassword()));
-
-    userRepository.save(user);
-
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(createdUser, "User registered successfully!"));
   }
 
   @PostMapping("/signout")
-  public ResponseEntity<?> logoutUser() {
+  public ResponseEntity<GenericResponse<?>> logoutUser() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long userId = userDetails.getId();
-    refreshTokenService.deleteByUserId(userId);
-    return ResponseEntity.ok(new MessageResponse("Log out successful!"));
+    this.refreshTokenService.deleteByUserId(userDetails.getId());
+    return ResponseEntity.ok(GenericResponse.success(null, "Log out successful!"));
   }
 
   @PostMapping("/refreshtoken")

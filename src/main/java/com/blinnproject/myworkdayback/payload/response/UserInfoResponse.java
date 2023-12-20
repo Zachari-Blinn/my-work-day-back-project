@@ -1,33 +1,24 @@
 package com.blinnproject.myworkdayback.payload.response;
 
+import com.blinnproject.myworkdayback.model.EGender;
+import com.blinnproject.myworkdayback.model.User;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Getter
+@Setter
 public class UserInfoResponse {
   private Long id;
   private String username;
   private String email;
-  private final List<String> roles;
+  private EGender gender;
 
-  public UserInfoResponse(Long id, String username, String email, List<String> roles) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.roles = roles;
+  public UserInfoResponse(User user) {
+    this.id = user.getId();
+    this.username = user.getUsername();
+    this.email = user.getEmail();
+    this.gender = user.getGender();
   }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
 }

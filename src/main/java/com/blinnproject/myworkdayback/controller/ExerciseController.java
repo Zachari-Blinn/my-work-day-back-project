@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.Exercise;
+import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ExerciseController {
   }
 
   @GetMapping()
-  public ResponseEntity<List<Exercise>> listAllExercises() {
+  public ResponseEntity<GenericResponse<List<Exercise>>> listAllExercises() {
     try {
       List<Exercise> exercises = new ArrayList<Exercise>(exerciseService.findAll());
 
@@ -32,7 +33,7 @@ public class ExerciseController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(exercises, HttpStatus.OK);
+      return ResponseEntity.ok(GenericResponse.success(exercises, "List all exercises successfully!"));
     } catch (Exception exception) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
