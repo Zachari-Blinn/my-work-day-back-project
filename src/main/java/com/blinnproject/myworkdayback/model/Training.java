@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +29,20 @@ public class Training extends BaseEntityAudit {
   @Lob
   private String description;
 
-  @Column
-  private Boolean hasWarpUp;
+  @Column(nullable = false)
+  private Boolean hasWarpUp = true;
+
+  @Column(nullable = false)
+  private Boolean hasStretching = false;
+
+  @Column(nullable = false)
+  @Enumerated(EnumType.ORDINAL)
+  private ETrainingStatus trainingStatus = ETrainingStatus.IN_PROGRESS;
+
+  @Column(nullable = false)
+  private String iconName = "dumbbell";
 
   @Column
-  private Boolean hasStretching;
+  @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
+  private String iconHexadecimalColor = "#ea6b50";
 }
