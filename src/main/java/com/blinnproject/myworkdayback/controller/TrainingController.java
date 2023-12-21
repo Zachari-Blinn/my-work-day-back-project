@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -108,14 +109,16 @@ public class TrainingController {
   }
 
   @PostMapping("/{trainingId}/validate-training-day")
-  public ResponseEntity<GenericResponse<List<TrainingExercisesSeriesInfo>>> checkIfTrainingExercisesSeriesIsCompleted(
+  public ResponseEntity<GenericResponse<List<Map<String, Object>>>> checkIfTrainingExercisesSeriesIsCompleted(
       @PathVariable("trainingId") Long trainingId,
       @Valid @RequestBody ValidateTrainingRequest requestBody
   ) {
     try {
       List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
 
-      return ResponseEntity.ok(GenericResponse.success(trainingExercisesSeriesInfoList, "Return training session info of selected day successfully!"));
+      List<Map<String, Object>> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
+
+      return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }

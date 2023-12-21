@@ -8,6 +8,7 @@ import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesIn
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface TrainingService {
@@ -27,4 +28,6 @@ public interface TrainingService {
   List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId);
 
   List<TrainingExercisesSeriesInfo> getSeriesStatus(Long trainingId, Date trainingDay);
+
+  public List<Map<String, Object>> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input);
 }
