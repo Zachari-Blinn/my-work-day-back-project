@@ -5,6 +5,7 @@ import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
@@ -121,14 +122,14 @@ public class TrainingController {
   }
 
   @PostMapping("/{trainingId}/validate-training-day")
-  public ResponseEntity<GenericResponse<List<Map<String, Object>>>> checkIfTrainingExercisesSeriesIsCompleted(
+  public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> checkIfTrainingExercisesSeriesIsCompleted(
       @PathVariable("trainingId") Long trainingId,
       @Valid @RequestBody ValidateTrainingRequest requestBody
   ) {
     try {
       List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
 
-      List<Map<String, Object>> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
+      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
 
       return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
     } catch (Exception e) {

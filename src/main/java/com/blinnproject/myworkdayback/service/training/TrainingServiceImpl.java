@@ -6,6 +6,7 @@ import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
@@ -112,39 +113,54 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
   }
 
-//  test
-
-  public List<Map<String, Object>> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input) {
-    Map<Long, Map<String, Object>> trainingMap = new HashMap<>();
+  public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input) {
+    Map<Long, FormattedTrainingData> trainingMap = new HashMap<>();
 
     for (TrainingExercisesSeriesInfo seriesInfo : input) {
       long trainingId = seriesInfo.getTrainingId();
 
       trainingMap.computeIfAbsent(trainingId, k -> {
-        Map<String, Object> trainingData = new HashMap<>();
-        trainingData.put("trainingId", seriesInfo.getTrainingId());
-        trainingData.put("trainingName", seriesInfo.getTrainingName());
-        trainingData.put("numberOfExercise", 0);
-        trainingData.put("trainingExercises", new ArrayList<>());
+        FormattedTrainingData trainingData = new FormattedTrainingData();
+        trainingData.setTrainingId(seriesInfo.getTrainingId());
+        trainingData.setTrainingName(seriesInfo.getTrainingName());
+        trainingData.setTrainingExercises(new ArrayList<>());
+        trainingData.setNumberOfExercise(0);
         return trainingData;
       });
 
-      Map<String, Object> trainingData = trainingMap.get(trainingId);
-      int numberOfExercise = (int) trainingData.get("numberOfExercise");
-      List<Map<String, Object>> trainingExercises = (List<Map<String, Object>>) trainingData.get("trainingExercises");
+      FormattedTrainingData trainingData = trainingMap.get(trainingId);
+      List<FormattedTrainingData.ExerciseData> trainingExercises = trainingData.getTrainingExercises();
 
-      Map<String, Object> exerciseData = new HashMap<>();
-      exerciseData.put("exerciseId", seriesInfo.getExerciseId());
-      exerciseData.put("exerciseName", seriesInfo.getExerciseName());
-      exerciseData.put("seriesId", seriesInfo.getSeriesId());
-      exerciseData.put("seriesPositionIndex", seriesInfo.getSeriesPositionIndex());
-      exerciseData.put("seriesRepsCount", seriesInfo.getSeriesRepsCount());
-      exerciseData.put("seriesRestTime", seriesInfo.getSeriesRestTime());
-      exerciseData.put("seriesWeight", seriesInfo.getSeriesWeight());
-      exerciseData.put("completed", seriesInfo.isCompleted());
+      FormattedTrainingData.ExerciseData exerciseData = null;
 
-      trainingExercises.add(exerciseData);
-      trainingData.put("numberOfExercise", numberOfExercise + 1);
+      for (FormattedTrainingData.ExerciseData existingExercise : trainingExercises) {
+        if (existingExercise.getExerciseId() == seriesInfo.getExerciseId()) {
+          exerciseData = existingExercise;
+          break;
+        }
+      }
+
+      if (exerciseData == null) {
+        exerciseData = new FormattedTrainingData.ExerciseData();
+        exerciseData.setExerciseId(seriesInfo.getExerciseId());
+        exerciseData.setExerciseName(seriesInfo.getExerciseName());
+        exerciseData.setSeries(new ArrayList<>());
+
+        trainingExercises.add(exerciseData);
+        int numberOfExercise = trainingData.getNumberOfExercise();
+        trainingData.setNumberOfExercise(numberOfExercise + 1);
+      }
+
+      List<FormattedTrainingData.ExerciseData.SeriesEntry> seriesList = exerciseData.getSeries();
+      FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry = new FormattedTrainingData.ExerciseData.SeriesEntry();
+      seriesEntry.setId(seriesInfo.getSeriesId());
+      seriesEntry.setPositionIndex(seriesInfo.getSeriesPositionIndex());
+      seriesEntry.setRepsCount(seriesInfo.getSeriesRepsCount());
+      seriesEntry.setRestTime(seriesInfo.getSeriesRestTime());
+      seriesEntry.setWeight(seriesInfo.getSeriesWeight());
+      seriesEntry.setCompleted(seriesInfo.isCompleted());
+
+      seriesList.add(seriesEntry);
     }
 
     return new ArrayList<>(trainingMap.values());

@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
   }
 
   public UserInfoResponse signUp(SignupRequest signUpRequest) {
-    User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
+    User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getGender(),
       this.encoder.encode(signUpRequest.getPassword()));
 
     return new UserInfoResponse(this.userRepository.save(user));

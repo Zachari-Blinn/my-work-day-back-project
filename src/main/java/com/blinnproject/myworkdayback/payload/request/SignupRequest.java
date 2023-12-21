@@ -33,8 +33,6 @@ public class SignupRequest {
   @Size(min = 6, max = 40)
   private String password;
 
-  private EGender gender;
-
   public void setUsername(String username) {
     this.username = username;
   }

@@ -5,6 +5,7 @@ import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
+import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ public interface TrainingService {
 
   List<TrainingExercisesSeriesInfo> getSeriesStatus(Long trainingId, Date trainingDay);
 
-  public List<Map<String, Object>> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input);
+  public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input);
 
   List<TrainingExercises> modifyBeforeValidate(Long trainingId, ModifyBeforeValidateRequest requestBody);
 }
