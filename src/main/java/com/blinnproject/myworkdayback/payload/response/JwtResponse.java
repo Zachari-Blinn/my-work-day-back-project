@@ -7,8 +7,6 @@ import java.util.List;
 
 public class JwtResponse {
   private String token;
-  @Getter
-  private User user;
   private String type = "Bearer";
   private String refreshToken;
   @Getter

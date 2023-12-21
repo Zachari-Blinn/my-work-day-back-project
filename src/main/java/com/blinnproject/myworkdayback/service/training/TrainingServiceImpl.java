@@ -111,4 +111,42 @@ public class TrainingServiceImpl implements TrainingService {
   public List<TrainingExercisesSeriesInfo> getSeriesStatus(Long trainingId, Date trainingDay) {
     return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
   }
+
+//  test
+
+  public List<Map<String, Object>> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input) {
+    Map<Long, Map<String, Object>> trainingMap = new HashMap<>();
+
+    for (TrainingExercisesSeriesInfo seriesInfo : input) {
+      long trainingId = seriesInfo.getTrainingId();
+
+      trainingMap.computeIfAbsent(trainingId, k -> {
+        Map<String, Object> trainingData = new HashMap<>();
+        trainingData.put("trainingId", seriesInfo.getTrainingId());
+        trainingData.put("trainingName", seriesInfo.getTrainingName());
+        trainingData.put("numberOfExercise", 0);
+        trainingData.put("trainingExercises", new ArrayList<>());
+        return trainingData;
+      });
+
+      Map<String, Object> trainingData = trainingMap.get(trainingId);
+      int numberOfExercise = (int) trainingData.get("numberOfExercise");
+      List<Map<String, Object>> trainingExercises = (List<Map<String, Object>>) trainingData.get("trainingExercises");
+
+      Map<String, Object> exerciseData = new HashMap<>();
+      exerciseData.put("exerciseId", seriesInfo.getExerciseId());
+      exerciseData.put("exerciseName", seriesInfo.getExerciseName());
+      exerciseData.put("seriesId", seriesInfo.getSeriesId());
+      exerciseData.put("seriesPositionIndex", seriesInfo.getSeriesPositionIndex());
+      exerciseData.put("seriesRepsCount", seriesInfo.getSeriesRepsCount());
+      exerciseData.put("seriesRestTime", seriesInfo.getSeriesRestTime());
+      exerciseData.put("seriesWeight", seriesInfo.getSeriesWeight());
+      exerciseData.put("completed", seriesInfo.isCompleted());
+
+      trainingExercises.add(exerciseData);
+      trainingData.put("numberOfExercise", numberOfExercise + 1);
+    }
+
+    return new ArrayList<>(trainingMap.values());
+  }
 }
