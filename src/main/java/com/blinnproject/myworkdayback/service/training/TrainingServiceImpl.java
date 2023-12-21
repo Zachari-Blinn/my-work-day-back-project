@@ -4,6 +4,7 @@ import com.blinnproject.myworkdayback.model.Series;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
+import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
@@ -72,6 +73,12 @@ public class TrainingServiceImpl implements TrainingService {
       clonedExercises.add(cloned);
     }
 
+    return trainingExercisesRepository.saveAll(clonedExercises);
+  }
+
+  @Override
+  public List<TrainingExercises> modifyBeforeValidate(Long trainingId, ModifyBeforeValidateRequest requestBody) {
+    List<TrainingExercises> clonedExercises = Arrays.asList(requestBody.getTrainingSession());
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 

@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.seed.models;
 
+import com.blinnproject.myworkdayback.model.EGender;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.seed.DataLoader;
@@ -30,8 +31,8 @@ public class UserData {
     if (userRepository.count() == 0) {
       logger.info("Seeding users...");
 
-      this.userList.add(new User("jean-sebastien", "jean-sebastien@fake-email.fr", encoder.encode("Toto@123*")));
-      this.userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", encoder.encode("Toto@123*")));
+      this.userList.add(new User("jean-sebastien", "jean-sebastien@fake-email.fr", EGender.MAN, encoder.encode("Toto@123*")));
+      this.userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", EGender.NOT_SPECIFIED, encoder.encode("Toto@123*")));
       // Add more user here
 
       userRepository.saveAll(this.userList);

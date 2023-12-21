@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.payload.request;
 
+import com.blinnproject.myworkdayback.model.EGender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,6 +26,8 @@ public class SignupRequest {
   private String email;
 
   private Set<String> role;
+
+  private EGender gender;
 
   @NotBlank
   @Size(min = 6, max = 40)

@@ -40,9 +40,10 @@ public class User extends BaseEntityAudit {
     inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
 
-  public User(String username, String email, String password) {
+  public User(String username, String email, EGender gender, String password) {
     this.username = username;
     this.email = email;
+    this.gender = gender;
     this.password = password;
   }
 }

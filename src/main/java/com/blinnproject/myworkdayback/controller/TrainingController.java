@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.controller;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
+import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
@@ -96,7 +97,7 @@ public class TrainingController {
   }
 
   @PostMapping("/{trainingId}/validate")
-  public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {
+  public ResponseEntity<List<TrainingExercises>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) {
     try {
       List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, requestBody);
 
@@ -106,7 +107,16 @@ public class TrainingController {
     }
   }
 
-  // todo validate patch
+  @PostMapping("/{trainingId}/modify-before-validate")
+  public ResponseEntity<List<TrainingExercises>> modifyBeforeValidate(@PathVariable("trainingId") Long trainingId, @RequestBody ModifyBeforeValidateRequest requestBody) {
+    try {
+      List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyBeforeValidate(trainingId, requestBody);
+
+      return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @PostMapping("/{trainingId}/validate-training-day")
   public ResponseEntity<List<TrainingExercisesSeriesInfo>> checkIfTrainingExercisesSeriesIsCompleted(
