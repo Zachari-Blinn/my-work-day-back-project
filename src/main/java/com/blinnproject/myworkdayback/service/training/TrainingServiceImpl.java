@@ -63,7 +63,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional(readOnly = false)
-  public List<TrainingExercises> validateTrainingExercises(Long trainingId, ValidateTrainingRequest requestBody) throws Exception {
+  public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDay) throws Exception {
     // Authorization and checkup
     Training training = this.findById(trainingId).orElseThrow(() -> new Exception("Training not found with id " + trainingId));
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -72,7 +72,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     // Check if trainingDay day is included in training trainingDays and if not already set
     Format formatter = new SimpleDateFormat("u");
-    DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(formatter.format(requestBody.getTrainingDay())));
+    DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(formatter.format(trainingDay)));
     Assert.state(training.getTrainingDays().contains(currentDay), "The day: " + currentDay + " is not in training days list: " + training.getTrainingDays());
 
     List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingId(trainingId);
@@ -80,7 +80,7 @@ public class TrainingServiceImpl implements TrainingService {
     List<TrainingExercises> clonedExercises = new ArrayList<>();
     for (TrainingExercises original : trainingExercises) {
       TrainingExercises cloned = new TrainingExercises(original);
-      cloned.setTrainingDay(requestBody.getTrainingDay());
+      cloned.setTrainingDay(trainingDay);
       clonedExercises.add(cloned);
     }
 

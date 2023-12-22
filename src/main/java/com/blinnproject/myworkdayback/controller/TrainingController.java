@@ -13,12 +13,14 @@ import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -100,10 +102,13 @@ public class TrainingController {
     }
   }
 
-  @PostMapping("/{trainingId}/validate")
-  public ResponseEntity<GenericResponse<List<TrainingExercises>>> validateTraining(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody ValidateTrainingRequest requestBody) throws Exception {
+  @PostMapping("/{trainingId}/validate/{trainingDay}")
+  public ResponseEntity<GenericResponse<List<TrainingExercises>>> validateTraining(
+      @PathVariable("trainingId") Long trainingId,
+      @PathVariable("trainingDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDay
+  ) {
     try {
-      List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, requestBody);
+      List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, trainingDay);
 
       return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
     } catch (Exception e) {
@@ -122,13 +127,13 @@ public class TrainingController {
     }
   }
 
-  @PostMapping("/{trainingId}/validate-training-day")
+  @GetMapping("/{trainingId}/validate-training-day/{trainingDate}")
   public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> checkIfTrainingExercisesSeriesIsCompleted(
       @PathVariable("trainingId") Long trainingId,
-      @Valid @RequestBody ValidateTrainingRequest requestBody
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
     try {
-      List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, requestBody.getTrainingDay());
+      List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getSeriesStatus(trainingId, trainingDate);
 
       List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
 

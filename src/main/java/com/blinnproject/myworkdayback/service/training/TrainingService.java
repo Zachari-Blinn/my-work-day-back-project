@@ -22,7 +22,7 @@ public interface TrainingService {
 
   Optional<Training> findById(Long id);
 
-  List<TrainingExercises> validateTrainingExercises(Long trainingId, ValidateTrainingRequest requestBody) throws Exception;
+  List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDay) throws Exception;
 
   TrainingExercises addExercise(Long trainingId, AddExerciseRequest requestBody);
 
