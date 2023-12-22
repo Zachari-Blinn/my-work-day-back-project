@@ -13,6 +13,9 @@ public class TrainingExercisesSeriesInfo {
     private Long trainingId;
     private String trainingName;
 
+    private String trainingIconName;
+    private String trainingIconHexadecimalColor;
+
     private Long exerciseId;
     private String exerciseName;
 

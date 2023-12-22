@@ -118,11 +118,6 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.findTemplateByTrainingId(trainingId);
   }
 
-  @Transactional(readOnly = true)
-  public List<TrainingExercisesSeriesInfo> getSeriesStatus(Long trainingId, Date trainingDay) {
-    return trainingExercisesRepository.checkIfTrainingExercisesSeriesIsCompleted(trainingId, trainingDay);
-  }
-
   public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input) {
     Map<Long, FormattedTrainingData> trainingMap = new HashMap<>();
 
@@ -133,6 +128,8 @@ public class TrainingServiceImpl implements TrainingService {
         FormattedTrainingData trainingData = new FormattedTrainingData();
         trainingData.setTrainingId(seriesInfo.getTrainingId());
         trainingData.setTrainingName(seriesInfo.getTrainingName());
+        trainingData.setTrainingIconName(seriesInfo.getTrainingIconName());
+        trainingData.setTrainingIconHexadecimalColor(seriesInfo.getTrainingIconHexadecimalColor());
         trainingData.setTrainingExercises(new ArrayList<>());
         trainingData.setNumberOfExercise(0);
         return trainingData;
@@ -174,5 +171,16 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     return new ArrayList<>(trainingMap.values());
+  }
+
+
+  @Transactional(readOnly = true)
+  public List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay) {
+    return trainingExercisesRepository.getTrainingSeriesStatusByDate(trainingId, trainingDay);
+  }
+
+  @Transactional(readOnly = true)
+  public List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay) {
+    return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(trainingDay);
   }
 }

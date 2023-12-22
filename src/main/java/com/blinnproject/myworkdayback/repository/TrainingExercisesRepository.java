@@ -21,6 +21,41 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
+                trainingExercisesTemplate.training.iconName,
+                trainingExercisesTemplate.training.iconHexadecimalColor,
+                trainingExercisesTemplate.exercise.id,
+                trainingExercisesTemplate.exercise.name,
+                seriesTemplate.id,
+                seriesTemplate.positionIndex,
+                seriesTemplate.repsCount,
+                seriesTemplate.restTime,
+                seriesTemplate.weight,
+                CASE WHEN EXISTS (
+                    SELECT series.id
+                    FROM TrainingExercises trainingExercises
+                    JOIN trainingExercises.seriesList series
+                    WHERE trainingExercises.training.id = trainingExercisesTemplate.training.id
+                    AND trainingExercises.parent.id IS NOT NULL
+                    AND trainingExercises.trainingDay IS NOT NULL
+                    AND trainingExercises.parent.id = trainingExercisesTemplate.id
+                    AND series.parent.id = seriesTemplate.id
+                    AND trainingExercises.trainingDay = :selectedTrainingDay
+                ) THEN true ELSE false END
+            )
+            FROM TrainingExercises trainingExercisesTemplate
+            JOIN trainingExercisesTemplate.seriesList seriesTemplate
+            WHERE trainingExercisesTemplate.trainingDay IS NULL
+            AND trainingExercisesTemplate.parent IS NULL
+            ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
+    """)
+    List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date selectedTrainingDay);
+
+    @Query("""
+            SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
+                trainingExercisesTemplate.training.id,
+                trainingExercisesTemplate.training.name,
+                trainingExercisesTemplate.training.iconName,
+                trainingExercisesTemplate.training.iconHexadecimalColor,
                 trainingExercisesTemplate.exercise.id,
                 trainingExercisesTemplate.exercise.name,
                 seriesTemplate.id,
@@ -47,6 +82,6 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             AND trainingExercisesTemplate.parent IS NULL
             ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
     """)
-    List<TrainingExercisesSeriesInfo> checkIfTrainingExercisesSeriesIsCompleted(Long trainingId, Date selectedTrainingDay);
+    List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date selectedTrainingDay);
 }
 //todo ajouter parent_id a series également

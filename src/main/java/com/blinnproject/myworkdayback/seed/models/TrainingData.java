@@ -67,10 +67,13 @@ public class TrainingData {
   private Training createTraining(String name, Long userID) {
     Training training = new Training();
     training.setName(name);
+    training.setIconName("Dumbbell");
+    training.setIconHexadecimalColor("#0072db");
     training.setCreatedBy(userID);
     ArrayList<DayOfWeek> days = new ArrayList<>();
     days.add(DayOfWeek.TUESDAY);
     days.add(DayOfWeek.THURSDAY);
+    days.add(DayOfWeek.WEDNESDAY);
     training.setTrainingDays(days);
 
     return training;
