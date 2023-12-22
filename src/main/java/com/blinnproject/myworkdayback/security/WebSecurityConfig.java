@@ -47,7 +47,8 @@ public class WebSecurityConfig {
   private static final AntPathRequestMatcher[] API_REQUEST_WHITE_LIST = {
       antMatcher("/api/auth/**"),
       antMatcher("/api/training/**"),
-      antMatcher("/api/exercise/**")
+      antMatcher("/api/exercise/**"),
+      antMatcher("/api/user/**")
   };
 
   private UserDetailsServiceImpl userDetailsService;

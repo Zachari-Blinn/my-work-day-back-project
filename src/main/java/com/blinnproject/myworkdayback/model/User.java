@@ -34,6 +34,10 @@ public class User extends BaseEntityAudit {
   @Column(nullable=false)
   private String password;
 
+  @OneToOne(cascade = CascadeType.ALL)
+  @PrimaryKeyJoinColumn
+  private ProfilePicture profilePicture;
+
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "user_roles",
     joinColumns = @JoinColumn(name = "user_id"),

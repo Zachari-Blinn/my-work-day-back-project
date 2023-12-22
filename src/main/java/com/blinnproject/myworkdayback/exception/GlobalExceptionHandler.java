@@ -74,4 +74,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
   }
 
+  @ExceptionHandler({CompressImageException.class})
+  public ResponseEntity<Object> handleCompressImageException(CompressImageException exception) {
+    return ResponseEntity
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({DecompressImageException.class})
+  public ResponseEntity<Object> handleDecompressImageException(DecompressImageException exception) {
+    return ResponseEntity
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({ProfilePictureIsEmptyException.class})
+  public ResponseEntity<Object> handleProfilePictureIsEmptyException() {
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+  }
 }
