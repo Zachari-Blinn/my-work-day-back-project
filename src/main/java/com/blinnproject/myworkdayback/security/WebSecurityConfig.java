@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.security;
 
-import com.blinnproject.myworkdayback.security.jwt.AuthTokenFilter;
+import com.blinnproject.myworkdayback.security.jwt.JwtAuthenticationFilter;
 import com.blinnproject.myworkdayback.security.jwt.JwtAuthenticationEntryPoint;
 import com.blinnproject.myworkdayback.security.services.UserDetailsServiceImpl;
 import io.swagger.v3.oas.models.Components;
@@ -9,7 +9,6 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,15 +50,16 @@ public class WebSecurityConfig {
       antMatcher("/api/exercise/**")
   };
 
-  @Autowired
-  UserDetailsServiceImpl userDetailsService;
+  private UserDetailsServiceImpl userDetailsService;
 
-  @Autowired
   private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-  @Bean
-  public AuthTokenFilter authenticationJwtTokenFilter() {
-    return new AuthTokenFilter();
+  private JwtAuthenticationFilter authenticationFilter;
+
+  public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationEntryPoint authenticationEntryPoint, JwtAuthenticationFilter authenticationFilter) {
+    this.userDetailsService = userDetailsService;
+    this.authenticationEntryPoint = authenticationEntryPoint;
+    this.authenticationFilter = authenticationFilter;
   }
 
   @Bean
@@ -100,23 +100,23 @@ public class WebSecurityConfig {
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     http.authenticationProvider(authenticationProvider());
-    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
 
   private SecurityScheme createAPIKeyScheme() {
-    return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+    return new SecurityScheme()
+        .name("Bear Authentication")
+        .type(SecurityScheme.Type.HTTP)
         .bearerFormat("JWT")
         .scheme("bearer");
   }
 
   @Bean
   public OpenAPI openAPI() {
-    return new OpenAPI().addSecurityItem(new SecurityRequirement().
-            addList("Bearer Authentication"))
-        .components(new Components().addSecuritySchemes
-            ("Bearer Authentication", createAPIKeyScheme()))
+    return new OpenAPI().addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+        .components(new Components().addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()))
         .info(new Info().title("My REST API")
         .description("Some custom description of API.")
         .version("1.0")

@@ -41,7 +41,7 @@ public class AuthController {
   @Autowired
   UserService userService;
 
-  @PostMapping("/signin")
+  @PostMapping(value = {"/login", "/signin"})
   public ResponseEntity<GenericResponse<?>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     Authentication authentication = authenticationManager
       .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -61,7 +61,7 @@ public class AuthController {
       userDetails.getUsername(), userDetails.getEmail(), roles), "User logged in successfully!"));
   }
 
-  @PostMapping("/signup")
+  @PostMapping(value = {"/register", "/signup"})
   public ResponseEntity<GenericResponse<UserInfoResponse>> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     this.userService.throwExceptionIfUsernameIsAlreadyTaken(signUpRequest.getUsername());
     this.userService.throwExceptionIfEmailIsAlreadyTaken(signUpRequest.getEmail());
@@ -71,7 +71,7 @@ public class AuthController {
     return ResponseEntity.ok(GenericResponse.success(createdUser, "User registered successfully!"));
   }
 
-  @PostMapping("/signout")
+  @PostMapping(value = {"logout", "/signout"})
   public ResponseEntity<GenericResponse<?>> logoutUser() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     this.refreshTokenService.deleteByUserId(userDetails.getId());
