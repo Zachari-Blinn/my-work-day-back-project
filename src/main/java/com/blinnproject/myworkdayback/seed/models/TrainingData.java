@@ -86,9 +86,6 @@ public class TrainingData {
     Exercise benchPressExercise = this.exerciseData.getExerciseByName("Bench press");
     Exercise militaryPressExercise = this.exerciseData.getExerciseByName("Military Press");
 
-    // Training basDuCorpsTraining = this.getTrainingByName("Bas du corps");
-    // todo add squat exercise
-
     List<Series> benchPressSeriesList = new ArrayList<>();
     Series benchPressSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
     benchPressSeriesList.add(benchPressSeries1);
@@ -108,8 +105,20 @@ public class TrainingData {
     TrainingExercises militaryPressTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, militaryPressExercise, "Military press note", militaryPressSeriesList);
     this.trainingExercisesList.add(militaryPressTrainingExercises);
 
-//    TrainingExercises basDuCorpsTrainingExercises = this.createTrainingExercises(basDuCorpsTraining, benchPressExercise, "Lorem ipsum note"); // this line crash
-//    this.trainingExercisesList.add(basDuCorpsTrainingExercises);
+    Training basDuCorpsTraining = this.getTrainingByName("Bas du corps");
+
+    Exercise squatExercise = this.exerciseData.getExerciseByName("Squat");
+
+    List<Series> squatSeriesList = new ArrayList<>();
+    Series squatSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
+    squatSeriesList.add(squatSeries1);
+    Series squatSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    squatSeriesList.add(squatSeries2);
+    Series squatSeries3 = createSeries(3, 10, 60, "02:00", this.user.getId());
+    squatSeriesList.add(squatSeries3);
+
+    TrainingExercises squatTrainingExercises = this.createTrainingExercises(basDuCorpsTraining, squatExercise, "Squat note", squatSeriesList);
+    this.trainingExercisesList.add(squatTrainingExercises);
 
     this.trainingExercisesRepository.saveAll(this.trainingExercisesList);
   }

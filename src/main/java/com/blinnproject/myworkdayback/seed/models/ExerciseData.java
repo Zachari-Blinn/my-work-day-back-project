@@ -47,6 +47,11 @@ public class ExerciseData {
       this.exerciseList.add(militaryPressExercise);
 
       // Add more exercise here
+      Exercise squatExercise = new Exercise();
+      squatExercise.setName("Squat");
+      squatExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
+      squatExercise.setCreatedBy(user1.getId());
+      this.exerciseList.add(squatExercise);
 
       exerciseRepository.saveAll(this.exerciseList);
       logger.info(String.valueOf(exerciseRepository.count()) + " exercise successfully loaded!");
