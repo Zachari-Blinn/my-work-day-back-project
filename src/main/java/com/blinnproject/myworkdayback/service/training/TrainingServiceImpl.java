@@ -4,6 +4,7 @@ import com.blinnproject.myworkdayback.model.Series;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
+import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
@@ -36,8 +37,17 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Override
   @Transactional(readOnly = false)
-  public Training create(Training training) {
-    return trainingRepository.save(training);
+  public Training create(CreateTrainingRequest training) {
+    Training newTraining = new Training();
+
+    newTraining.setName(training.getName());
+    newTraining.setTrainingDays(training.getTrainingDays());
+    newTraining.setSportPreset(training.getSportPreset());
+    newTraining.setDescription(training.getDescription());
+    newTraining.setHasWarpUp(training.getHasWarpUp());
+    newTraining.setHasStretching(training.getHasStretching());
+
+    return trainingRepository.save(newTraining);
   }
 
   @Override

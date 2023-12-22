@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.controller;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
+import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
@@ -31,7 +32,7 @@ public class TrainingController {
   TrainingService trainingService;
 
   @PostMapping()
-  public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody Training trainingRequest) {
+  public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody CreateTrainingRequest trainingRequest) {
     try {
       Training _training = trainingService.create(trainingRequest);
       return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(_training, "Training was successfully created!"));
