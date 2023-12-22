@@ -1,6 +1,5 @@
 package com.blinnproject.myworkdayback.security;
 
-import com.blinnproject.myworkdayback.security.jwt.AuthEntryPointJwt;
 import com.blinnproject.myworkdayback.security.jwt.AuthTokenFilter;
 import com.blinnproject.myworkdayback.security.jwt.JwtAuthenticationEntryPoint;
 import com.blinnproject.myworkdayback.security.services.UserDetailsServiceImpl;
