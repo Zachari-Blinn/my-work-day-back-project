@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.payload.response;
 
+import com.blinnproject.myworkdayback.model.ETrainingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,8 @@ import java.util.List;
 public class FormattedTrainingData {
   private long trainingId;
   private String trainingName;
+
+  private ETrainingStatus trainingStatus;
 
   private ArrayList<DayOfWeek> trainingDays;
 

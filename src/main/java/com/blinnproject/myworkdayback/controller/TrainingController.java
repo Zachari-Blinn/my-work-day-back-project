@@ -32,50 +32,34 @@ public class TrainingController {
 
   @PostMapping()
   public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody CreateTrainingRequest trainingRequest) {
-    try {
-      Training _training = trainingService.create(trainingRequest);
-      return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(_training, "Training was successfully created!"));
-    } catch (Exception exception) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    Training _training = trainingService.create(trainingRequest);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(_training, "Training was successfully created!"));
   }
 
   @GetMapping("/current-user")
   public ResponseEntity<GenericResponse<List<Training>>> getCurrentUserTrainings() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    try {
-      List<Training> trainings = trainingService.getAllTrainingsByCreatedBy(userDetails.getId());
+    List<Training> trainings = trainingService.getAllTrainingsByCreatedBy(userDetails.getId());
 
-      if (trainings.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-      }
-
-      return ResponseEntity.ok(GenericResponse.success(trainings, "Return all trainings of current user successfully!"));
-    } catch (Exception exception) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    if (trainings.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    return ResponseEntity.ok(GenericResponse.success(trainings, "Return all trainings of current user successfully!"));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<Training>> getTrainingById(@PathVariable("id") Long id) {
-    try {
-      Optional<Training> trainingData = trainingService.findById(id);
+    Optional<Training> trainingData = trainingService.findById(id);
 
-      return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, "Return training by id successfully!"))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, "Return training by id successfully!"))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   @PostMapping("/{trainingId}/add-exercise")
   public ResponseEntity<GenericResponse<?>> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
-    try {
-      TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, requestBody);
+    TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, requestBody);
 
-      return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));
   }
 
   @GetMapping("/{trainingId}/exercises")
@@ -83,19 +67,15 @@ public class TrainingController {
       @RequestParam(defaultValue = "false") Boolean fetchTemplate,
       @PathVariable("trainingId") Long trainingId
   ) {
-    try {
-      List<TrainingExercises> trainingExercises;
+    List<TrainingExercises> trainingExercises;
 
-      if (fetchTemplate) {
-        trainingExercises = this.trainingService.getTemplateExercisesByTrainingId(trainingId);
-      } else {
-        trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId);
-      }
-
-      return ResponseEntity.ok(GenericResponse.success(trainingExercises, "Return all exercises by training successfully!"));
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    if (fetchTemplate) {
+      trainingExercises = this.trainingService.getTemplateExercisesByTrainingId(trainingId);
+    } else {
+      trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId);
     }
+
+    return ResponseEntity.ok(GenericResponse.success(trainingExercises, "Return all exercises by training successfully!"));
   }
 
   @PostMapping("/{trainingId}/validate/{trainingDay}")
@@ -103,24 +83,20 @@ public class TrainingController {
       @PathVariable("trainingId") Long trainingId,
       @PathVariable("trainingDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDay
   ) {
-    try {
-      List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, trainingDay);
+    List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, trainingDay);
 
-      return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
   }
 
-  @PostMapping("/{trainingId}/modify-before-validate")
-  public ResponseEntity<List<TrainingExercises>> modifyBeforeValidate(@PathVariable("trainingId") Long trainingId, @RequestBody ModifyBeforeValidateRequest requestBody) {
-    try {
-      List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyBeforeValidate(trainingId, requestBody);
+  @PostMapping("/{trainingId}/modify-before-validate/{trainingDate}")
+  public ResponseEntity<GenericResponse<List<TrainingExercises>>> modifyBeforeValidate(
+      @PathVariable("trainingId") Long trainingId,
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @RequestBody ModifyBeforeValidateRequest requestBody
+  ) {
+    List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyBeforeValidate(trainingId, trainingDate, requestBody);
 
-      return new ResponseEntity<>(createdTrainingExercises, HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Modify and validate training session successfully!"));
   }
 
   @GetMapping("/{trainingId}/validate-training-day/{trainingDate}")
@@ -128,29 +104,21 @@ public class TrainingController {
       @PathVariable("trainingId") Long trainingId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
-    try {
-      List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getTrainingSeriesStatusByDate(trainingId, trainingDate);
+    List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getTrainingSeriesStatusByDate(trainingId, trainingDate);
 
-      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
+    List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
 
-      return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
   }
 
   @GetMapping("/validate-training-day/{trainingDate}")
   public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> checkIfTrainingExercisesSeriesIsCompleted(
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
-    try {
-      List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate);
+    List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate);
 
-      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
+    List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
 
-      return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
   }
 }

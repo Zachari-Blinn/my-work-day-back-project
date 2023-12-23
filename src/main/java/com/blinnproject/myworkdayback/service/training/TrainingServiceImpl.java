@@ -1,11 +1,9 @@
 package com.blinnproject.myworkdayback.service.training;
 
 import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
+import com.blinnproject.myworkdayback.exception.TrainingAlreadyPerformedException;
 import com.blinnproject.myworkdayback.exception.TrainingWithCurrentUserNotFound;
-import com.blinnproject.myworkdayback.model.Exercise;
-import com.blinnproject.myworkdayback.model.Series;
-import com.blinnproject.myworkdayback.model.Training;
-import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
@@ -19,7 +17,6 @@ import io.jsonwebtoken.lang.Assert;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.util.*;
@@ -67,20 +64,31 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional()
-  public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDay) {
-    // Authorization and checkup
-    Training training = this.findById(trainingId).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+  public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDate) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    // Check if trainingDay day is included in training trainingDays and if not already set
-    DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDay)));
-    Assert.state(training.getTrainingDays().contains(currentDay), "The day: " + currentDay + " is not in training days list: " + training.getTrainingDays());
+    // Check if training with the same performed date already exists
+    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, userDetails.getId())) {
+      throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
+    }
+
+    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+
+    DayOfWeek providedDayDate = DayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
+    Assert.state(training.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + training.getTrainingDays());
 
     List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, training.getCreatedBy());
+
+    Training clonedTraining = new Training(training);
+    clonedTraining.setTrainingStatus(ETrainingStatus.PERFORMED);
+    clonedTraining.setPerformedDate(trainingDate);
+    Training newTraining = trainingRepository.save(clonedTraining);
 
     List<TrainingExercises> clonedExercises = new ArrayList<>();
     for (TrainingExercises original : trainingExercises) {
       TrainingExercises cloned = new TrainingExercises(original);
-      cloned.setTrainingDay(trainingDay);
+      cloned.setTraining(newTraining);
+      cloned.setTrainingDay(trainingDate);
       clonedExercises.add(cloned);
     }
 
@@ -88,14 +96,31 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Override
-  public List<TrainingExercises> modifyBeforeValidate(Long trainingId, ModifyBeforeValidateRequest requestBody) {
+  public List<TrainingExercises> modifyBeforeValidate(Long trainingId, Date trainingDate, ModifyBeforeValidateRequest requestBody) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    if(!this.trainingRepository.existsByIdAndCreatedBy(trainingId, userDetails.getId())) {
-      throw new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user");
+    // Check if training with the same performed date already exists
+    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, userDetails.getId())) {
+      throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
     }
 
+    Training originalTraining = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+
+    DayOfWeek providedDayDate = DayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
+    Assert.state(originalTraining.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + originalTraining.getTrainingDays());
+
+    // Clone the training and set status to performed
+    Training clonedTraining = new Training(originalTraining);
+    clonedTraining.setTrainingStatus(ETrainingStatus.PERFORMED);
+    clonedTraining.setPerformedDate(trainingDate);
+    Training newTraining = trainingRepository.save(clonedTraining);
+
     List<TrainingExercises> clonedExercises = Arrays.asList(requestBody.getTrainingSession());
+    for (TrainingExercises clonedExercise : clonedExercises) {
+      clonedExercise.setTraining(newTraining); // check
+      clonedExercise.setTrainingDay(trainingDate);
+    }
+
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
@@ -147,6 +172,7 @@ public class TrainingServiceImpl implements TrainingService {
         FormattedTrainingData trainingData = new FormattedTrainingData();
         trainingData.setTrainingId(seriesInfo.getTrainingId());
         trainingData.setTrainingName(seriesInfo.getTrainingName());
+        trainingData.setTrainingStatus(seriesInfo.getTrainingStatus());
         trainingData.setTrainingDays(seriesInfo.getTrainingDays());
         trainingData.setTrainingIconName(seriesInfo.getTrainingIconName());
         trainingData.setTrainingIconHexadecimalColor(seriesInfo.getTrainingIconHexadecimalColor());

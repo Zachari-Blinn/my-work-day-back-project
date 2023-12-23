@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -26,6 +28,21 @@ public class Training extends BaseEntityAudit {
   @Column
   private ArrayList<DayOfWeek> trainingDays;
 
+  @Column
+  @Enumerated(EnumType.ORDINAL)
+  private ETrainingStatus trainingStatus;
+
+  @Column
+  @Temporal(TemporalType.DATE)
+  private Date startDate;
+
+  @Column
+  @Temporal(TemporalType.DATE)
+  private Date endDate;
+
+  @Temporal(TemporalType.DATE)
+  private Date performedDate;
+
   @Lob
   private String description;
 
@@ -36,13 +53,20 @@ public class Training extends BaseEntityAudit {
   private Boolean hasStretching = false;
 
   @Column(nullable = false)
-  @Enumerated(EnumType.ORDINAL)
-  private ETrainingStatus trainingStatus = ETrainingStatus.IN_PROGRESS;
-
-  @Column(nullable = false)
   private String iconName = "dumbbell";
 
   @Column
   @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
   private String iconHexadecimalColor = "#0072db";
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(referencedColumnName = "id")
+  private Training parent;
+
+  // Constructor used for clone to new entity Training
+  public Training(Training that) {
+    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), that.getTrainingStatus(), that.getStartDate(), that.getEndDate(),that.getPerformedDate(), that.getDescription(), that.getHasWarpUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null);
+
+    this.setParent(that);
+  }
 }

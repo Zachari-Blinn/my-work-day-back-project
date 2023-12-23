@@ -29,7 +29,7 @@ public interface TrainingService {
 
   List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input, Date trainingDate);
 
-  List<TrainingExercises> modifyBeforeValidate(Long trainingId, ModifyBeforeValidateRequest requestBody);
+  List<TrainingExercises> modifyBeforeValidate(Long trainingId, Date trainingDate, ModifyBeforeValidateRequest requestBody);
 
   // get training session info by date
   List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay);

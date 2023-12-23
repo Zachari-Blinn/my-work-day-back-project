@@ -99,4 +99,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.NOT_FOUND)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({TrainingAlreadyPerformedException.class})
+  public ResponseEntity<Object> handleTrainingAlreadyPerformedException(TrainingAlreadyPerformedException exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
 }

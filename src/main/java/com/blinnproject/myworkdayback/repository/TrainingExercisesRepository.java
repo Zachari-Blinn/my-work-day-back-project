@@ -21,6 +21,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
+                trainingExercisesTemplate.training.trainingStatus,
                 trainingExercisesTemplate.training.trainingDays,
                 trainingExercisesTemplate.training.iconName,
                 trainingExercisesTemplate.training.iconHexadecimalColor,
@@ -35,8 +36,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
                     SELECT series.id
                     FROM TrainingExercises trainingExercises
                     JOIN trainingExercises.seriesList series
-                    WHERE trainingExercises.training.id = trainingExercisesTemplate.training.id
-                    AND trainingExercises.parent.id IS NOT NULL
+                    WHERE trainingExercises.parent.id IS NOT NULL
                     AND trainingExercises.trainingDay IS NOT NULL
                     AND trainingExercises.parent.id = trainingExercisesTemplate.id
                     AND series.parent.id = seriesTemplate.id
@@ -56,6 +56,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
+                trainingExercisesTemplate.training.trainingStatus,
                 trainingExercisesTemplate.training.trainingDays,
                 trainingExercisesTemplate.training.iconName,
                 trainingExercisesTemplate.training.iconHexadecimalColor,
@@ -70,8 +71,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
                     SELECT series.id
                     FROM TrainingExercises trainingExercises
                     JOIN trainingExercises.seriesList series
-                    WHERE trainingExercises.training.id = :trainingId
-                    AND trainingExercises.parent.id IS NOT NULL
+                    WHERE trainingExercises.parent.id IS NOT NULL
                     AND trainingExercises.trainingDay IS NOT NULL
                     AND trainingExercises.parent.id = trainingExercisesTemplate.id
                     AND series.parent.id = seriesTemplate.id
