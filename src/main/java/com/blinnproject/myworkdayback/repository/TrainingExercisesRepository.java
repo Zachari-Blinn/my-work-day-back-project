@@ -21,7 +21,14 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
-                trainingExercisesTemplate.training.trainingStatus,
+                (
+                    SELECT trainingExercises.training.trainingStatus
+                    FROM TrainingExercises trainingExercises
+                    WHERE trainingExercises.parent.id IS NOT NULL
+                    AND trainingExercises.trainingDay IS NOT NULL
+                    AND trainingExercises.parent.id = trainingExercisesTemplate.id
+                    AND trainingExercises.trainingDay = :selectedTrainingDay
+                ),
                 trainingExercisesTemplate.training.trainingDays,
                 trainingExercisesTemplate.training.iconName,
                 trainingExercisesTemplate.training.iconHexadecimalColor,
@@ -56,7 +63,14 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
-                trainingExercisesTemplate.training.trainingStatus,
+                (
+                    SELECT trainingExercises.training.trainingStatus
+                    FROM TrainingExercises trainingExercises
+                    WHERE trainingExercises.parent.id IS NOT NULL
+                    AND trainingExercises.trainingDay IS NOT NULL
+                    AND trainingExercises.parent.id = trainingExercisesTemplate.id
+                    AND trainingExercises.trainingDay = :selectedTrainingDay
+                ),
                 trainingExercisesTemplate.training.trainingDays,
                 trainingExercisesTemplate.training.iconName,
                 trainingExercisesTemplate.training.iconHexadecimalColor,
