@@ -11,8 +11,8 @@ import java.util.List;
 
 @Repository
 public interface TrainingExercisesRepository extends JpaRepository<TrainingExercises, Long> {
-    @Query("SELECT te FROM TrainingExercises te WHERE te.training.id = :trainingId AND te.parent = NULL")
-    List<TrainingExercises> findTemplateByTrainingId(Long trainingId);
+    @Query("SELECT te FROM TrainingExercises te WHERE te.training.id = :trainingId AND te.parent = NULL AND te.training.createdBy = :createdBy")
+    List<TrainingExercises> findTemplateByTrainingIdAndCreatedBy(Long trainingId, Long createdBy);
 
     List<TrainingExercises> findByTrainingId(Long trainingId);
 
@@ -45,10 +45,11 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             FROM TrainingExercises trainingExercisesTemplate
             JOIN trainingExercisesTemplate.seriesList seriesTemplate
             WHERE trainingExercisesTemplate.trainingDay IS NULL
+            AND trainingExercisesTemplate.training.createdBy = :currentUser
             AND trainingExercisesTemplate.parent IS NULL
             ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
     """)
-    List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date selectedTrainingDay);
+    List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Long currentUser, Date selectedTrainingDay);
 
     @Query("""
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
@@ -78,10 +79,11 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             FROM TrainingExercises trainingExercisesTemplate
             JOIN trainingExercisesTemplate.seriesList seriesTemplate
             WHERE trainingExercisesTemplate.training.id = :trainingId
+            AND trainingExercisesTemplate.training.createdBy = :currentUser
             AND trainingExercisesTemplate.trainingDay IS NULL
             AND trainingExercisesTemplate.parent IS NULL
             ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
     """)
-    List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date selectedTrainingDay);
+    List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long currentUser, Long trainingId, Date selectedTrainingDay);
 }
 //todo ajouter parent_id a series également

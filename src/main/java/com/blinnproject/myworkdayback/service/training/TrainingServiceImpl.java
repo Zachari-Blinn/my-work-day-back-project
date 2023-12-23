@@ -1,5 +1,7 @@
 package com.blinnproject.myworkdayback.service.training;
 
+import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
+import com.blinnproject.myworkdayback.model.Exercise;
 import com.blinnproject.myworkdayback.model.Series;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
@@ -59,23 +61,24 @@ public class TrainingServiceImpl implements TrainingService {
   @Override
   @Transactional(readOnly = true)
   public Optional<Training> findById(Long id) {
-    return trainingRepository.findById(id);
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    return trainingRepository.findByIdAndCreatedBy(id, userDetails.getId());
   }
 
-  @Transactional(readOnly = false)
-  public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDay) throws Exception {
+  @Transactional()
+  public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDay) {
     // Authorization and checkup
-    Training training = this.findById(trainingId).orElseThrow(() -> new Exception("Training not found with id " + trainingId));
+    Training training = this.findById(trainingId).orElseThrow(() -> new ResourceNotFoundException("Training", "id", trainingId));
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long createdBy = userDetails.getId();
-    Assert.state(Objects.equals(training.getCreatedBy(), createdBy), "Training with id " + trainingId + " does not belong to current user");
+    Assert.state(Objects.equals(training.getCreatedBy(), userDetails.getId()), "Training with id " + trainingId + " does not belong to current user");
 
     // Check if trainingDay day is included in training trainingDays and if not already set
     Format formatter = new SimpleDateFormat("u");
     DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(formatter.format(trainingDay)));
     Assert.state(training.getTrainingDays().contains(currentDay), "The day: " + currentDay + " is not in training days list: " + training.getTrainingDays());
 
-    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingId(trainingId);
+    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, training.getCreatedBy());
 
     List<TrainingExercises> clonedExercises = new ArrayList<>();
     for (TrainingExercises original : trainingExercises) {
@@ -89,16 +92,27 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Override
   public List<TrainingExercises> modifyBeforeValidate(Long trainingId, ModifyBeforeValidateRequest requestBody) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if(!this.trainingRepository.existsByIdAndCreatedBy(trainingId, userDetails.getId())) {
+      throw new ResourceNotFoundException("Training", "id", trainingId);
+    }
+
     List<TrainingExercises> clonedExercises = Arrays.asList(requestBody.getTrainingSession());
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
-  @Transactional(readOnly = false)
+  @Transactional()
   public TrainingExercises addExercise(Long trainingId, AddExerciseRequest requestBody) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new ResourceNotFoundException("Training", "id", trainingId));
+    Exercise exercise = this.exerciseService.findById(requestBody.getExerciseId()).orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", requestBody.getExerciseId()));
+
     TrainingExercises trainingExercises = new TrainingExercises();
 
-    trainingExercises.setTraining(this.findById(trainingId).orElse(null));
-    trainingExercises.setExercise(this.exerciseService.findById(requestBody.getExerciseId()).orElse(null));
+    trainingExercises.setTraining(training);
+    trainingExercises.setExercise(exercise);
     trainingExercises.setNotes(requestBody.getNotes());
     trainingExercises.setNumberOfWarmUpSeries(requestBody.getNumberOfWarmUpSeries());
 
@@ -115,7 +129,9 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Transactional(readOnly = true)
   public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId) {
-    return trainingExercisesRepository.findTemplateByTrainingId(trainingId);
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, userDetails.getId());
   }
 
   public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input) {
@@ -176,11 +192,15 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Transactional(readOnly = true)
   public List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay) {
-    return trainingExercisesRepository.getTrainingSeriesStatusByDate(trainingId, trainingDay);
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    return trainingExercisesRepository.getTrainingSeriesStatusByDate(userDetails.getId(), trainingId, trainingDay);
   }
 
   @Transactional(readOnly = true)
   public List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay) {
-    return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(trainingDay);
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(userDetails.getId(), trainingDay);
   }
 }
