@@ -147,6 +147,7 @@ public class TrainingServiceImpl implements TrainingService {
         FormattedTrainingData trainingData = new FormattedTrainingData();
         trainingData.setTrainingId(seriesInfo.getTrainingId());
         trainingData.setTrainingName(seriesInfo.getTrainingName());
+        trainingData.setTrainingDays(seriesInfo.getTrainingDays());
         trainingData.setTrainingIconName(seriesInfo.getTrainingIconName());
         trainingData.setTrainingIconHexadecimalColor(seriesInfo.getTrainingIconHexadecimalColor());
         trainingData.setTrainingExercises(new ArrayList<>());
