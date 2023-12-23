@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,6 +15,8 @@ import lombok.Setter;
 public class TrainingExercisesSeriesInfo {
     private Long trainingId;
     private String trainingName;
+
+    private ArrayList<DayOfWeek> trainingDays;
 
     private String trainingIconName;
     private String trainingIconHexadecimalColor;

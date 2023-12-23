@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,6 +16,8 @@ import java.util.List;
 public class FormattedTrainingData {
   private long trainingId;
   private String trainingName;
+
+  private ArrayList<DayOfWeek> trainingDays;
 
   private String trainingIconName;
   private String trainingIconHexadecimalColor;

@@ -27,7 +27,7 @@ public interface TrainingService {
 
   List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId);
 
-  public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input);
+  List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input, Date trainingDate);
 
   List<TrainingExercises> modifyBeforeValidate(Long trainingId, ModifyBeforeValidateRequest requestBody);
 

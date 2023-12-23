@@ -92,4 +92,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleProfilePictureIsEmptyException() {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
+
+  @ExceptionHandler({TrainingWithCurrentUserNotFound.class})
+  public ResponseEntity<Object> handleTrainingWithCurrentUserNotFound(TrainingWithCurrentUserNotFound exception) {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
 }

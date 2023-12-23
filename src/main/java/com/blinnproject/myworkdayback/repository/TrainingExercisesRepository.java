@@ -14,13 +14,14 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
     @Query("SELECT te FROM TrainingExercises te WHERE te.training.id = :trainingId AND te.parent = NULL AND te.training.createdBy = :createdBy")
     List<TrainingExercises> findTemplateByTrainingIdAndCreatedBy(Long trainingId, Long createdBy);
 
-    List<TrainingExercises> findByTrainingId(Long trainingId);
+    List<TrainingExercises> findByTrainingIdAndTrainingCreatedBy(Long trainingId, Long createdBy);
 
 //    for checking if training exercises series is completed or not, compare trainingExercises series with parent_id and training_day is null (it is template), with trainingExercises series with parent_id and training_day is not null (it's training session of the day)
     @Query("""
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
+                trainingExercisesTemplate.training.trainingDays,
                 trainingExercisesTemplate.training.iconName,
                 trainingExercisesTemplate.training.iconHexadecimalColor,
                 trainingExercisesTemplate.exercise.id,
@@ -55,6 +56,7 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             SELECT new com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo(
                 trainingExercisesTemplate.training.id,
                 trainingExercisesTemplate.training.name,
+                trainingExercisesTemplate.training.trainingDays,
                 trainingExercisesTemplate.training.iconName,
                 trainingExercisesTemplate.training.iconHexadecimalColor,
                 trainingExercisesTemplate.exercise.id,

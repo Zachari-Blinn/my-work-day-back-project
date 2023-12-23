@@ -5,7 +5,6 @@ import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
-import com.blinnproject.myworkdayback.payload.request.ValidateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
@@ -19,10 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -46,9 +43,8 @@ public class TrainingController {
   @GetMapping("/current-user")
   public ResponseEntity<GenericResponse<List<Training>>> getCurrentUserTrainings() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    Long createdBy = userDetails.getId();
     try {
-      List<Training> trainings = trainingService.getAllTrainingsByCreatedBy(createdBy);
+      List<Training> trainings = trainingService.getAllTrainingsByCreatedBy(userDetails.getId());
 
       if (trainings.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -135,7 +131,7 @@ public class TrainingController {
     try {
       List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getTrainingSeriesStatusByDate(trainingId, trainingDate);
 
-      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
+      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
 
       return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
     } catch (Exception e) {
@@ -150,7 +146,7 @@ public class TrainingController {
     try {
       List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate);
 
-      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
+      List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
 
       return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
     } catch (Exception e) {
