@@ -1,8 +1,9 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.blinnproject.myworkdayback.field_constraint.HexadecimalColorConstraint;
+import com.blinnproject.myworkdayback.field_constraint.IconNameConstraint;
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,6 @@ import lombok.Setter;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -53,10 +53,11 @@ public class Training extends BaseEntityAudit {
   private Boolean hasStretching = false;
 
   @Column(nullable = false)
-  private String iconName = "dumbbell";
+  @IconNameConstraint
+  private String iconName = "icon_dumbbell";
 
   @Column
-  @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
+  @HexadecimalColorConstraint
   private String iconHexadecimalColor = "#0072db";
 
   @ManyToOne(fetch = FetchType.LAZY)
