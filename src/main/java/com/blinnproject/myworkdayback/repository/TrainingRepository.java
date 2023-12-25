@@ -18,5 +18,7 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
 
   Optional<Training> findByIdAndCreatedBy(Long id, Long createdId);
 
+  Optional<Training> findByName(String name);
+
   boolean existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(Long parentId, Date performedDate, ETrainingStatus trainingStatus, Long createdId);
 }

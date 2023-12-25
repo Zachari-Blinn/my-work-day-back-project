@@ -18,46 +18,46 @@ public class UserRepositoryTest {
   @Autowired
   private UserRepository userRepository;
 
-//  @Test
-//  public void UserRepository_SaveAll_ReturnSavedUser() {
-//    User user = User.builder()
-//      .username("jean-sebastien")
-//      .email("jean-sebastien@fake-email.fr")
-//      .gender(EGender.MAN)
-//      .password("Toto@2021*").build();
-//
-//    User savedUser = userRepository.save(user);
-//
-//    Assertions.assertThat(savedUser).isNotNull();
-//    Assertions.assertThat(savedUser.getId()).isNotNull().isGreaterThan(0);
-//    Assertions.assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
-//    Assertions.assertThat(savedUser.getEmail()).isEqualTo(user.getEmail());
-//    Assertions.assertThat(savedUser.getGender()).isEqualTo(user.getGender());
-//    Assertions.assertThat(savedUser.getPassword()).isNotNull();
-//  }
+  @Test
+  public void UserRepository_SaveAll_ReturnSavedUser() {
+    User user = User.builder()
+      .username("jean-abernathy")
+      .email("jean-abernathy@fake-email.fr")
+      .gender(EGender.MAN)
+      .password("Toto@2021*").build();
 
-//  @Test
-//  public void UserRepository_GetAll_ReturnMoreThanOneUser() {
-//    User user1 = User.builder()
-//      .username("jean-marc")
-//      .email("jean-marc@fake-email.fr")
-//      .gender(EGender.MAN)
-//      .password("Toto@2021*").build();
-//
-//    User user2 = User.builder()
-//      .username("jean-baptiste")
-//      .email("jean-baptiste@fake-email.fr")
-//      .gender(EGender.MAN)
-//      .password("Toto@2021*").build();
-//
-//    User savedUser1 = userRepository.save(user1);
-//    User savedUser2 = userRepository.save(user2);
-//
-//    List<User> userList = userRepository.findAll();
-//
-//    Assertions.assertThat(userList).isNotNull();
-//    Assertions.assertThat(userList.size()).isEqualTo(2);
-//  }
+    User savedUser = userRepository.save(user);
+
+    Assertions.assertThat(savedUser).isNotNull();
+    Assertions.assertThat(savedUser.getId()).isNotNull().isGreaterThan(0);
+    Assertions.assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
+    Assertions.assertThat(savedUser.getEmail()).isEqualTo(user.getEmail());
+    Assertions.assertThat(savedUser.getGender()).isEqualTo(user.getGender());
+    Assertions.assertThat(savedUser.getPassword()).isNotNull();
+  }
+
+  @Test
+  public void UserRepository_GetAll_ReturnMoreThanOneUser() {
+    User user1 = User.builder()
+      .username("jean-marc")
+      .email("jean-marc@fake-email.fr")
+      .gender(EGender.MAN)
+      .password("Toto@2021*").build();
+
+    User user2 = User.builder()
+      .username("jean-barnabé")
+      .email("jean-barnabe@fake-email.fr")
+      .gender(EGender.MAN)
+      .password("Toto@2021*").build();
+
+    userRepository.save(user1);
+    userRepository.save(user2);
+
+    List<User> userList = userRepository.findAll();
+
+    Assertions.assertThat(userList).isNotNull();
+    Assertions.assertThat(userList.size()).isGreaterThan(1);
+  }
 
   @Test
   public void UserRepository_FindByUsername_ReturnUserByUsername() {
@@ -73,8 +73,8 @@ public class UserRepositoryTest {
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
-    User savedUser1 = userRepository.save(user1);
-    User savedUser2 = userRepository.save(user2);
+    userRepository.save(user1);
+    userRepository.save(user2);
 
     Optional<User> userByUsername = userRepository.findByUsername(user2.getUsername());
 
@@ -91,7 +91,7 @@ public class UserRepositoryTest {
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
-    User savedUser1 = userRepository.save(user1);
+    userRepository.save(user1);
 
     Optional<User> userByUsername = userRepository.findByUsername("non-existent-username");
 
@@ -106,7 +106,7 @@ public class UserRepositoryTest {
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
-    User savedUser1 = userRepository.save(user1);
+    userRepository.save(user1);
 
     Boolean userExist = userRepository.existsByUsername(user1.getUsername());
 
@@ -121,7 +121,7 @@ public class UserRepositoryTest {
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
-    User savedUser1 = userRepository.save(user1);
+    userRepository.save(user1);
 
     Boolean userExist = userRepository.existsByUsername("non-existent-username");
 
@@ -136,7 +136,7 @@ public class UserRepositoryTest {
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
-    User savedUser1 = userRepository.save(user1);
+    userRepository.save(user1);
 
     Boolean userExist = userRepository.existsByEmail(user1.getEmail());
 
@@ -151,7 +151,7 @@ public class UserRepositoryTest {
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
-    User savedUser1 = userRepository.save(user1);
+    userRepository.save(user1);
 
     Boolean userExist = userRepository.existsByEmail("non-existent-email");
 

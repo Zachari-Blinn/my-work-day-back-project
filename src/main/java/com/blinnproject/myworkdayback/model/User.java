@@ -26,8 +26,7 @@ public class User extends BaseEntityAudit {
   @Enumerated(EnumType.ORDINAL)
   private EGender gender;
 
-  @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
-    flags = Pattern.Flag.CASE_INSENSITIVE)
+  @Email(flags = Pattern.Flag.CASE_INSENSITIVE)
   @Column(nullable=false, unique=true)
   private String email;
 
