@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +56,8 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             WHERE trainingExercisesTemplate.trainingDay IS NULL
             AND trainingExercisesTemplate.training.createdBy = :currentUser
             AND trainingExercisesTemplate.parent IS NULL
+            AND (trainingExercisesTemplate.training.startDate IS NULL OR trainingExercisesTemplate.training.startDate <= :selectedTrainingDay)
+            AND (trainingExercisesTemplate.training.endDate IS NULL OR trainingExercisesTemplate.training.endDate >= :selectedTrainingDay)
             ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
     """)
     List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Long currentUser, Date selectedTrainingDay);
@@ -98,6 +101,8 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
             AND trainingExercisesTemplate.training.createdBy = :currentUser
             AND trainingExercisesTemplate.trainingDay IS NULL
             AND trainingExercisesTemplate.parent IS NULL
+            AND (trainingExercisesTemplate.training.startDate IS NULL OR trainingExercisesTemplate.training.startDate <= :selectedTrainingDay)
+            AND (trainingExercisesTemplate.training.endDate IS NULL OR trainingExercisesTemplate.training.endDate >= :selectedTrainingDay)
             ORDER BY trainingExercisesTemplate.exercise.id, seriesTemplate.positionIndex
     """)
     List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long currentUser, Long trainingId, Date selectedTrainingDay);

@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.model;
 
-import com.blinnproject.myworkdayback.field_constraint.HexadecimalColorConstraint;
-import com.blinnproject.myworkdayback.field_constraint.IconNameConstraint;
+import com.blinnproject.myworkdayback.constraint.HexadecimalColorConstraint;
+import com.blinnproject.myworkdayback.constraint.IconNameConstraint;
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

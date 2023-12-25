@@ -1,4 +1,4 @@
-package com.blinnproject.myworkdayback.field_constraint;
+package com.blinnproject.myworkdayback.constraint;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -6,15 +6,16 @@ import jakarta.validation.constraints.Pattern;
 
 import java.lang.annotation.*;
 
-@Pattern(regexp = "^(icon|emoji)_.*", message = "Le champ iconName doit commencer par 'icon_' ou 'emoji_'")
+@Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "Le format hexadécimal requis n'est pas bon pour ce champ")
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 @Documented
-public @interface IconNameConstraint {
-  String message() default "Le champ iconName doit commencer par 'icon_' ou 'emoji_'";
+public @interface HexadecimalColorConstraint {
+  String message() default "Le format hexadécimal requis n'est pas bon pour ce champ";
 
   Class<?>[] groups() default {};
 
   Class<? extends Payload>[] payload() default {};
 }
+
