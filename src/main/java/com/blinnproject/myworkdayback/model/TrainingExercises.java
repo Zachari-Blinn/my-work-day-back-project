@@ -79,23 +79,4 @@ public class TrainingExercises implements Cloneable {
     this.setSeriesList(clonedSeriesList);
     this.setParent(that);
   }
-
-  @Override
-  public TrainingExercises clone() {
-    try {
-      TrainingExercises cloned = (TrainingExercises) super.clone();
-      cloned.setSeriesList(cloneSeriesList(this.seriesList));
-      return cloned;
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException("Cloning failed", e);
-    }
-  }
-
-  private List<Series> cloneSeriesList(List<Series> originalList) {
-    List<Series> clonedList = new ArrayList<>(originalList.size());
-    for (Series original : originalList) {
-      clonedList.add((Series) original.clone());
-    }
-    return clonedList;
-  }
 }

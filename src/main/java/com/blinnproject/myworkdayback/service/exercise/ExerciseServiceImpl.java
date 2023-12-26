@@ -2,8 +2,6 @@ package com.blinnproject.myworkdayback.service.exercise;
 
 import com.blinnproject.myworkdayback.model.Exercise;
 import com.blinnproject.myworkdayback.repository.ExerciseRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;

@@ -1,8 +1,10 @@
 package com.blinnproject.myworkdayback.model;
 
-import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -10,7 +12,10 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfilePicture {
+public class ProfilePicture implements Serializable {
+  @Serial
+  private static final long serialVersionUID = 1L;
+
   @Id
   private Long id;
 

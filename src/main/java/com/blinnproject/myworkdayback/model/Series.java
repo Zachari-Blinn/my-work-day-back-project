@@ -42,13 +42,4 @@ public class Series extends BaseEntityAudit implements Cloneable {
     this(that.getPositionIndex(), null, that.getWeight(), that.getRestTime(), that.getNotes(), that.getRepsCount(), that.getDifficulty());
     this.setParent(that);
   }
-
-  @Override
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException("Error cloning Series", e);
-    }
-  }
 }

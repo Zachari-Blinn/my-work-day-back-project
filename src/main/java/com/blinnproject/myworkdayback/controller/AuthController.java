@@ -20,29 +20,29 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth/")
 public class AuthController {
-  @Autowired
-  AuthenticationManager authenticationManager;
 
-  @Autowired
-  PasswordEncoder encoder;
+  private final AuthenticationManager authenticationManager;
 
-  @Autowired
-  JwtUtils jwtUtils;
+  private final JwtUtils jwtUtils;
 
-  @Autowired
-  RefreshTokenService refreshTokenService;
+  private final RefreshTokenService refreshTokenService;
 
-  @Autowired
-  UserService userService;
+  private final UserService userService;
+
+  public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService, UserService userService) {
+    this.authenticationManager = authenticationManager;
+    this.jwtUtils = jwtUtils;
+    this.refreshTokenService = refreshTokenService;
+    this.userService = userService;
+  }
 
   @PostMapping(value = {"/login", "/signin"})
-  public ResponseEntity<GenericResponse<?>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<GenericResponse<JwtResponse>> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     Authentication authentication = authenticationManager
       .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -52,8 +52,9 @@ public class AuthController {
 
     String jwt = jwtUtils.generateJwtToken(userDetails);
 
-    List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-      .collect(Collectors.toList());
+    List<String> roles = userDetails.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .toList();
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
@@ -79,7 +80,7 @@ public class AuthController {
   }
 
   @PostMapping("/refreshtoken")
-  public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+  public ResponseEntity<TokenRefreshResponse> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
     String requestRefreshToken = request.getRefreshToken();
 
     return refreshTokenService.findByToken(requestRefreshToken)

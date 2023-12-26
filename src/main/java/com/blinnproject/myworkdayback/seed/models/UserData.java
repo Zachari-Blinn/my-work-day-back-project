@@ -3,10 +3,8 @@ package com.blinnproject.myworkdayback.seed.models;
 import com.blinnproject.myworkdayback.model.EGender;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.UserRepository;
-import com.blinnproject.myworkdayback.seed.DataLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,18 +14,20 @@ import java.util.List;
 @Component
 public class UserData {
 
-  private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
+  private static final Logger logger = LoggerFactory.getLogger(UserData.class);
 
-  @Autowired
-  UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  @Autowired
-  PasswordEncoder encoder;
+  private final PasswordEncoder encoder;
 
-  public List<User> userList = new ArrayList<User>();
+  public UserData(UserRepository userRepository, PasswordEncoder encoder) {
+    this.userRepository = userRepository;
+    this.encoder = encoder;
+  }
+
+  public List<User> userList = new ArrayList<>();
 
   public void load() {
-    List<User> result = null;
     if (userRepository.count() == 0) {
       logger.info("Seeding users...");
 
@@ -36,7 +36,7 @@ public class UserData {
       // Add more user here
 
       userRepository.saveAll(this.userList);
-      logger.info(userRepository.count() + " user successfully loaded!");
+      logger.info("{} user successfully loaded!", userRepository.count());
     }
   }
 

@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class TrainingControllerTest {
+class TrainingControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -50,7 +50,7 @@ public class TrainingControllerTest {
     createMockedUser();
   }
 
-  public void createMockedUser() {
+  void createMockedUser() {
     User user = new User();
     user.setUsername("mocked-user");
     user.setPassword("Toto@123*");
@@ -61,7 +61,7 @@ public class TrainingControllerTest {
 
   @Test
   @WithMockUser()
-  public void TrainingController_Create_ReturnSavedTraining() throws Exception {
+  void TrainingController_Create_ReturnSavedTraining() throws Exception {
     Training training = new Training();
     training.setName("MMA");
     training.setIconName("icon_dumbbell");
@@ -86,7 +86,7 @@ public class TrainingControllerTest {
 
   @Test
   @WithUserDetails("mocked-user")
-  public void TrainingController_AddExercise_ipsum() throws Exception {
+  void TrainingController_AddExercise_ipsum() throws Exception {
     Training training = new Training();
     training.setName("Crossfit");
     training.setIconName("icon_dumbbell");

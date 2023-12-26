@@ -7,7 +7,6 @@ import com.blinnproject.myworkdayback.repository.ExerciseRepository;
 import com.blinnproject.myworkdayback.seed.DataLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
@@ -18,15 +17,18 @@ import java.util.List;
 @Component
 public class ExerciseData {
 
-  private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExerciseData.class);
 
-  @Autowired
-  ExerciseRepository exerciseRepository;
+  private final ExerciseRepository exerciseRepository;
 
-  @Autowired
-  UserData userData;
+  private final UserData userData;
 
-  List<Exercise> exerciseList = new ArrayList<Exercise>();
+  public ExerciseData(ExerciseRepository exerciseRepository, UserData userData) {
+    this.exerciseRepository = exerciseRepository;
+    this.userData = userData;
+  }
+
+  List<Exercise> exerciseList = new ArrayList<>();
 
   public void load() throws ChangeSetPersister.NotFoundException {
     if (exerciseRepository.count() == 0) {
@@ -54,7 +56,7 @@ public class ExerciseData {
       this.exerciseList.add(squatExercise);
 
       exerciseRepository.saveAll(this.exerciseList);
-      logger.info(exerciseRepository.count() + " exercise successfully loaded!");
+      logger.info("{} exercise successfully loaded!", exerciseRepository.count());
     }
   }
 

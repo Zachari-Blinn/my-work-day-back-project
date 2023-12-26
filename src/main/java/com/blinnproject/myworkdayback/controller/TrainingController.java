@@ -35,9 +35,9 @@ public class TrainingController {
 
   @PostMapping()
   public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody CreateTrainingRequest trainingRequest) {
-    Training _training = trainingService.create(trainingRequest);
+    Training training = trainingService.create(trainingRequest);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(_training, "Training was successfully created!"));
+    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(training, "Training was successfully created!"));
   }
 
   @GetMapping("/current-user")
@@ -59,7 +59,7 @@ public class TrainingController {
   }
 
   @PostMapping("/{trainingId}/add-exercise")
-  public ResponseEntity<GenericResponse<?>> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
+  public ResponseEntity<GenericResponse<TrainingExercises>> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
     TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, requestBody);
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));

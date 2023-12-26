@@ -5,8 +5,6 @@ import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesIn
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.time.DayOfWeek;
 import java.util.Date;
 import java.util.List;
 
@@ -107,4 +105,3 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
     """)
     List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long currentUser, Long trainingId, Date selectedTrainingDay);
 }
-//todo ajouter parent_id a series également

@@ -19,7 +19,7 @@ public class ActiveProfile {
   @EventListener(ContextRefreshedEvent.class)
   public void onStartUp() {
     logger.warn("--------------------------------------------------------------------------------------------");
-    logger.warn("The current profile is : " +  profile);
+    logger.warn("The current profile is: {}",  profile);
     if (!Objects.equals(profile, "prod")) {
       logger.warn("PLEASE RESTART WITH THE PROD PROFILE ARGS IF YOU WANT TO LAUNCH PROJECT IN PRODUCTION MODE");
     }

@@ -23,8 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-  private JwtUtils jwtUtils;
-  private UserDetailsServiceImpl userDetailsService;
+  private final JwtUtils jwtUtils;
+  private final UserDetailsServiceImpl userDetailsService;
 
   public JwtAuthenticationFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
     this.jwtUtils = jwtUtils;

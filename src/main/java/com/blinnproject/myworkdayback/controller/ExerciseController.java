@@ -13,11 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/exercise")
-@AllArgsConstructor
 public class ExerciseController {
 
-  @Autowired
   private final ExerciseService exerciseService;
+
+  public ExerciseController(ExerciseService exerciseService) {
+    this.exerciseService = exerciseService;
+  }
 
   @PostMapping()
   public Exercise create(@RequestBody Exercise exercise) {
@@ -26,16 +28,12 @@ public class ExerciseController {
 
   @GetMapping()
   public ResponseEntity<GenericResponse<List<Exercise>>> listAllExercises() {
-    try {
-      List<Exercise> exercises = new ArrayList<Exercise>(exerciseService.findAll());
+    List<Exercise> exercises = new ArrayList<>(exerciseService.findAll());
 
-      if (exercises.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-      }
-
-      return ResponseEntity.ok(GenericResponse.success(exercises, "List all exercises successfully!"));
-    } catch (Exception exception) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    if (exercises.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    return ResponseEntity.ok(GenericResponse.success(exercises, "List all exercises successfully!"));
   }
 }

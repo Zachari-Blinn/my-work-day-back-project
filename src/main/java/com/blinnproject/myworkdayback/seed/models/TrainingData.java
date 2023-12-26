@@ -1,13 +1,11 @@
 package com.blinnproject.myworkdayback.seed.models;
 
 import com.blinnproject.myworkdayback.model.*;
-import com.blinnproject.myworkdayback.repository.SeriesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.seed.DataLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
@@ -17,27 +15,27 @@ import java.util.List;
 @Component
 public class TrainingData {
 
-  private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
+  private static final Logger logger = LoggerFactory.getLogger(TrainingData.class);
 
-  @Autowired
-  TrainingRepository trainingRepository;
+  private final TrainingRepository trainingRepository;
 
-  @Autowired
-  TrainingExercisesRepository trainingExercisesRepository;
+  private final TrainingExercisesRepository trainingExercisesRepository;
 
-  @Autowired
-  SeriesRepository seriesRepository;
+  private final UserData userData;
 
-  @Autowired
-  UserData userData;
+  private final ExerciseData exerciseData;
 
-  @Autowired
-  ExerciseData exerciseData;
+  public TrainingData(TrainingRepository trainingRepository, TrainingExercisesRepository trainingExercisesRepository, UserData userData, ExerciseData exerciseData) {
+    this.trainingRepository = trainingRepository;
+    this.trainingExercisesRepository = trainingExercisesRepository;
+    this.userData = userData;
+    this.exerciseData = exerciseData;
+  }
+
+  List<Training> trainingList = new ArrayList<>();
+  List<TrainingExercises> trainingExercisesList = new ArrayList<>();
 
   public User user;
-
-  List<Training> trainingList = new ArrayList<Training>();
-  List<TrainingExercises> trainingExercisesList = new ArrayList<TrainingExercises>();
 
   public void load() throws ChangeSetPersister.NotFoundException {
     if (trainingRepository.count() == 0) {
@@ -48,7 +46,7 @@ public class TrainingData {
       this.loadExercisesAndCreateTraining();
       this.loadTrainingExercises();
 
-      logger.info(trainingRepository.count() + " exercise successfully loaded!");
+      logger.info("{} exercise successfully loaded!", trainingRepository.count());
     }
   }
 

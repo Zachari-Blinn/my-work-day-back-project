@@ -13,13 +13,13 @@ import java.util.Optional;
 
 @SpringBootTest()
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UserRepositoryTest {
+class UserRepositoryTest {
 
   @Autowired
   private UserRepository userRepository;
 
   @Test
-  public void UserRepository_SaveAll_ReturnSavedUser() {
+  void UserRepository_SaveAll_ReturnSavedUser() {
     User user = User.builder()
       .username("jean-abernathy")
       .email("jean-abernathy@fake-email.fr")
@@ -29,7 +29,7 @@ public class UserRepositoryTest {
     User savedUser = userRepository.save(user);
 
     Assertions.assertThat(savedUser).isNotNull();
-    Assertions.assertThat(savedUser.getId()).isNotNull().isGreaterThan(0);
+    Assertions.assertThat(savedUser.getId()).isNotNull().isPositive();
     Assertions.assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
     Assertions.assertThat(savedUser.getEmail()).isEqualTo(user.getEmail());
     Assertions.assertThat(savedUser.getGender()).isEqualTo(user.getGender());
@@ -37,7 +37,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void UserRepository_GetAll_ReturnMoreThanOneUser() {
+  void UserRepository_GetAll_ReturnMoreThanOneUser() {
     User user1 = User.builder()
       .username("jean-marc")
       .email("jean-marc@fake-email.fr")
@@ -56,11 +56,11 @@ public class UserRepositoryTest {
     List<User> userList = userRepository.findAll();
 
     Assertions.assertThat(userList).isNotNull();
-    Assertions.assertThat(userList.size()).isGreaterThan(1);
+    Assertions.assertThat(userList).hasSizeGreaterThan(1);
   }
 
   @Test
-  public void UserRepository_FindByUsername_ReturnUserByUsername() {
+  void UserRepository_FindByUsername_ReturnUserByUsername() {
     User user1 = User.builder()
       .username("Jean-Adam")
       .email("Jean-Adam@fake-email.fr")
@@ -78,13 +78,13 @@ public class UserRepositoryTest {
 
     Optional<User> userByUsername = userRepository.findByUsername(user2.getUsername());
 
-    Assertions.assertThat(userByUsername.isPresent()).isTrue();
+    Assertions.assertThat(userByUsername).isPresent();
     Assertions.assertThat(userByUsername.get().getId()).isEqualTo(user2.getId());
     Assertions.assertThat(userByUsername.get().getUsername()).isEqualTo(user2.getUsername());
   }
 
   @Test
-  public void UserRepository_FindByUsername_ReturnNoUserWithThisUsername() {
+  void UserRepository_FindByUsername_ReturnNoUserWithThisUsername() {
     User user1 = User.builder()
       .username("Jean-André")
       .email("Jean-Andre@fake-email.fr")
@@ -99,7 +99,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void UserRepository_ExistsByUsername_ReturnTrueWithExistingUsername() {
+  void UserRepository_ExistsByUsername_ReturnTrueWithExistingUsername() {
     User user1 = User.builder()
       .username("Jean-Antoine")
       .email("Jean-Antoine@fake-email.fr")
@@ -114,7 +114,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void UserRepository_ExistsByUsername_ReturnFalseWithNoExistingUsername() {
+  void UserRepository_ExistsByUsername_ReturnFalseWithNoExistingUsername() {
     User user1 = User.builder()
       .username("Jean-Arthur")
       .email("Jean-Arthur@fake-email.fr")
@@ -129,7 +129,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void UserRepository_ExistsByEmail_ReturnTrueWithExistingEmail() {
+  void UserRepository_ExistsByEmail_ReturnTrueWithExistingEmail() {
     User user1 = User.builder()
       .username("Jean-Augustin")
       .email("Jean-Augustin@fake-email.fr")
@@ -144,7 +144,7 @@ public class UserRepositoryTest {
   }
 
   @Test
-  public void UserRepository_ExistsByEmail_ReturnFalseWithNoExistingEmail() {
+  void UserRepository_ExistsByEmail_ReturnFalseWithNoExistingEmail() {
     User user1 = User.builder()
       .username("Jean-Auguste")
       .email("Jean-Auguste@fake-email.fr")

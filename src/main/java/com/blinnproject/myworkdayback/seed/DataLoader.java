@@ -16,14 +16,17 @@ public class DataLoader implements CommandLineRunner {
 
   private static final Logger logger = LoggerFactory.getLogger(DataLoader.class);
 
-  @Autowired
-  UserData userData;
+  private final UserData userData;
 
-  @Autowired
-  ExerciseData exerciseData;
+  private final ExerciseData exerciseData;
 
-  @Autowired
-  TrainingData trainingData;
+  private final TrainingData trainingData;
+
+  public DataLoader(UserData userData, ExerciseData exerciseData, TrainingData trainingData) {
+    this.userData = userData;
+    this.exerciseData = exerciseData;
+    this.trainingData = trainingData;
+  }
 
   @Override
   public void run(String... args) throws Exception {

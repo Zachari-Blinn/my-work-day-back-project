@@ -1,8 +1,6 @@
 package com.blinnproject.myworkdayback.payload.response;
 
-import com.blinnproject.myworkdayback.model.User;
 import lombok.Getter;
-
 import java.util.List;
 
 public class JwtResponse {
