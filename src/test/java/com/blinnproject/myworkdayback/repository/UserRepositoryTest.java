@@ -132,7 +132,7 @@ public class UserRepositoryTest {
   public void UserRepository_ExistsByEmail_ReturnTrueWithExistingEmail() {
     User user1 = User.builder()
       .username("Jean-Augustin")
-      .email("Jean-Antoine@fake-email.fr")
+      .email("Jean-Augustin@fake-email.fr")
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
@@ -147,7 +147,7 @@ public class UserRepositoryTest {
   public void UserRepository_ExistsByEmail_ReturnFalseWithNoExistingEmail() {
     User user1 = User.builder()
       .username("Jean-Auguste")
-      .email("Jean-Arthur@fake-email.fr")
+      .email("Jean-Auguste@fake-email.fr")
       .gender(EGender.MAN)
       .password("Toto@2021*").build();
 
