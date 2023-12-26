@@ -5,10 +5,8 @@ import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
 import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service

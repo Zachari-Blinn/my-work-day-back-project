@@ -2,7 +2,6 @@ package com.blinnproject.myworkdayback.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.Date;
 
 @Getter

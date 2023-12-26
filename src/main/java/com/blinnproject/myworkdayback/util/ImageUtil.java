@@ -2,7 +2,6 @@ package com.blinnproject.myworkdayback.util;
 
 import com.blinnproject.myworkdayback.exception.CompressImageException;
 import com.blinnproject.myworkdayback.exception.DecompressImageException;
-
 import java.io.ByteArrayOutputStream;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;

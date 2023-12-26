@@ -5,8 +5,6 @@ import com.blinnproject.myworkdayback.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 public class UserInfoResponse {

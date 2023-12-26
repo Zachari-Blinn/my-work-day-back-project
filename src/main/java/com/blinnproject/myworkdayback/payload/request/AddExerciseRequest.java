@@ -3,7 +3,6 @@ package com.blinnproject.myworkdayback.payload.request;
 import com.blinnproject.myworkdayback.model.Series;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.util.ArrayList;
 
 @Getter

@@ -1,7 +1,6 @@
 package com.blinnproject.myworkdayback.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.RefreshToken;
 import com.blinnproject.myworkdayback.payload.request.LoginRequest;
@@ -13,7 +12,6 @@ import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.user.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,7 +1,6 @@
 package com.blinnproject.myworkdayback.service.exercise;
 
 import com.blinnproject.myworkdayback.model.Exercise;
-
 import java.util.List;
 import java.util.Optional;
 
