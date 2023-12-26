@@ -18,11 +18,14 @@ public class RefreshTokenService {
   @Value("${raise.app.jwtRefreshExpirationMs}")
   private Long refreshTokenDurationMs;
 
-  @Autowired
-  private RefreshTokenRepository refreshTokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
-  @Autowired
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
+
+  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
+    this.refreshTokenRepository = refreshTokenRepository;
+    this.userRepository = userRepository;
+  }
 
   public Optional<RefreshToken> findByToken(String token) {
     return refreshTokenRepository.findByToken(token);

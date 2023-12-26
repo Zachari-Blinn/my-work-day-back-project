@@ -54,7 +54,7 @@ public class ExerciseData {
       this.exerciseList.add(squatExercise);
 
       exerciseRepository.saveAll(this.exerciseList);
-      logger.info(String.valueOf(exerciseRepository.count()) + " exercise successfully loaded!");
+      logger.info(exerciseRepository.count() + " exercise successfully loaded!");
     }
   }
 

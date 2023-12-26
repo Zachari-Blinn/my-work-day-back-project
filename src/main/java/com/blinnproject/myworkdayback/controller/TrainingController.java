@@ -27,8 +27,11 @@ import java.util.Optional;
 @RequestMapping("/api/training")
 public class TrainingController {
 
-  @Autowired
-  TrainingService trainingService;
+  private TrainingService trainingService;
+
+  public TrainingController(TrainingService trainingService) {
+    this.trainingService = trainingService;
+  }
 
   @PostMapping()
   public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody CreateTrainingRequest trainingRequest) {
@@ -78,18 +81,18 @@ public class TrainingController {
     return ResponseEntity.ok(GenericResponse.success(trainingExercises, "Return all exercises by training successfully!"));
   }
 
-  @PostMapping("/{trainingId}/validate/{trainingDay}")
+  @PostMapping("/{trainingId}/validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> validateTraining(
       @PathVariable("trainingId") Long trainingId,
-      @PathVariable("trainingDay") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDay
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
-    List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, trainingDay);
+    List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, trainingDate);
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
   }
 
   @PostMapping("/{trainingId}/modify-before-validate/{trainingDate}")
-  public ResponseEntity<GenericResponse<List<TrainingExercises>>> modifyBeforeValidate(
+  public ResponseEntity<GenericResponse<List<TrainingExercises>>> modifyAndValidate(
       @PathVariable("trainingId") Long trainingId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
       @RequestBody ModifyBeforeValidateRequest requestBody
@@ -100,7 +103,7 @@ public class TrainingController {
   }
 
   @GetMapping("/{trainingId}/validate-training-day/{trainingDate}")
-  public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> checkIfTrainingExercisesSeriesIsCompleted(
+  public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> returnTrainingSessionInfo(
       @PathVariable("trainingId") Long trainingId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
@@ -112,7 +115,7 @@ public class TrainingController {
   }
 
   @GetMapping("/validate-training-day/{trainingDate}")
-  public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> checkIfTrainingExercisesSeriesIsCompleted(
+  public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> returnAllTrainingSessionInfo(
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
     List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate);

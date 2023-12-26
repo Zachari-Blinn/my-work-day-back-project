@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class ExerciseServiceImpl implements ExerciseService {
 
-  @Autowired
   private final ExerciseRepository exerciseRepository;
+
+  public ExerciseServiceImpl(ExerciseRepository exerciseRepository) {
+    this.exerciseRepository = exerciseRepository;
+  }
+
   @Override
   public Exercise create(Exercise exercise) {
     return exerciseRepository.save(exercise);

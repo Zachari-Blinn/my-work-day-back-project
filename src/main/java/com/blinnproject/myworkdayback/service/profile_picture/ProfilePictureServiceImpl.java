@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ProfilePictureServiceImpl implements ProfilePictureService {
 
   private final ProfilePictureRepository profilePictureRepository;
-  private UserService userService;
+  private final UserService userService;
 
   public ProfilePictureServiceImpl(ProfilePictureRepository profilePictureRepository, UserService userService) {
     this.profilePictureRepository = profilePictureRepository;

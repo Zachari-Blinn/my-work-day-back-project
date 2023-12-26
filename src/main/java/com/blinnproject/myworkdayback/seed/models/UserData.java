@@ -36,7 +36,7 @@ public class UserData {
       // Add more user here
 
       userRepository.saveAll(this.userList);
-      logger.info(String.valueOf(userRepository.count()) + " user successfully loaded!");
+      logger.info(userRepository.count() + " user successfully loaded!");
     }
   }
 

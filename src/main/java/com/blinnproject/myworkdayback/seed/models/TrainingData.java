@@ -48,7 +48,7 @@ public class TrainingData {
       this.loadExercisesAndCreateTraining();
       this.loadTrainingExercises();
 
-      logger.info(String.valueOf(trainingRepository.count()) + " exercise successfully loaded!");
+      logger.info(trainingRepository.count() + " exercise successfully loaded!");
     }
   }
 
