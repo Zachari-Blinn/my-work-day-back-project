@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.model;
 
 public enum ETrainingStatus {
-  CANCELED,
+  CANCELLED,
   IN_PROGRESS,
   PERFORMED,
 }
