@@ -34,7 +34,7 @@ public class FormattedTrainingData {
   public static class ExerciseData {
     private long exerciseId;
     private String exerciseName;
-    private boolean completed;
+    private ExerciseState exerciseState = ExerciseState.NOT_STARTED;
     private List<SeriesEntry> series;
 
     @Getter
@@ -51,3 +51,4 @@ public class FormattedTrainingData {
     }
   }
 }
+

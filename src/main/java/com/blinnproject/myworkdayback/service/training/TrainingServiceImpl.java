@@ -7,6 +7,7 @@ import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
+import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
@@ -216,19 +217,26 @@ public class TrainingServiceImpl implements TrainingService {
       seriesList.add(seriesEntry);
     }
 
-    // Check and update exerciseIsComplete after processing series for each exercise
+    // Check and update exerciseState after processing series for each exercise
     for (FormattedTrainingData trainingData : trainingMap.values()) {
       for (FormattedTrainingData.ExerciseData exerciseData : trainingData.getTrainingExercises()) {
-        boolean exerciseIsComplete = true;
+        ExerciseState exerciseState = ExerciseState.NOT_STARTED;
 
         for (FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry : exerciseData.getSeries()) {
-          if (!seriesEntry.isCompleted()) {
-            exerciseIsComplete = false;
+          if (seriesEntry.isCompleted()) {
+            exerciseState = ExerciseState.STARTED;
             break;
           }
         }
 
-        exerciseData.setCompleted(exerciseIsComplete);
+        if (exerciseState == ExerciseState.STARTED) {
+          boolean allSeriesCompleted = exerciseData.getSeries().stream().allMatch(FormattedTrainingData.ExerciseData.SeriesEntry::isCompleted);
+          if (allSeriesCompleted) {
+            exerciseState = ExerciseState.COMPLETED;
+          }
+        }
+
+        exerciseData.setExerciseState(exerciseState);
       }
     }
 
