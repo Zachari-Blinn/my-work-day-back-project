@@ -216,6 +216,22 @@ public class TrainingServiceImpl implements TrainingService {
       seriesList.add(seriesEntry);
     }
 
+    // Check and update exerciseIsComplete after processing series for each exercise
+    for (FormattedTrainingData trainingData : trainingMap.values()) {
+      for (FormattedTrainingData.ExerciseData exerciseData : trainingData.getTrainingExercises()) {
+        boolean exerciseIsComplete = true;
+
+        for (FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry : exerciseData.getSeries()) {
+          if (!seriesEntry.isCompleted()) {
+            exerciseIsComplete = false;
+            break;
+          }
+        }
+
+        exerciseData.setCompleted(exerciseIsComplete);
+      }
+    }
+
     return new ArrayList<>(trainingMap.values());
   }
 

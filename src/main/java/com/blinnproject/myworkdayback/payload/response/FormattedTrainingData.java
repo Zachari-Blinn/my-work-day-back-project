@@ -34,6 +34,7 @@ public class FormattedTrainingData {
   public static class ExerciseData {
     private long exerciseId;
     private String exerciseName;
+    private boolean completed;
     private List<SeriesEntry> series;
 
     @Getter
