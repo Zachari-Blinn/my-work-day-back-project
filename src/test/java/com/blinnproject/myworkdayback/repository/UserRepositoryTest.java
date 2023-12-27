@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +18,7 @@ class UserRepositoryTest {
   private UserRepository userRepository;
 
   @Test
-  void UserRepository_SaveAll_ReturnSavedUser() {
+  void UserRepository_Save_ReturnSavedUser() {
     User user = User.builder()
       .username("jean-abernathy")
       .email("jean-abernathy@fake-email.fr")
