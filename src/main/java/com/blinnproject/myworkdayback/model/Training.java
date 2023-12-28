@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.model;
 import com.blinnproject.myworkdayback.constraint.HexadecimalColorConstraint;
 import com.blinnproject.myworkdayback.constraint.IconNameConstraint;
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -64,9 +66,13 @@ public class Training extends BaseEntityAudit {
   @JoinColumn(referencedColumnName = "id")
   private Training parent;
 
+  @OneToMany(mappedBy = "training", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private List<TrainingExercises> trainingExercisesList = new ArrayList<>();
+
   // Constructor used for clone to new entity Training
   public Training(Training that) {
-    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), that.getTrainingStatus(), that.getStartDate(), that.getEndDate(),that.getPerformedDate(), that.getDescription(), that.getHasWarpUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null);
+    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), that.getTrainingStatus(), that.getStartDate(), that.getEndDate(),that.getPerformedDate(), that.getDescription(), that.getHasWarpUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null, null);
 
     this.setParent(that);
   }

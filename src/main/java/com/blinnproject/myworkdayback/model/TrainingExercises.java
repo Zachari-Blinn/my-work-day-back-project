@@ -8,7 +8,7 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
-public class TrainingExercises implements Cloneable {
+public class TrainingExercises {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

@@ -256,4 +256,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(userDetails.getId(), trainingDay);
   }
+
+  @Transactional()
+  public void cancelTrainingDay(Long trainingParentId, Date trainingDayDate) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, userDetails.getId(), trainingDayDate);
+  }
 }

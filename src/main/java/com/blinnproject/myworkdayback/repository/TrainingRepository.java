@@ -20,4 +20,6 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
   Optional<Training> findByName(String name);
 
   boolean existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(Long parentId, Date performedDate, ETrainingStatus trainingStatus, Long createdId);
+
+  void deleteByParentIdAndCreatedByAndPerformedDate(Long parentId, Long createdId, Date performedDate);
 }

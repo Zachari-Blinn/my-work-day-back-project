@@ -34,4 +34,6 @@ public interface TrainingService {
   // get training session info by date
   List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay);
   List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay);
+
+  void cancelTrainingDay(Long trainingParentId, Date trainingDay);
 }

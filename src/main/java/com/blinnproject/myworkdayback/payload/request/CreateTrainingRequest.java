@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.payload.request;
 
+import com.blinnproject.myworkdayback.constraint.IconNameConstraint;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,4 +27,7 @@ public class CreateTrainingRequest {
   private Boolean hasWarpUp;
 
   private Boolean hasStretching;
+
+  @IconNameConstraint
+  private String iconName;
 }
