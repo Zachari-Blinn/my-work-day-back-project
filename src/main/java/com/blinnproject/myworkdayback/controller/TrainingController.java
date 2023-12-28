@@ -7,6 +7,7 @@ import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
+import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
@@ -132,5 +133,12 @@ public class TrainingController {
     this.trainingService.cancelTrainingDay(trainingParentId, trainingDate);
 
     return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
+  }
+
+  @GetMapping("/calendar")
+  public ResponseEntity<GenericResponse<List<TrainingCalendarInfoResponse>>> returnCalendarInfo() {
+    List<TrainingCalendarInfoResponse> transformedData = this.trainingService.getTrainingCalendarInfo();
+
+    return ResponseEntity.ok(GenericResponse.success(transformedData, "Return calendar info successfully!"));
   }
 }

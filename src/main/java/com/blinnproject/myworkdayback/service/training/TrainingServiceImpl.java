@@ -9,6 +9,7 @@ import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
+import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
@@ -262,5 +263,12 @@ public class TrainingServiceImpl implements TrainingService {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, userDetails.getId(), trainingDayDate);
+  }
+
+  @Transactional(readOnly = true)
+  public List<TrainingCalendarInfoResponse> getTrainingCalendarInfo() {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    return trainingRepository.findAllByCreatedByAndParentIdIsNull(userDetails.getId());
   }
 }
