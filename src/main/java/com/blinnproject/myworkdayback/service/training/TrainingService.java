@@ -10,6 +10,7 @@ import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoRespo
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface TrainingService {
@@ -39,4 +40,6 @@ public interface TrainingService {
   void cancelTrainingDay(Long trainingParentId, Date trainingDay);
 
   List<TrainingCalendarInfoResponse> getTrainingCalendarInfo();
+
+  List<Map<String, Object>> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception;
 }

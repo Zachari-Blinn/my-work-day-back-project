@@ -20,9 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static com.blinnproject.myworkdayback.util.FormatUtil.convertJsonToList;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -145,11 +145,9 @@ public class TrainingController {
   public ResponseEntity<GenericResponse<List<?>>> returnCalendarInfo(
       @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
       @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
-  ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  ) throws Exception {
+    List<Map<String, Object>> result = this.trainingService.getTrainingCalendarInfo(startDate, endDate);
 
-    List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(userDetails.getId(), startDate, endDate);
-
-    return ResponseEntity.ok(GenericResponse.success(transformedData, "Return calendar info successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(result, "Return calendar info successfully!"));
   }
 }

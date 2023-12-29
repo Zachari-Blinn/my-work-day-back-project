@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.blinnproject.myworkdayback.util.FormatUtil.convertJsonToList;
+
 @Service
 public class TrainingServiceImpl implements TrainingService {
 
@@ -269,5 +271,28 @@ public class TrainingServiceImpl implements TrainingService {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     return trainingRepository.findAllByCreatedByAndParentIdIsNull(userDetails.getId());
+  }
+
+  @Transactional(readOnly = true)
+  public List<Map<String, Object>> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(userDetails.getId(), startDate, endDate);
+
+    return this.formatTrainingCalendarData(transformedData);
+  }
+
+  private List<Map<String, Object>> formatTrainingCalendarData(List<Object[]> transformedData) throws Exception {
+    List<Map<String, Object>> formattedData = new ArrayList<>();
+
+    for (Object[] data : transformedData) {
+      Map<String, Object> formattedItem = Map.of(
+          "date", String.valueOf(data[0]),
+          "trainings", convertJsonToList((String) data[1])
+      );
+
+      formattedData.add(formattedItem);
+    }
+    return formattedData;
   }
 }

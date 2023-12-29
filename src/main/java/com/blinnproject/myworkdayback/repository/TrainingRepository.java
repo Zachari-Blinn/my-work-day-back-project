@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.repository;
 import com.blinnproject.myworkdayback.model.ETrainingStatus;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -66,5 +67,5 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
       ") " +
       "GROUP BY generated_date " +
       "ORDER BY generated_date", nativeQuery = true)
-  List<Object[]> getTrainingCalendarData(Long currentUserId, Date startDate, Date endDate);
+  List<Object[]> getTrainingCalendarData(@NotNull Long currentUserId, @NotNull Date startDate, @NotNull Date endDate);
 }
