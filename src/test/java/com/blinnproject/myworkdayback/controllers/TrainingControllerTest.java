@@ -14,9 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -66,10 +64,10 @@ class TrainingControllerTest {
     training.setName("MMA");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
-    ArrayList<DayOfWeek> days = new ArrayList<>();
-    days.add(DayOfWeek.TUESDAY);
-    days.add(DayOfWeek.THURSDAY);
-    days.add(DayOfWeek.WEDNESDAY);
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
     training.setTrainingDays(days);
 
     mockMvc.perform(post("/api/training")
@@ -91,10 +89,10 @@ class TrainingControllerTest {
     training.setName("Crossfit");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
-    ArrayList<DayOfWeek> days = new ArrayList<>();
-    days.add(DayOfWeek.TUESDAY);
-    days.add(DayOfWeek.THURSDAY);
-    days.add(DayOfWeek.WEDNESDAY);
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
     training.setTrainingDays(days);
 
     mockMvc.perform(post("/api/training")

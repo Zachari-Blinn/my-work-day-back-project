@@ -1,11 +1,11 @@
 package com.blinnproject.myworkdayback.payload.response;
 
+import com.blinnproject.myworkdayback.model.EDayOfWeek;
 import com.blinnproject.myworkdayback.model.ETrainingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class FormattedTrainingData {
 
   private ETrainingStatus trainingStatus;
 
-  private ArrayList<DayOfWeek> trainingDays;
+  private ArrayList<EDayOfWeek> trainingDays;
 
   private String trainingIconName;
   private String trainingIconHexadecimalColor;

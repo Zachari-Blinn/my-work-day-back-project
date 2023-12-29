@@ -14,14 +14,14 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  raise_app:
-    build: .
-    container_name: raise_app
-    restart: always
-    ports:
-      - "8083:8083"
-    depends_on:
-      - postgres
+#  raise_app:
+#    build: .
+#    container_name: raise_app
+#    restart: always
+#    ports:
+#      - "8083:8083"
+#    depends_on:
+#      - postgres
 
   pgadmin:
     image: dpage/pgadmin4

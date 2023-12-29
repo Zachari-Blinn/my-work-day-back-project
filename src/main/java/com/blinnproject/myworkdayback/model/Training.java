@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +27,8 @@ public class Training extends BaseEntityAudit {
   private String sportPreset;
 
   @Column
-  private ArrayList<DayOfWeek> trainingDays;
+  @Enumerated(EnumType.ORDINAL)
+  private ArrayList<EDayOfWeek> trainingDays;
 
   @Column
   @Enumerated(EnumType.ORDINAL)
@@ -76,4 +76,6 @@ public class Training extends BaseEntityAudit {
 
     this.setParent(that);
   }
+
+//  get
 }

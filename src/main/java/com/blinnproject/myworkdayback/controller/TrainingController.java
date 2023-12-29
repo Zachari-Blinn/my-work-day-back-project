@@ -7,17 +7,19 @@ import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
-import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
+import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +29,11 @@ import java.util.Optional;
 @RequestMapping("/api/training")
 public class TrainingController {
 
-  private TrainingService trainingService;
+  private final TrainingService trainingService;
+
+  @Autowired
+  private TrainingRepository trainingRepository;
+
 
   public TrainingController(TrainingService trainingService) {
     this.trainingService = trainingService;
@@ -135,9 +141,14 @@ public class TrainingController {
     return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
   }
 
-  @GetMapping("/calendar")
-  public ResponseEntity<GenericResponse<List<TrainingCalendarInfoResponse>>> returnCalendarInfo() {
-    List<TrainingCalendarInfoResponse> transformedData = this.trainingService.getTrainingCalendarInfo();
+  @GetMapping("/calendar/{startDate}/{endDate}")
+  public ResponseEntity<GenericResponse<List<?>>> returnCalendarInfo(
+      @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+      @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
+  ) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(userDetails.getId(), startDate, endDate);
 
     return ResponseEntity.ok(GenericResponse.success(transformedData, "Return calendar info successfully!"));
   }

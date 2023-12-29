@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,10 +66,10 @@ public class TrainingData {
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
     training.setCreatedBy(userID);
-    ArrayList<DayOfWeek> days = new ArrayList<>();
-    days.add(DayOfWeek.TUESDAY);
-    days.add(DayOfWeek.THURSDAY);
-    days.add(DayOfWeek.WEDNESDAY);
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
     training.setTrainingDays(days);
 
     return training;

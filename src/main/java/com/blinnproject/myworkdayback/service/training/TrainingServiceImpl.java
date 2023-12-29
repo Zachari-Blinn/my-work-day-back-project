@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.util.*;
 
 @Service
@@ -76,7 +75,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
-    DayOfWeek providedDayDate = DayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
+    EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
     Assert.state(training.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + training.getTrainingDays());
 
     List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, training.getCreatedBy());
@@ -108,7 +107,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     Training originalTraining = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
-    DayOfWeek providedDayDate = DayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
+    EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
     Assert.state(originalTraining.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + originalTraining.getTrainingDays());
 
     // Clone the training and set status to performed
@@ -164,8 +163,8 @@ public class TrainingServiceImpl implements TrainingService {
     Map<Long, FormattedTrainingData> trainingMap = new HashMap<>();
 
     for (TrainingExercisesSeriesInfo seriesInfo : input) {
-      DayOfWeek currentDay = DayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
-      if (!seriesInfo.getTrainingDays().contains(currentDay)) {
+      EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
+      if (!seriesInfo.getTrainingDays().contains(providedDayDate)) {
         continue;
       }
       long trainingId = seriesInfo.getTrainingId();
