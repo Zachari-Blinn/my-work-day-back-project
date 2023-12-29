@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
@@ -19,8 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-
-import static com.blinnproject.myworkdayback.util.FormatUtil.convertJsonToList;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -137,11 +136,11 @@ public class TrainingController {
   }
 
   @GetMapping("/calendar/{startDate}/{endDate}")
-  public ResponseEntity<GenericResponse<List<?>>> returnCalendarInfo(
+  public ResponseEntity<GenericResponse<List<TrainingCalendarDTO>>> returnCalendarInfo(
       @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
       @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
   ) throws Exception {
-    List<Map<String, Object>> result = this.trainingService.getTrainingCalendarInfo(startDate, endDate);
+    List<TrainingCalendarDTO> result = this.trainingService.getTrainingCalendarInfo(startDate, endDate);
 
     return ResponseEntity.ok(GenericResponse.success(result, "Return calendar info successfully!"));
   }

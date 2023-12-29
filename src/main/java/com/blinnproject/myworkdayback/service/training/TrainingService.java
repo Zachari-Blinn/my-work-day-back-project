@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.service.training;
 
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
@@ -38,5 +39,5 @@ public interface TrainingService {
 
   void cancelTrainingDay(Long trainingParentId, Date trainingDay);
 
-  List<Map<String, Object>> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception;
+  List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception;
 }

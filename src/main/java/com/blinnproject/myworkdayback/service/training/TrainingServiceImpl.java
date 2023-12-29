@@ -4,6 +4,7 @@ import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
 import com.blinnproject.myworkdayback.exception.TrainingAlreadyPerformedException;
 import com.blinnproject.myworkdayback.exception.TrainingWithCurrentUserNotFound;
 import com.blinnproject.myworkdayback.model.*;
+import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
@@ -274,7 +275,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional(readOnly = true)
-  public List<Map<String, Object>> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception {
+  public List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(userDetails.getId(), startDate, endDate);
@@ -282,14 +283,13 @@ public class TrainingServiceImpl implements TrainingService {
     return this.formatTrainingCalendarData(transformedData);
   }
 
-  private List<Map<String, Object>> formatTrainingCalendarData(List<Object[]> transformedData) throws Exception {
-    List<Map<String, Object>> formattedData = new ArrayList<>();
+  private List<TrainingCalendarDTO> formatTrainingCalendarData(List<Object[]> transformedData) throws Exception {
+    List<TrainingCalendarDTO> formattedData = new ArrayList<>();
 
     for (Object[] data : transformedData) {
-      Map<String, Object> formattedItem = Map.of(
-          "date", String.valueOf(data[0]),
-          "trainings", convertJsonToList((String) data[1])
-      );
+      TrainingCalendarDTO formattedItem = new TrainingCalendarDTO();
+      formattedItem.setDate(String.valueOf(data[0]));
+      formattedItem.setTrainings(convertJsonToList((String) data[1]));
 
       formattedData.add(formattedItem);
     }
