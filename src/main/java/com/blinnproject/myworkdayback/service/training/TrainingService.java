@@ -6,7 +6,6 @@ import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
 import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
-import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +37,6 @@ public interface TrainingService {
   List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay);
 
   void cancelTrainingDay(Long trainingParentId, Date trainingDay);
-
-  List<TrainingCalendarInfoResponse> getTrainingCalendarInfo();
 
   List<Map<String, Object>> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception;
 }

@@ -42,7 +42,7 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
   List<TrainingCalendarInfoResponse> findAllByCreatedByAndParentIdIsNull(Long createdId);
 
   @Query(value = "SELECT " +
-      "    generated_date AS date, " +
+      "    CAST(generated_date AS DATE) AS date, " +
       "    jsonb_agg( " +
       "        jsonb_build_object( " +
       "            'trainingName', training.name, " +
