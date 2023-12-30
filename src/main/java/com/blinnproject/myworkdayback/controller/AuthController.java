@@ -90,9 +90,9 @@ public class AuthController {
         "Refresh token is not in database!"));
   }
 
-  @PostMapping("/reset-password-request")
-  public ResponseEntity<GenericResponse<?>> resetPasswordRequest(@Valid @RequestBody EmailRequest body) {
-    this.userService.resetPasswordRequest(body.getEmail());
+  @PostMapping("/forgot-password")
+  public ResponseEntity<GenericResponse<?>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) {
+    this.userService.forgotPassword(body.getEmail());
     return ResponseEntity.ok(GenericResponse.success(null, "Reset password email was sent successfully!"));
   }
 

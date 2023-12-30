@@ -62,11 +62,14 @@ public class UserServiceImpl implements UserService {
     return  this.userRepository.findById(userId);
   }
 
-  public void resetPasswordRequest(String email) {
+  public void forgotPassword(String email) {
     Optional<User> user = this.userRepository.findByEmail(email);
 
     // fail silently if user is not found for security reasons
     if (user.isPresent()) {
+      // check if token already exists and delete it
+      this.passwordResetTokenRepository.findByUserEmail(email).ifPresent(this.passwordResetTokenRepository::delete);
+
       String token = generateRandomFourNumbersToken();
 
       createPasswordResetTokenForUser(user.get(), token);

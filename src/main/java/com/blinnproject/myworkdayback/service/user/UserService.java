@@ -18,7 +18,7 @@ public interface UserService {
 
   Optional<User> findById(Long userId);
 
-  void resetPasswordRequest(String email);
+  void forgotPassword(String email);
 
   void resetPassword(String email, int token, String newPassword);
 }

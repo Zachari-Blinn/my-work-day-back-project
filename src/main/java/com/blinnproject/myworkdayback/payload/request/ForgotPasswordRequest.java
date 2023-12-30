@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailRequest {
+public class ForgotPasswordRequest {
   @NotBlank
   @Size(max = 50)
   @Email

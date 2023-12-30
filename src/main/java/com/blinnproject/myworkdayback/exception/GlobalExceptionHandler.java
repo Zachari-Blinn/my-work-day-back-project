@@ -131,21 +131,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({ResetPasswordTokenAttemptsExceededException.class})
   public ResponseEntity<Object> handleResetPasswordTokenAttemptsExceededException(ResetPasswordTokenAttemptsExceededException exception) {
     return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
+      .status(HttpStatus.UNAUTHORIZED)
       .body(exception.getMessage());
   }
 
   @ExceptionHandler({ResetPasswordTokenExpiredException.class})
   public ResponseEntity<Object> handleResetPasswordTokenExpiredException(ResetPasswordTokenExpiredException exception) {
     return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
+      .status(HttpStatus.UNAUTHORIZED)
       .body(exception.getMessage());
   }
 
   @ExceptionHandler({ResetPasswordTokenInvalidException.class})
   public ResponseEntity<Object> handleResetPasswordTokenInvalidException(ResetPasswordTokenInvalidException exception) {
     return ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
+      .status(HttpStatus.UNAUTHORIZED)
       .body(exception.getMessage());
   }
 }
