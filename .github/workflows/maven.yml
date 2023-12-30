@@ -41,4 +41,4 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn --batch-mode --update-snapshots --spring.profiles.active=prod --spring.datasource.url=jdbc:postgresql://postgres:5432/dockerdb verify
+      run: mvn --batch-mode --update-snapshots verify --spring.profiles.active=prod --spring.datasource.url=jdbc:postgresql://postgres:5432/dockerdb
