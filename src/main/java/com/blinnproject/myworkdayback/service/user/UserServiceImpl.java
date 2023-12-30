@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
       String token = generateRandomFourNumbersToken();
 
-      createPasswordResetTokenForUser(user.get(), token);
+      this.createPasswordResetTokenForUser(user.get(), this.encoder.encode(token));
 
       this.emailService.sendResetPasswordEmail(email, token);
     }
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
       throw new ResetPasswordTokenExpiredException("Token expired.");
     }
 
-    if (passwordResetToken.getToken().equals(String.valueOf(token))) {
+    if (this.encoder.matches(String.valueOf(token), passwordResetToken.getToken())) {
       User user = passwordResetToken.getUser();
       user.setPassword(this.encoder.encode(newPassword));
       this.userRepository.save(user);
