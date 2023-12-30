@@ -15,5 +15,4 @@ public class FormatUtil {
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper.readValue(jsonString, new TypeReference<>() {});
   }
-
 }

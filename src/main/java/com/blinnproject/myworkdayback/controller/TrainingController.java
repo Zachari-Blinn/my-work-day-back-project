@@ -28,7 +28,6 @@ public class TrainingController {
 
   private final TrainingService trainingService;
 
-
   public TrainingController(TrainingService trainingService) {
     this.trainingService = trainingService;
   }
