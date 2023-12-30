@@ -3,9 +3,7 @@ package com.blinnproject.myworkdayback.controller;
 import java.util.List;
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.RefreshToken;
-import com.blinnproject.myworkdayback.payload.request.LoginRequest;
-import com.blinnproject.myworkdayback.payload.request.SignupRequest;
-import com.blinnproject.myworkdayback.payload.request.TokenRefreshRequest;
+import com.blinnproject.myworkdayback.payload.request.*;
 import com.blinnproject.myworkdayback.payload.response.*;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
@@ -90,5 +88,17 @@ public class AuthController {
       })
       .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
         "Refresh token is not in database!"));
+  }
+
+  @PostMapping("/reset-password-request")
+  public ResponseEntity<GenericResponse<?>> resetPasswordRequest(@Valid @RequestBody EmailRequest body) {
+    this.userService.resetPasswordRequest(body.getEmail());
+    return ResponseEntity.ok(GenericResponse.success(null, "Reset password email was sent successfully!"));
+  }
+
+  @PostMapping("/reset-password")
+  public ResponseEntity<GenericResponse<?>> resetPassword(@Valid @RequestBody ResetPasswordRequest body) {
+    this.userService.resetPassword(body.getEmail(), body.getToken(), body.getNewPassword());
+    return ResponseEntity.ok(GenericResponse.success(null, "User password was reset successfully!"));
   }
 }

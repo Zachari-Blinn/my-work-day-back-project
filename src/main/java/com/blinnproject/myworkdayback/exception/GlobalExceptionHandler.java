@@ -113,4 +113,39 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.UNAUTHORIZED)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({UserNotFoundException.class})
+  public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception) {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({TokenNotFoundException.class})
+  public ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException exception) {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({ResetPasswordTokenAttemptsExceededException.class})
+  public ResponseEntity<Object> handleResetPasswordTokenAttemptsExceededException(ResetPasswordTokenAttemptsExceededException exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({ResetPasswordTokenExpiredException.class})
+  public ResponseEntity<Object> handleResetPasswordTokenExpiredException(ResetPasswordTokenExpiredException exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({ResetPasswordTokenInvalidException.class})
+  public ResponseEntity<Object> handleResetPasswordTokenInvalidException(ResetPasswordTokenInvalidException exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
 }
