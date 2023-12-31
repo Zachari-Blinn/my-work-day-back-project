@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.service.user;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
 import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
+import jakarta.mail.MessagingException;
 
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ public interface UserService {
 
   Optional<User> findById(Long userId);
 
-  void forgotPassword(String email);
+  void forgotPassword(String email) throws MessagingException;
 
   void resetPassword(String email, int token, String newPassword);
 }

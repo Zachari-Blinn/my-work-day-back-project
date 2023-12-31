@@ -9,6 +9,7 @@ import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.user.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -91,7 +92,7 @@ public class AuthController {
   }
 
   @PostMapping("/forgot-password")
-  public ResponseEntity<GenericResponse<?>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) {
+  public ResponseEntity<GenericResponse<?>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) throws MessagingException {
     this.userService.forgotPassword(body.getEmail());
     return ResponseEntity.ok(GenericResponse.success(null, "Reset password email was sent successfully!"));
   }

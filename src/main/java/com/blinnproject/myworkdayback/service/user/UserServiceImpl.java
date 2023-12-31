@@ -8,6 +8,7 @@ import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.repository.PasswordResetTokenRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.service.email.EmailService;
+import jakarta.mail.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
     return  this.userRepository.findById(userId);
   }
 
-  public void forgotPassword(String email) {
+  public void forgotPassword(String email) throws MessagingException {
     Optional<User> user = this.userRepository.findByEmail(email);
 
     // fail silently if user is not found for security reasons
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
       this.createPasswordResetTokenForUser(user.get(), this.encoder.encode(token));
 
-      this.emailService.sendResetPasswordEmail(email, token);
+      this.emailService.sendForgotPasswordEmail(email, token, user.get());
     }
   }
 
@@ -104,7 +105,7 @@ public class UserServiceImpl implements UserService {
       user.setPassword(this.encoder.encode(newPassword));
       this.userRepository.save(user);
       this.passwordResetTokenRepository.delete(passwordResetToken);
-      this.emailService.sendResetPasswordConfirmationEmail(email);
+      this.emailService.sendResetPasswordSuccessEmail(email);
     } else {
       this.passwordResetTokenRepository.save(passwordResetToken);
       throw new ResetPasswordTokenInvalidException("Token invalid.");
