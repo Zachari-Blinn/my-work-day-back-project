@@ -5,7 +5,7 @@ import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
-import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
+import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
@@ -98,7 +98,7 @@ public class TrainingController {
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> modifyAndValidate(
       @PathVariable("trainingParentId") Long trainingParentId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
-      @RequestBody ModifyBeforeValidateRequest requestBody
+      @RequestBody ModifyAndValidateRequest requestBody
   ) {
     List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyAndValidateTraining(trainingParentId, trainingDate, requestBody);
 

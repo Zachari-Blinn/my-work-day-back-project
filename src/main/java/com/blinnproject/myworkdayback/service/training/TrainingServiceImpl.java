@@ -7,7 +7,7 @@ import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
-import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
+import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
@@ -90,7 +90,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Override
-  public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyBeforeValidateRequest requestBody) {
+  public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     // Check if training with the same performed date already exists

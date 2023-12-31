@@ -84,7 +84,7 @@ class TrainingControllerTest {
 
   @Test
   @WithUserDetails("mocked-user")
-  void TrainingController_AddExercise_ipsum() throws Exception {
+  void TrainingController_AddExercise_ReturnOk() throws Exception {
     Training training = new Training();
     training.setName("Crossfit");
     training.setIconName("icon_dumbbell");
@@ -109,7 +109,6 @@ class TrainingControllerTest {
     Exercise createdExercise = ExerciseRepository.save(newExercise);
 
     AddExerciseRequest addExerciseRequest = new AddExerciseRequest();
-    addExerciseRequest.setExerciseId(createdExercise.getId());
     addExerciseRequest.setNumberOfWarmUpSeries(2);
     addExerciseRequest.setNotes("Lorem ipsum dollores");
 
@@ -121,7 +120,7 @@ class TrainingControllerTest {
     series.add(series1);
     addExerciseRequest.setSeries(series);
 
-    mockMvc.perform(post("/api/training/{trainingId}/add-exercise", createdTraining.getId())
+    mockMvc.perform(post("/api/training/{trainingId}/exercise/{exerciseId}", createdTraining.getId(), createdExercise.getId())
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(addExerciseRequest)))
         .andExpect(status().isOk());

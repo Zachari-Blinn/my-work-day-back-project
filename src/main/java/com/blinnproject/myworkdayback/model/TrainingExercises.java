@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.model;
 
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.*;
@@ -34,6 +35,7 @@ public class TrainingExercises {
   private String notes;
 
   @Column
+  @Min(0)
   private int numberOfWarmUpSeries;
 
   @Temporal(TemporalType.DATE)

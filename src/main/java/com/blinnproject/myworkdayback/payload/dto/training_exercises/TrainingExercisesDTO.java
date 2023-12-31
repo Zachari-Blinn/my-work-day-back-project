@@ -5,8 +5,10 @@ import com.blinnproject.myworkdayback.model.Series;
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +32,9 @@ public class TrainingExercisesDTO {
 
   private String notes;
 
+  @Min(0)
   private int numberOfWarmUpSeries;
 
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date trainingDay;
 }

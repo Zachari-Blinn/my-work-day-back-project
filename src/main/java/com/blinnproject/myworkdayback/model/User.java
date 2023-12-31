@@ -33,7 +33,7 @@ public class User extends BaseEntityAudit {
   @Column(nullable=false)
   private String password;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
   private ProfilePicture profilePicture;
 
