@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.model;
 import com.blinnproject.myworkdayback.constraint.HexadecimalColorConstraint;
 import com.blinnproject.myworkdayback.constraint.IconNameConstraint;
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
+import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -77,5 +78,7 @@ public class Training extends BaseEntityAudit {
     this.setParent(that);
   }
 
-//  get
+  public Training(TrainingCreateDTO that) {
+    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), null, that.getStartDate(), that.getEndDate(), null, that.getDescription(), that.getHasWarpUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null, null);
+  }
 }

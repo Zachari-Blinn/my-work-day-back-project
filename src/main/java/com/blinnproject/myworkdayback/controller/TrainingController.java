@@ -2,9 +2,9 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
+import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
-import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
-import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
@@ -33,8 +33,8 @@ public class TrainingController {
   }
 
   @PostMapping()
-  public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody CreateTrainingRequest trainingRequest) {
-    Training training = trainingService.create(trainingRequest);
+  public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody TrainingCreateDTO trainingDTO) {
+    Training training = trainingService.create(trainingDTO);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(training, "Training was successfully created!"));
   }
@@ -57,9 +57,13 @@ public class TrainingController {
     return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, "Return training by id successfully!"))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  @PostMapping("/{trainingId}/add-exercise")
-  public ResponseEntity<GenericResponse<TrainingExercises>> addExercise(@PathVariable("trainingId") Long trainingId, @Valid @RequestBody AddExerciseRequest requestBody) {
-    TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, requestBody);
+  @PostMapping("/{trainingId}/exercise/{exerciseId}")
+  public ResponseEntity<GenericResponse<TrainingExercises>> addExercise(
+      @PathVariable("trainingId") Long trainingId,
+      @PathVariable("exerciseId") Long exerciseId,
+      @Valid @RequestBody TrainingExercisesCreateDTO trainingExercisesDTO
+  ) {
+    TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, exerciseId, trainingExercisesDTO);
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));
   }
@@ -80,23 +84,23 @@ public class TrainingController {
     return ResponseEntity.ok(GenericResponse.success(trainingExercises, "Return all exercises by training successfully!"));
   }
 
-  @PostMapping("/{trainingId}/validate/{trainingDate}")
+  @PostMapping("/{trainingParentId}/validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> validateTraining(
-      @PathVariable("trainingId") Long trainingId,
+      @PathVariable("trainingParentId") Long trainingParentId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
   ) {
-    List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTrainingExercises(trainingId, trainingDate);
+    List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTraining(trainingParentId, trainingDate);
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
   }
 
-  @PostMapping("/{trainingId}/modify-before-validate/{trainingDate}")
+  @PostMapping("/{trainingParentId}/modify-and-validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> modifyAndValidate(
-      @PathVariable("trainingId") Long trainingId,
+      @PathVariable("trainingParentId") Long trainingParentId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
       @RequestBody ModifyBeforeValidateRequest requestBody
   ) {
-    List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyBeforeValidate(trainingId, trainingDate, requestBody);
+    List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyAndValidateTraining(trainingParentId, trainingDate, requestBody);
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Modify and validate training session successfully!"));
   }

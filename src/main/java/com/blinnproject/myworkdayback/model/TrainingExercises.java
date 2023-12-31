@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.model;
 
+import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,5 +79,10 @@ public class TrainingExercises {
     }
     this.setSeriesList(clonedSeriesList);
     this.setParent(that);
+  }
+
+  public TrainingExercises(Training training, Exercise exercise, TrainingExercisesCreateDTO that) {
+    this(training, exercise, that.getNotes(), that.getNumberOfWarmUpSeries());
+    this.addSeriesList(that.getSeries());
   }
 }

@@ -4,9 +4,9 @@ import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
 import com.blinnproject.myworkdayback.exception.TrainingAlreadyPerformedException;
 import com.blinnproject.myworkdayback.exception.TrainingWithCurrentUserNotFound;
 import com.blinnproject.myworkdayback.model.*;
+import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
+import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
-import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
-import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
@@ -39,17 +39,8 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Override
   @Transactional
-  public Training create(CreateTrainingRequest training) {
-    Training newTraining = new Training();
-
-    newTraining.setName(training.getName());
-    newTraining.setTrainingDays(training.getTrainingDays());
-    newTraining.setSportPreset(training.getSportPreset());
-    newTraining.setDescription(training.getDescription());
-    newTraining.setHasWarpUp(training.getHasWarpUp());
-    newTraining.setHasStretching(training.getHasStretching());
-
-    return trainingRepository.save(newTraining);
+  public Training create(TrainingCreateDTO training) {
+    return trainingRepository.save(new Training(training));
   }
 
   @Override
@@ -67,7 +58,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional
-  public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDate) {
+  public List<TrainingExercises> validateTraining(Long trainingId, Date trainingDate) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     // Check if training with the same performed date already exists
@@ -99,7 +90,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Override
-  public List<TrainingExercises> modifyBeforeValidate(Long trainingId, Date trainingDate, ModifyBeforeValidateRequest requestBody) {
+  public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyBeforeValidateRequest requestBody) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     // Check if training with the same performed date already exists
@@ -128,21 +119,13 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional
-  public TrainingExercises addExercise(Long trainingId, AddExerciseRequest requestBody) {
+  public TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
-    Exercise exercise = this.exerciseService.findById(requestBody.getExerciseId()).orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", requestBody.getExerciseId()));
+    Exercise exercise = this.exerciseService.findById(exerciseId).orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", exerciseId));
 
-    TrainingExercises trainingExercises = new TrainingExercises();
-
-    trainingExercises.setTraining(training);
-    trainingExercises.setExercise(exercise);
-    trainingExercises.setNotes(requestBody.getNotes());
-    trainingExercises.setNumberOfWarmUpSeries(requestBody.getNumberOfWarmUpSeries());
-
-    List<Series> seriesList = requestBody.getSeries();
-    trainingExercises.addSeriesList(seriesList);
+    TrainingExercises trainingExercises = new TrainingExercises(training, exercise, trainingExercisesCreateDTO);
 
     return trainingExercisesRepository.save(trainingExercises);
   }
