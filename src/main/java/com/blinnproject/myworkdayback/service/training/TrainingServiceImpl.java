@@ -10,7 +10,6 @@ import com.blinnproject.myworkdayback.payload.request.CreateTrainingRequest;
 import com.blinnproject.myworkdayback.payload.request.ModifyBeforeValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
-import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
@@ -39,7 +38,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Override
-  @Transactional()
+  @Transactional
   public Training create(CreateTrainingRequest training) {
     Training newTraining = new Training();
 
@@ -67,7 +66,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingRepository.findByIdAndCreatedBy(id, userDetails.getId());
   }
 
-  @Transactional()
+  @Transactional
   public List<TrainingExercises> validateTrainingExercises(Long trainingId, Date trainingDate) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -128,7 +127,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
-  @Transactional()
+  @Transactional
   public TrainingExercises addExercise(Long trainingId, AddExerciseRequest requestBody) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -162,6 +161,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, userDetails.getId());
   }
 
+  @Transactional
   public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input, Date trainingDate) {
     Map<Long, FormattedTrainingData> trainingMap = new HashMap<>();
 
@@ -260,7 +260,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(userDetails.getId(), trainingDay);
   }
 
-  @Transactional()
+  @Transactional
   public void cancelTrainingDay(Long trainingParentId, Date trainingDayDate) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -279,20 +279,13 @@ public class TrainingServiceImpl implements TrainingService {
     }
   }
 
-  @Transactional()
+  @Transactional
   public void resetTrainingDay(Long trainingParentId, Date trainingDayDate) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if (this.trainingRepository.existsByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, userDetails.getId())) {
       this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, userDetails.getId(), trainingDayDate);
     }
-  }
-
-  @Transactional(readOnly = true)
-  public List<TrainingCalendarInfoResponse> getTrainingCalendarInfo() {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    return trainingRepository.findAllByCreatedByAndParentIdIsNull(userDetails.getId());
   }
 
   @Transactional(readOnly = true)
