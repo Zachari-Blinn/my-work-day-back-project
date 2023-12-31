@@ -264,7 +264,28 @@ public class TrainingServiceImpl implements TrainingService {
   public void cancelTrainingDay(Long trainingParentId, Date trainingDayDate) {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, userDetails.getId(), trainingDayDate);
+    Training parentTraining = this.trainingRepository.findByIdAndCreatedBy(trainingParentId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingParentId + " does not belong to current user"));
+
+    Training training = trainingRepository.findByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, userDetails.getId()).orElse(null);
+
+    if (training == null) {
+      Training clonedTraining = new Training(parentTraining);
+      clonedTraining.setTrainingStatus(ETrainingStatus.CANCELLED);
+      clonedTraining.setPerformedDate(trainingDayDate);
+      trainingRepository.save(clonedTraining);
+    } else {
+      training.setTrainingStatus(ETrainingStatus.CANCELLED);
+      trainingRepository.save(training);
+    }
+  }
+
+  @Transactional()
+  public void resetTrainingDay(Long trainingParentId, Date trainingDayDate) {
+    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (this.trainingRepository.existsByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, userDetails.getId())) {
+      this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, userDetails.getId(), trainingDayDate);
+    }
   }
 
   @Transactional(readOnly = true)

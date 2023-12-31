@@ -39,5 +39,7 @@ public interface TrainingService {
 
   void cancelTrainingDay(Long trainingParentId, Date trainingDay);
 
+  void resetTrainingDay(Long trainingParentId, Date trainingDay);
+
   List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception;
 }

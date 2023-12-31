@@ -124,6 +124,16 @@ public class TrainingController {
     return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
   }
 
+  @DeleteMapping("/{trainingParentId}/reset-training-session-day/{trainingDate}")
+  public ResponseEntity<GenericResponse<?>> resetTrainingDay(
+      @PathVariable("trainingParentId") Long trainingParentId,
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
+  ) {
+    this.trainingService.resetTrainingDay(trainingParentId, trainingDate);
+
+    return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
+  }
+
   @DeleteMapping("/{trainingParentId}/cancel-training-session-day/{trainingDate}")
   public ResponseEntity<GenericResponse<?>> cancelTrainingDay(
       @PathVariable("trainingParentId") Long trainingParentId,

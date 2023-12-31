@@ -24,6 +24,10 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
 
   boolean existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(Long parentId, Date performedDate, ETrainingStatus trainingStatus, Long createdId);
 
+  Optional<Training> findByParentIdAndPerformedDateAndCreatedBy(Long parentId, Date performedDate, Long createdId);
+
+  boolean existsByParentIdAndPerformedDateAndCreatedBy(Long parentId, Date performedDate, Long createdId);
+
   void deleteByParentIdAndCreatedByAndPerformedDate(Long parentId, Long createdId, Date performedDate);
 
   @Query("""
