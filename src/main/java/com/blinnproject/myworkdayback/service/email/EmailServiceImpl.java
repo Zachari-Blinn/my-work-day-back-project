@@ -3,6 +3,8 @@ package com.blinnproject.myworkdayback.service.email;
 import com.blinnproject.myworkdayback.model.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.hibernate.cfg.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +15,8 @@ import org.thymeleaf.context.Context;
 @Service
 public class EmailServiceImpl implements EmailService {
 
+  @Value("${spring.mail.username}")
+  private String raiseEmail;
   private final JavaMailSender emailSender;
   private final TemplateEngine templateEngine;
 
@@ -24,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
   public void sendEmail(String to, String subject, String text) {
     SimpleMailMessage message = new SimpleMailMessage();
 
-    message.setFrom("no-reply-raise-support@mail.com");
+    message.setFrom(raiseEmail);
     message.setTo(to);
     message.setSubject(subject);
     message.setText(text);
