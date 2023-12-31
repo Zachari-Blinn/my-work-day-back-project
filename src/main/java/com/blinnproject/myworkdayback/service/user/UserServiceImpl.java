@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.blinnproject.myworkdayback.util.FormatUtil.generateRandomFourNumbersToken;
+import static com.blinnproject.myworkdayback.util.FormatUtil.generateSixNumbersRandomlyToken;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
       // check if token already exists and delete it
       this.passwordResetTokenRepository.findByUserEmail(email).ifPresent(this.passwordResetTokenRepository::delete);
 
-      String token = generateRandomFourNumbersToken();
+      String token = generateSixNumbersRandomlyToken();
 
       this.createPasswordResetTokenForUser(user.get(), this.encoder.encode(token));
 

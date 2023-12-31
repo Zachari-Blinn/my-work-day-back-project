@@ -17,7 +17,7 @@ public class FormatUtil {
     return objectMapper.readValue(jsonString, new TypeReference<>() {});
   }
 
-  public static String generateRandomFourNumbersToken() {
-    return String.format("%04d", new Random().nextInt(10000));
+  public static String generateSixNumbersRandomlyToken() {
+    return String.format("%06d", new Random().nextInt(1000000));
   }
 }
