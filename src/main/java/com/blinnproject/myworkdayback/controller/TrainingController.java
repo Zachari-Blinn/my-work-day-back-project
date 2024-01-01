@@ -16,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,9 +53,7 @@ public class TrainingController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<GenericResponse<Training>> getTrainingById(@PathVariable("id") Long id) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+  public ResponseEntity<GenericResponse<Training>> getTrainingById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
     Optional<Training> trainingData = trainingService.findById(id, userDetails.getId());
 
     return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, "Return training by id successfully!"))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -64,10 +63,9 @@ public class TrainingController {
   public ResponseEntity<GenericResponse<TrainingExercises>> addExerciseToTraining(
       @PathVariable("trainingId") Long trainingId,
       @PathVariable("exerciseId") Long exerciseId,
-      @Valid @RequestBody TrainingExercisesCreateDTO trainingExercisesDTO
+      @Valid @RequestBody TrainingExercisesCreateDTO trainingExercisesDTO,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, exerciseId, trainingExercisesDTO, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));
@@ -77,10 +75,9 @@ public class TrainingController {
   @GetMapping("/{trainingId}/exercises")
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> getExercisesByTrainingId(
       @RequestParam(defaultValue = "false") Boolean fetchTemplate,
-      @PathVariable("trainingId") Long trainingId
+      @PathVariable("trainingId") Long trainingId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     List<TrainingExercises> trainingExercises;
 
     if (fetchTemplate) {
@@ -95,10 +92,9 @@ public class TrainingController {
   @PostMapping("/{trainingParentId}/validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> validateTrainingSession(
       @PathVariable("trainingParentId") Long trainingParentId,
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTraining(trainingParentId, trainingDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
@@ -108,10 +104,9 @@ public class TrainingController {
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> modifyAndValidateTrainingSession(
       @PathVariable("trainingParentId") Long trainingParentId,
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
-      @RequestBody ModifyAndValidateRequest requestBody
+      @RequestBody ModifyAndValidateRequest requestBody,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyAndValidateTraining(trainingParentId, trainingDate, requestBody, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Modify and validate training session successfully!"));
@@ -121,10 +116,9 @@ public class TrainingController {
   @GetMapping("/{trainingId}/validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> returnTrainingSessionInfo(
       @PathVariable("trainingId") Long trainingId,
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getTrainingSeriesStatusByDate(trainingId, trainingDate, userDetails.getId());
 
     List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
@@ -134,10 +128,9 @@ public class TrainingController {
 
   @GetMapping("/validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> returnAllTrainingSessionInfo(
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate, userDetails.getId());
 
     List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
@@ -148,10 +141,9 @@ public class TrainingController {
   @DeleteMapping("/{trainingParentId}/reset/{trainingDate}")
   public ResponseEntity<GenericResponse<?>> resetTrainingSession(
       @PathVariable("trainingParentId") Long trainingParentId,
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     this.trainingService.resetTrainingDay(trainingParentId, trainingDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
@@ -160,10 +152,9 @@ public class TrainingController {
   @DeleteMapping("/{trainingParentId}/cancel/{trainingDate}")
   public ResponseEntity<GenericResponse<?>> cancelTrainingSession(
       @PathVariable("trainingParentId") Long trainingParentId,
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     this.trainingService.cancelTrainingDay(trainingParentId, trainingDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
@@ -172,10 +163,9 @@ public class TrainingController {
   @GetMapping("/calendar/{startDate}/{endDate}")
   public ResponseEntity<GenericResponse<List<TrainingCalendarDTO>>> returnTrainingCalendarInfo(
       @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-      @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
+      @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
   ) throws Exception {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
     List<TrainingCalendarDTO> result = this.trainingService.getTrainingCalendarInfo(startDate, endDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(result, "Return calendar info successfully!"));

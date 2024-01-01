@@ -26,6 +26,7 @@ public class ExerciseController {
 
   @GetMapping()
   public ResponseEntity<GenericResponse<List<Exercise>>> listAllExercises() {
+    // todo search all exercises with created by user id or null
     List<Exercise> exercises = new ArrayList<>(exerciseService.findAll());
 
     if (exercises.isEmpty()) {

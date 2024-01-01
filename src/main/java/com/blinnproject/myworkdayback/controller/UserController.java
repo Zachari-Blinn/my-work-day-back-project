@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -24,9 +24,10 @@ public class UserController {
   }
 
   @PostMapping("profile-picture")
-  public ResponseEntity<GenericResponse<String>> uploadProfilePicture(@RequestParam("picture") MultipartFile file) throws IOException {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+  public ResponseEntity<GenericResponse<String>> uploadProfilePicture(
+      @RequestParam("picture") MultipartFile file,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) throws IOException {
     String fileName = this.profilePictureService.uploadProfilePicture(file, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(fileName, "Profile picture was uploaded successfully!"));
