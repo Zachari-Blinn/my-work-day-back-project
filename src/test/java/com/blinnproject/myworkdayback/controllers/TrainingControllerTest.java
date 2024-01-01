@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -126,4 +127,172 @@ class TrainingControllerTest {
         .andExpect(status().isOk());
   }
 
+  @Test
+  @WithUserDetails("mocked-user")
+  void TrainingController_GetTrainingById_ReturnOk() throws Exception {
+    Training training = new Training();
+    training.setName("Séance de Force");
+    training.setIconName("icon_dumbbell");
+    training.setIconHexadecimalColor("#0072db");
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
+    training.setTrainingDays(days);
+
+    mockMvc.perform(post("/api/training")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(training)))
+        .andExpect(status().isCreated());
+
+    Training createdTraining = trainingRepository.findByName("Séance de Force").orElse(null);
+    assert createdTraining != null;
+
+    mockMvc.perform(get("/api/training/{id}", createdTraining.getId())
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(createdTraining)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithUserDetails("mocked-user")
+  void TrainingController_AddExerciseToTraining_ReturnOk() throws Exception {
+    Training training = new Training();
+    training.setName("Entraînement Équilibré");
+    training.setIconName("icon_dumbbell");
+    training.setIconHexadecimalColor("#0072db");
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
+    training.setTrainingDays(days);
+
+    mockMvc.perform(post("/api/training")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(training)))
+        .andExpect(status().isCreated());
+
+    Training createdTraining = trainingRepository.findByName("Entraînement Équilibré").orElse(null);
+    assert createdTraining != null;
+
+    Exercise newExercise = new Exercise();
+    newExercise.setName("New exercise");
+    newExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
+    Exercise createdExercise = ExerciseRepository.save(newExercise);
+
+    AddExerciseRequest addExerciseRequest = new AddExerciseRequest();
+    addExerciseRequest.setNumberOfWarmUpSeries(2);
+    addExerciseRequest.setNotes("Lorem ipsum dollores");
+
+    ArrayList<Series> series = new ArrayList<>();
+    Series series1 = new Series();
+    series1.setRepsCount(8);
+    series1.setWeight(50);
+    series1.setRestTime("60");
+    series.add(series1);
+    addExerciseRequest.setSeries(series);
+
+    mockMvc.perform(post("/api/training/{trainingId}/exercise/{exerciseId}", createdTraining.getId(), createdExercise.getId())
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(addExerciseRequest)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithUserDetails("mocked-user")
+  void TrainingController_ValidateTrainingSession_ReturnOk() throws Exception {
+    Training training = new Training();
+    training.setName("Renforcement Musculaire Global");
+    training.setIconName("icon_dumbbell");
+    training.setIconHexadecimalColor("#0072db");
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
+    training.setTrainingDays(days);
+
+    mockMvc.perform(post("/api/training")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(training)))
+        .andExpect(status().isCreated());
+
+    Training createdTraining = trainingRepository.findByName("Renforcement Musculaire Global").orElse(null);
+    assert createdTraining != null;
+
+    Exercise newExercise = new Exercise();
+    newExercise.setName("New exercise");
+    newExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
+    Exercise createdExercise = ExerciseRepository.save(newExercise);
+
+    AddExerciseRequest addExerciseRequest = new AddExerciseRequest();
+    addExerciseRequest.setNumberOfWarmUpSeries(2);
+    addExerciseRequest.setNotes("Lorem ipsum dollores");
+
+    ArrayList<Series> series = new ArrayList<>();
+    Series series1 = new Series();
+    series1.setRepsCount(8);
+    series1.setWeight(50);
+    series1.setRestTime("60");
+    series.add(series1);
+    addExerciseRequest.setSeries(series);
+
+    mockMvc.perform(post("/api/training/{trainingId}/exercise/{exerciseId}", createdTraining.getId(), createdExercise.getId())
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(addExerciseRequest)))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(post("/api/training/{trainingId}/validate/{trainingDate}", createdTraining.getId(), "2024-01-03")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(createdTraining)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithUserDetails("mocked-user")
+  void TrainingController_ValidateTrainingSession_WithInvalidDayOfWeek_Return4xxClientError() throws Exception {
+    Training training = new Training();
+    training.setName("Séance Mixte");
+    training.setIconName("icon_dumbbell");
+    training.setIconHexadecimalColor("#0072db");
+    ArrayList<EDayOfWeek> days = new ArrayList<>();
+    days.add(EDayOfWeek.TUESDAY);
+    days.add(EDayOfWeek.THURSDAY);
+    days.add(EDayOfWeek.WEDNESDAY);
+    training.setTrainingDays(days);
+
+    mockMvc.perform(post("/api/training")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(training)))
+        .andExpect(status().isCreated());
+
+    Training createdTraining = trainingRepository.findByName("Séance Mixte").orElse(null);
+    assert createdTraining != null;
+
+    Exercise newExercise = new Exercise();
+    newExercise.setName("New exercise");
+    newExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
+    Exercise createdExercise = ExerciseRepository.save(newExercise);
+
+    AddExerciseRequest addExerciseRequest = new AddExerciseRequest();
+    addExerciseRequest.setNumberOfWarmUpSeries(2);
+    addExerciseRequest.setNotes("Lorem ipsum dollores");
+
+    ArrayList<Series> series = new ArrayList<>();
+    Series series1 = new Series();
+    series1.setRepsCount(8);
+    series1.setWeight(50);
+    series1.setRestTime("60");
+    series.add(series1);
+    addExerciseRequest.setSeries(series);
+
+    mockMvc.perform(post("/api/training/{trainingId}/exercise/{exerciseId}", createdTraining.getId(), createdExercise.getId())
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(addExerciseRequest)))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(post("/api/training/{trainingId}/validate/{trainingDate}", createdTraining.getId(), "2024-01-05")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(createdTraining)))
+        .andExpect(status().is4xxClientError());
+  }
 }

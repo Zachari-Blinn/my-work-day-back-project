@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.service.training;
 
+import com.blinnproject.myworkdayback.exception.InvalidDayOfWeekProvidedForTraining;
 import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
 import com.blinnproject.myworkdayback.exception.TrainingAlreadyPerformedException;
 import com.blinnproject.myworkdayback.exception.TrainingWithCurrentUserNotFound;
@@ -63,7 +64,10 @@ public class TrainingServiceImpl implements TrainingService {
     Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
     EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
-    Assert.state(training.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + training.getTrainingDays());
+
+    if (!training.getTrainingDays().contains(providedDayDate)) {
+      throw new InvalidDayOfWeekProvidedForTraining("The day: " + providedDayDate + " is not in training days list: " + training.getTrainingDays());
+    }
 
     List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, training.getCreatedBy());
 
@@ -93,7 +97,10 @@ public class TrainingServiceImpl implements TrainingService {
     Training originalTraining = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
     EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
-    Assert.state(originalTraining.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + originalTraining.getTrainingDays());
+
+    if (!originalTraining.getTrainingDays().contains(providedDayDate)) {
+      throw new InvalidDayOfWeekProvidedForTraining("The day: " + providedDayDate + " is not in training days list: " + originalTraining.getTrainingDays());
+    }
 
     // Clone the training and set status to performed
     Training clonedTraining = new Training(originalTraining);

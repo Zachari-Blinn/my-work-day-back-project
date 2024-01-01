@@ -8,10 +8,7 @@ import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jdk.jfr.BooleanFlag;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,11 +34,11 @@ public class TrainingDTO {
 
   private Date endDate;
 
+  @PastOrPresent
   private Date performedDate;
 
   private String description;
 
-  @BooleanFlag
   private Boolean hasWarpUp;
 
   private Boolean hasStretching;

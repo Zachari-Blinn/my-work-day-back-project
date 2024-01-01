@@ -148,4 +148,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.UNAUTHORIZED)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({InvalidDayOfWeekProvidedForTraining.class})
+  public ResponseEntity<Object> handleInvalidDayOfWeekProvidedForTraining(InvalidDayOfWeekProvidedForTraining exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
 }
