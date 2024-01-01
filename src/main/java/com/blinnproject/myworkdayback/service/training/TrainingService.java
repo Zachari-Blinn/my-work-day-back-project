@@ -18,26 +18,26 @@ public interface TrainingService {
 
   List<Training> getAllTrainingsByCreatedBy(Long createdBy);
 
-  Optional<Training> findById(Long id);
+  Optional<Training> findById(Long id, Long createdBy);
 
-  List<TrainingExercises> validateTraining(Long trainingId, Date trainingDay);
+  List<TrainingExercises> validateTraining(Long trainingId, Date trainingDay, Long createdBy);
 
-  TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO);
+  TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO, Long createdBy);
 
-  List<TrainingExercises> getExercisesByTrainingId(Long trainingId);
+  List<TrainingExercises> getExercisesByTrainingId(Long trainingId, Long createdBy);
 
-  List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId);
+  List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId, Long createdBy);
 
   List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input, Date trainingDate);
 
-  List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody);
+  List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy);
 
-  List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay);
-  List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay);
+  List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay, Long createdBy);
+  List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay, Long createdBy);
 
-  void cancelTrainingDay(Long trainingParentId, Date trainingDay);
+  void cancelTrainingDay(Long trainingParentId, Date trainingDay, Long createdBy);
 
-  void resetTrainingDay(Long trainingParentId, Date trainingDay);
+  void resetTrainingDay(Long trainingParentId, Date trainingDay, Long createdBy);
 
-  List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception;
+  List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate, Long createdBy) throws Exception;
 }

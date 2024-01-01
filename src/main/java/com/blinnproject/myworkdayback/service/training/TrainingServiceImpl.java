@@ -13,10 +13,8 @@ import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
-import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import io.jsonwebtoken.lang.Assert;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
@@ -51,22 +49,18 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<Training> findById(Long id) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    return trainingRepository.findByIdAndCreatedBy(id, userDetails.getId());
+  public Optional<Training> findById(Long id, Long createdBy) {
+    return trainingRepository.findByIdAndCreatedBy(id, createdBy);
   }
 
   @Transactional
-  public List<TrainingExercises> validateTraining(Long trainingId, Date trainingDate) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+  public List<TrainingExercises> validateTraining(Long trainingId, Date trainingDate, Long createdBy) {
     // Check if training with the same performed date already exists
-    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, userDetails.getId())) {
+    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy)) {
       throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
     }
 
-    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
     EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
     Assert.state(training.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + training.getTrainingDays());
@@ -90,15 +84,13 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Override
-  public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+  public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy) {
     // Check if training with the same performed date already exists
-    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, userDetails.getId())) {
+    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy)) {
       throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
     }
 
-    Training originalTraining = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+    Training originalTraining = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
     EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
     Assert.state(originalTraining.getTrainingDays().contains(providedDayDate), "The day: " + providedDayDate + " is not in training days list: " + originalTraining.getTrainingDays());
@@ -119,10 +111,8 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional
-  public TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+  public TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO, Long createdBy) {
+    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
     Exercise exercise = this.exerciseService.findById(exerciseId).orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", exerciseId));
 
     TrainingExercises trainingExercises = new TrainingExercises(training, exercise, trainingExercisesCreateDTO);
@@ -131,17 +121,13 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercises> getExercisesByTrainingId(Long trainingId) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    return trainingExercisesRepository.findByTrainingIdAndTrainingCreatedBy(trainingId, userDetails.getId());
+  public List<TrainingExercises> getExercisesByTrainingId(Long trainingId, Long createdBy) {
+    return trainingExercisesRepository.findByTrainingIdAndTrainingCreatedBy(trainingId, createdBy);
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, userDetails.getId());
+  public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId, Long createdBy) {
+    return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, createdBy);
   }
 
   @Transactional
@@ -230,26 +216,20 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    return trainingExercisesRepository.getTrainingSeriesStatusByDate(userDetails.getId(), trainingId, trainingDay);
+  public List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay, Long createdBy) {
+    return trainingExercisesRepository.getTrainingSeriesStatusByDate(createdBy, trainingId, trainingDay);
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(userDetails.getId(), trainingDay);
+  public List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay, Long createdBy) {
+    return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(createdBy, trainingDay);
   }
 
   @Transactional
-  public void cancelTrainingDay(Long trainingParentId, Date trainingDayDate) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public void cancelTrainingDay(Long trainingParentId, Date trainingDayDate, Long createdBy) {
+    Training parentTraining = this.trainingRepository.findByIdAndCreatedBy(trainingParentId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingParentId + " does not belong to current user"));
 
-    Training parentTraining = this.trainingRepository.findByIdAndCreatedBy(trainingParentId, userDetails.getId()).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingParentId + " does not belong to current user"));
-
-    Training training = trainingRepository.findByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, userDetails.getId()).orElse(null);
+    Training training = trainingRepository.findByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, createdBy).orElse(null);
 
     if (training == null) {
       Training clonedTraining = new Training(parentTraining);
@@ -263,19 +243,15 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional
-  public void resetTrainingDay(Long trainingParentId, Date trainingDayDate) {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    if (this.trainingRepository.existsByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, userDetails.getId())) {
-      this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, userDetails.getId(), trainingDayDate);
+  public void resetTrainingDay(Long trainingParentId, Date trainingDayDate, Long createdBy) {
+    if (this.trainingRepository.existsByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, createdBy)) {
+      this.trainingRepository.deleteByParentIdAndCreatedByAndPerformedDate(trainingParentId, createdBy, trainingDayDate);
     }
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate) throws Exception {
-    UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(userDetails.getId(), startDate, endDate);
+  public List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate, Long createdBy) throws Exception {
+    List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(createdBy, startDate, endDate);
 
     return this.formatTrainingCalendarData(transformedData);
   }
