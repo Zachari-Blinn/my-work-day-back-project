@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Data
 public class AddExerciseRequest {
 
-    @NotNull(message = "Exercise ID cannot be null")
+    @NotNull
     private Long exerciseId;
 
     @Min(0)

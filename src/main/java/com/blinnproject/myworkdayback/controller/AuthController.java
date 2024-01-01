@@ -24,11 +24,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
   private final AuthenticationManager authenticationManager;
-
   private final JwtUtils jwtUtils;
-
   private final RefreshTokenService refreshTokenService;
-
   private final UserService userService;
 
   public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService, UserService userService) {

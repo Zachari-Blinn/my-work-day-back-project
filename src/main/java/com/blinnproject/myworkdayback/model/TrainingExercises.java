@@ -10,6 +10,7 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
+@Table(name = "training_exercises")
 public class TrainingExercises {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +21,7 @@ public class TrainingExercises {
   private TrainingExercises parent;
 
   @ManyToOne
-  @JoinColumn(name = "training_id")
+  @JoinColumn(name = "trainings_id")
   private Training training;
 
   @ManyToOne

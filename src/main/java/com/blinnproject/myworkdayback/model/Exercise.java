@@ -10,6 +10,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "exercise")
 public class Exercise extends BaseEntityAudit {
 
   @Column(length = 150, nullable = false)

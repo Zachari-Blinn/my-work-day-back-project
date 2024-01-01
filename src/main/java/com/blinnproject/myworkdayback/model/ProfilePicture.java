@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "profile_picture")
 public class ProfilePicture implements Serializable {
   @Serial
   private static final long serialVersionUID = 1L;

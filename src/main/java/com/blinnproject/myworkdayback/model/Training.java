@@ -19,6 +19,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "training")
 public class Training extends BaseEntityAudit {
 
   @Column(nullable = false)

@@ -14,7 +14,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Series extends BaseEntityAudit implements Cloneable {
+@Table(name = "series")
+public class Series extends BaseEntityAudit {
   @Min(0)
   @Column(nullable = false)
   private int positionIndex;
