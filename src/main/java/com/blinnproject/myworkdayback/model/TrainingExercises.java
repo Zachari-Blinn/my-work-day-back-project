@@ -5,13 +5,20 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.*;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "training_exercises")
-public class TrainingExercises {
+public class TrainingExercises implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = 1905122041950251207L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

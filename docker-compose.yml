@@ -8,9 +8,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: dockeruser
-      POSTGRES_PASSWORD: dockerpassword
-      POSTGRES_DB: dockerdb
+      POSTGRES_USER: raise
+      POSTGRES_PASSWORD: 8zAgqbfbEKzC68MJ
+      POSTGRES_DB: DB_RAISE_DEV
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
