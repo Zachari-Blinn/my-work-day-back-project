@@ -18,16 +18,7 @@ public class I18nServiceImpl implements I18nService {
     this.messageSource = messageSource;
   }
 
-//  @Value("${raise.app.locale}")
-//  private String systemLanguage;
-
-  private Locale locale;
-
-//  @PostConstruct
-//  private void init() {
-//    locale = new Locale.Builder().setLocale(Locale.of(systemLanguage)).build();
-//    LocaleContextHolder.setDefaultLocale(locale);
-//  }
+  private final Locale locale = Locale.FRENCH;
 
   public String getMessage(String key) {
     return getMessage(key, "");

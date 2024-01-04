@@ -25,10 +25,12 @@ public class RefreshTokenService {
     this.userRepository = userRepository;
   }
 
+  @Transactional(readOnly = true)
   public Optional<RefreshToken> findByToken(String token) {
     return refreshTokenRepository.findByToken(token);
   }
 
+  @Transactional
   public RefreshToken createRefreshToken(Long userId) {
     Optional<RefreshToken> existingToken = refreshTokenRepository.findByUserId(userId);
 
@@ -48,6 +50,7 @@ public class RefreshTokenService {
     return refreshTokenRepository.save(refreshToken);
   }
 
+  @Transactional
   public RefreshToken verifyExpiration(RefreshToken token) {
     if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
       refreshTokenRepository.delete(token);

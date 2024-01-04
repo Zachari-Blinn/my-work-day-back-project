@@ -15,7 +15,8 @@ import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesIn
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
-import io.jsonwebtoken.lang.Assert;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
@@ -38,6 +39,7 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Override
   @Transactional
+  @CacheEvict(value = "trainingCalendar", key = "{ #result.createdBy }")
   public Training create(TrainingCreateDTO training) {
     return trainingRepository.save(new Training(training));
   }
@@ -87,7 +89,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
-  @Override
+  @Transactional
   public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy) {
     // Check if training with the same performed date already exists
     if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy)) {
@@ -137,7 +139,6 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, createdBy);
   }
 
-  @Transactional
   public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input, Date trainingDate) {
     Map<Long, FormattedTrainingData> trainingMap = new HashMap<>();
 
@@ -257,6 +258,7 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   @Transactional(readOnly = true)
+  @Cacheable(value = "trainingCalendar", key = "{ #createdBy }")
   public List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate, Long createdBy) throws Exception {
     List<Object[]> transformedData = this.trainingRepository.getTrainingCalendarData(createdBy, startDate, endDate);
 

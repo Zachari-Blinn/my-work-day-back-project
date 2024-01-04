@@ -1,4 +1,4 @@
-﻿package com.blinnproject.myworkdayback.service.i18n;
+package com.blinnproject.myworkdayback.service.i18n;
 
 import java.util.List;
 import java.util.Locale;

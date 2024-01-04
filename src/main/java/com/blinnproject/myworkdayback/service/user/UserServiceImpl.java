@@ -11,6 +11,7 @@ import com.blinnproject.myworkdayback.service.email.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -35,45 +36,43 @@ public class UserServiceImpl implements UserService {
   }
 
   public void throwExceptionIfUsernameIsAlreadyTaken(String username) {
-    if (this.userRepository.existsByUsername(username)) {
+    if (Boolean.TRUE.equals(userRepository.existsByUsername(username))) {
       throw new UsernameAlreadyTakenException("Username is already taken.");
     }
   }
 
   public void throwExceptionIfEmailIsAlreadyTaken(String email) {
-    if (this.userRepository.existsByEmail(email)) {
+    if (Boolean.TRUE.equals(userRepository.existsByEmail(email))) {
       throw new UsernameAlreadyTakenException("Email is already taken.");
     }
   }
 
+  @Transactional
   public UserInfoResponse signUp(SignupRequest signUpRequest) {
     User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getGender(),
       this.encoder.encode(signUpRequest.getPassword()));
 
-    return new UserInfoResponse(this.userRepository.save(user));
+    return new UserInfoResponse(userRepository.save(user));
   }
 
   @Override
-  public Optional<User> findByUsername(String username) {
-    return this.userRepository.findByUsername(username);
-  }
-
-  @Override
+  @Transactional(readOnly = true)
   public Optional<User> findById(Long userId) {
-    return  this.userRepository.findById(userId);
+    return userRepository.findById(userId);
   }
 
+  @Transactional
   public void forgotPassword(String email) throws MessagingException {
-    Optional<User> user = this.userRepository.findByEmail(email);
+    Optional<User> user = userRepository.findByEmail(email);
 
     // fail silently if user is not found for security reasons
     if (user.isPresent()) {
       // check if token already exists and delete it
-      this.passwordResetTokenRepository.findByUserEmail(email).ifPresent(this.passwordResetTokenRepository::delete);
+      passwordResetTokenRepository.findByUserEmail(email).ifPresent(passwordResetTokenRepository::delete);
 
       String token = generateSixNumbersRandomlyToken();
 
-      this.createPasswordResetTokenForUser(user.get(), this.encoder.encode(token));
+      this.createPasswordResetTokenForUser(user.get(), encoder.encode(token));
 
       this.emailService.sendForgotPasswordEmail(email, token, user.get());
     }
@@ -84,30 +83,31 @@ public class UserServiceImpl implements UserService {
     passwordResetTokenRepository.save(myToken);
   }
 
+  @Transactional
   public void resetPassword(String email, int token, String newPassword) {
-    PasswordResetToken passwordResetToken = this.passwordResetTokenRepository.findByUserEmail(email)
+    PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserEmail(email)
       .orElseThrow(() -> new TokenNotFoundException("Token not found with email: " + email));
 
     passwordResetToken.setAttempts(passwordResetToken.getAttempts() + 1);
 
     if (passwordResetToken.getAttempts() > 3) {
-      this.passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenRepository.delete(passwordResetToken);
       throw new ResetPasswordTokenAttemptsExceededException("Number of attempts exceeded.");
     }
 
     if (passwordResetToken.getExpiryDate().getTime() < System.currentTimeMillis()) {
-      this.passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenRepository.delete(passwordResetToken);
       throw new ResetPasswordTokenExpiredException("Token expired.");
     }
 
-    if (this.encoder.matches(String.valueOf(token), passwordResetToken.getToken())) {
+    if (encoder.matches(String.valueOf(token), passwordResetToken.getToken())) {
       User user = passwordResetToken.getUser();
-      user.setPassword(this.encoder.encode(newPassword));
-      this.userRepository.save(user);
-      this.passwordResetTokenRepository.delete(passwordResetToken);
-      this.emailService.sendResetPasswordSuccessEmail(email);
+      user.setPassword(encoder.encode(newPassword));
+      userRepository.save(user);
+      passwordResetTokenRepository.delete(passwordResetToken);
+      emailService.sendResetPasswordSuccessEmail(email);
     } else {
-      this.passwordResetTokenRepository.save(passwordResetToken);
+      passwordResetTokenRepository.save(passwordResetToken);
       throw new ResetPasswordTokenInvalidException("Token invalid.");
     }
   }

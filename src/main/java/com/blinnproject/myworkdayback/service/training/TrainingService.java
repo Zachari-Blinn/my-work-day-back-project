@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.service.training;
 
 import com.blinnproject.myworkdayback.model.Training;
 import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
