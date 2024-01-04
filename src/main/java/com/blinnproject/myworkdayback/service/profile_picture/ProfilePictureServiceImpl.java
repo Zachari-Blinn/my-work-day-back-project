@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.service.profile_picture;
 
 import com.blinnproject.myworkdayback.exception.ProfilePictureIsEmptyException;
+import com.blinnproject.myworkdayback.exception.ProfilePictureNotFoundException;
 import com.blinnproject.myworkdayback.model.ProfilePicture;
 import com.blinnproject.myworkdayback.model.User;
 import com.blinnproject.myworkdayback.repository.ProfilePictureRepository;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.Optional;
 
 @Service
 public class ProfilePictureServiceImpl implements ProfilePictureService {
@@ -39,21 +39,19 @@ public class ProfilePictureServiceImpl implements ProfilePictureService {
 
   @Transactional
   public ProfilePicture getInfoByUsername(String name) {
-    Optional<ProfilePicture> profilePicture = profilePictureRepository.findByName(name);
+    ProfilePicture profilePicture = profilePictureRepository.findByName(name).orElseThrow(() -> new ProfilePictureNotFoundException("Profile picture not found"));
 
     return ProfilePicture.builder()
-      .name(profilePicture.get().getName())
-      .type(profilePicture.get().getType())
-      .fileData(ImageUtil.decompressImage(profilePicture.get().getFileData())).build();
+      .name(profilePicture.getName())
+      .type(profilePicture.getType())
+      .fileData(ImageUtil.decompressImage(profilePicture.getFileData())).build();
   }
 
   @Transactional
   public byte[] getProfilePictureByUsername(String username) {
-    Optional<ProfilePicture> profilePicture = profilePictureRepository.findByUserUsername(username);
-    if (profilePicture.isEmpty()) {
-      throw new ProfilePictureIsEmptyException();
-    }
-    return ImageUtil.decompressImage(profilePicture.get().getFileData());
+    ProfilePicture profilePicture = profilePictureRepository.findByUserUsername(username).orElseThrow(ProfilePictureIsEmptyException::new);
+
+    return ImageUtil.decompressImage(profilePicture.getFileData());
   }
 
 

@@ -155,4 +155,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.BAD_REQUEST)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({ProfilePictureNotFoundException.class})
+  public ResponseEntity<Object> handleProfilePictureNotFoundException(ProfilePictureNotFoundException exception) {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
 }

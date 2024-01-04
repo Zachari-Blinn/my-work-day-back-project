@@ -92,7 +92,7 @@ public class TrainingController {
       trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId, userDetails.getId());
     }
 
-    return ResponseEntity.ok(GenericResponse.success(trainingExercises, "Return all exercises by training successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(trainingExercises, i18n.translate("controller.training.return-training-exercise.successful")));
   }
 
   @PostMapping("/{trainingParentId}/validate/{trainingDate}")
@@ -129,7 +129,7 @@ public class TrainingController {
 
     List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
 
-    return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(transformedData, i18n.translate("controller.training.return-training-info.successful")));
   }
 
   @GetMapping("/validate/{trainingDate}")

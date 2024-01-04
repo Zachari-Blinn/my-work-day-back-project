@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
+import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.profile_picture.ProfilePictureService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,9 +18,11 @@ import java.io.IOException;
 @RequestMapping("/api/user/")
 public class UserController {
 
+  private final I18nService i18n;
   private final ProfilePictureService profilePictureService;
 
-  public UserController(ProfilePictureService profilePictureService) {
+  public UserController(I18nService i18nService, ProfilePictureService profilePictureService) {
+    this.i18n = i18nService;
     this.profilePictureService = profilePictureService;
   }
 
@@ -30,7 +33,7 @@ public class UserController {
   ) throws IOException {
     String fileName = this.profilePictureService.uploadProfilePicture(file, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(fileName, "Profile picture was uploaded successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(fileName, i18n.translate("controller.user.upload-profile-picture.successful")));
   }
 
   @GetMapping("{username}/profile-picture")
