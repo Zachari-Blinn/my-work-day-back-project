@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.Exercise;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
+import com.blinnproject.myworkdayback.service.MessageService;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,11 @@ import java.util.List;
 @RequestMapping("/api/exercise")
 public class ExerciseController {
 
+  private final MessageService i18n;
   private final ExerciseService exerciseService;
 
-  public ExerciseController(ExerciseService exerciseService) {
+  public ExerciseController(MessageService i18n, ExerciseService exerciseService) {
+    this.i18n = i18n;
     this.exerciseService = exerciseService;
   }
 
@@ -33,6 +36,6 @@ public class ExerciseController {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    return ResponseEntity.ok(GenericResponse.success(exercises, "List all exercises successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(exercises, i18n.getRequestLocalizedMessage("controller.exercise.list-all","successful")));
   }
 }

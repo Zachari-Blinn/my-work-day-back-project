@@ -10,6 +10,7 @@ import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
+import com.blinnproject.myworkdayback.service.MessageService;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,9 +28,11 @@ import java.util.*;
 @RequestMapping("/api/training")
 public class TrainingController {
 
+  private final MessageService i18n;
   private final TrainingService trainingService;
 
-  public TrainingController(TrainingService trainingService) {
+  public TrainingController(MessageService i18n, TrainingService trainingService) {
+    this.i18n = i18n;
     this.trainingService = trainingService;
   }
 
@@ -37,10 +40,13 @@ public class TrainingController {
   public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody TrainingCreateDTO trainingDTO) {
     Training training = trainingService.create(trainingDTO);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(training, "Training was successfully created!"));
+    return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(training, i18n.getRequestLocalizedMessage("controller.training.create","successful")));
   }
 
-  @Deprecated
+  /**
+   * @deprecated
+   */
+  @Deprecated(since = "1.0", forRemoval = false)
   @GetMapping("/current-user")
   public ResponseEntity<GenericResponse<List<Training>>> getCurrentUserTrainings() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -49,14 +55,14 @@ public class TrainingController {
     if (trainings.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    return ResponseEntity.ok(GenericResponse.success(trainings, "Return all trainings of current user successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(trainings, i18n.getRequestLocalizedMessage("controller.training.return-all-trainings","successful")));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<GenericResponse<Training>> getTrainingById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
     Optional<Training> trainingData = trainingService.findById(id, userDetails.getId());
 
-    return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, "Return training by id successfully!"))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, i18n.getRequestLocalizedMessage("controller.training.return-training-by-id","successful")))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   @PostMapping("/{trainingId}/exercise/{exerciseId}")
@@ -68,7 +74,7 @@ public class TrainingController {
   ) {
     TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, exerciseId, trainingExercisesDTO, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Exercise added to training successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, i18n.getRequestLocalizedMessage("controller.training.add-exercise","successful")));
   }
 
   @Deprecated
@@ -80,7 +86,7 @@ public class TrainingController {
   ) {
     List<TrainingExercises> trainingExercises;
 
-    if (fetchTemplate) {
+    if (Boolean.TRUE.equals(fetchTemplate)) {
       trainingExercises = this.trainingService.getTemplateExercisesByTrainingId(trainingId, userDetails.getId());
     } else {
       trainingExercises = this.trainingService.getExercisesByTrainingId(trainingId, userDetails.getId());
@@ -97,7 +103,7 @@ public class TrainingController {
   ) {
     List<TrainingExercises> createdTrainingExercises = this.trainingService.validateTraining(trainingParentId, trainingDate, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Validate training session successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, i18n.getRequestLocalizedMessage("controller.training.validate", "successful")));
   }
 
   @PostMapping("/{trainingParentId}/modify-and-validate/{trainingDate}")
@@ -109,7 +115,7 @@ public class TrainingController {
   ) {
     List<TrainingExercises> createdTrainingExercises = this.trainingService.modifyAndValidateTraining(trainingParentId, trainingDate, requestBody, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, "Modify and validate training session successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, i18n.getRequestLocalizedMessage("controller.training.modify-and-validate", "successful")));
   }
 
   @Deprecated
@@ -135,7 +141,7 @@ public class TrainingController {
 
     List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
 
-    return ResponseEntity.ok(GenericResponse.success(transformedData, "Return training session info of selected day successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(transformedData, i18n.getRequestLocalizedMessage("controller.training.return-all-trainings-info","successful")));
   }
 
   @DeleteMapping("/{trainingParentId}/reset/{trainingDate}")
@@ -146,7 +152,7 @@ public class TrainingController {
   ) {
     this.trainingService.resetTrainingDay(trainingParentId, trainingDate, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.getRequestLocalizedMessage("controller.training.reset", "successful")));
   }
 
   @DeleteMapping("/{trainingParentId}/cancel/{trainingDate}")
@@ -157,7 +163,7 @@ public class TrainingController {
   ) {
     this.trainingService.cancelTrainingDay(trainingParentId, trainingDate, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(null, "Cancelled training session info of selected day successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.getRequestLocalizedMessage("controller.training.cancel", "successful")));
   }
 
   @GetMapping("/calendar/{startDate}/{endDate}")
@@ -168,6 +174,6 @@ public class TrainingController {
   ) throws Exception {
     List<TrainingCalendarDTO> result = this.trainingService.getTrainingCalendarInfo(startDate, endDate, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(result, "Return calendar info successfully!"));
+    return ResponseEntity.ok(GenericResponse.success(result, i18n.getRequestLocalizedMessage("controller.training.return-calendar-info", "successful")));
   }
 }
