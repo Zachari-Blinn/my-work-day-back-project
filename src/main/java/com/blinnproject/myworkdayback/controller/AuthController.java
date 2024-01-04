@@ -63,7 +63,7 @@ public class AuthController {
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-      userDetails.getUsername(), userDetails.getEmail(), roles), i18n.getRequestLocalizedMessage("controller.auth.login.successful")));
+      userDetails.getUsername(), userDetails.getEmail(), roles), i18n.translate("controller.auth.login.successful")));
   }
 
   @PostMapping(value = {"/register", "/signup"})
@@ -73,14 +73,14 @@ public class AuthController {
 
     UserInfoResponse createdUser = this.userService.signUp(signUpRequest);
 
-    return ResponseEntity.ok(GenericResponse.success(createdUser, i18n.getRequestLocalizedMessage("controller.auth.register.successful")));
+    return ResponseEntity.ok(GenericResponse.success(createdUser, i18n.translate("controller.auth.register.successful")));
   }
 
   @PostMapping(value = {"logout", "/signout"})
   public ResponseEntity<GenericResponse<?>> logoutUser() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     this.refreshTokenService.deleteByUserId(userDetails.getId());
-    return ResponseEntity.ok(GenericResponse.success(null, i18n.getRequestLocalizedMessage("controller.auth.logout.successful")));
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.auth.logout.successful")));
   }
 
   @PostMapping("/refreshtoken")
@@ -94,18 +94,18 @@ public class AuthController {
         String token = jwtUtils.generateTokenFromUsername(user.getUsername());
         return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
       })
-      .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, i18n.getRequestLocalizedMessage("refreshToken.error.notFound")));
+      .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, i18n.translate("refreshToken.error.notFound")));
   }
 
   @PostMapping("/forgot-password")
   public ResponseEntity<GenericResponse<?>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) throws MessagingException {
     this.userService.forgotPassword(body.getEmail());
-    return ResponseEntity.ok(GenericResponse.success(null, i18n.getRequestLocalizedMessage("controller.auth.forgot-password.successful")));
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.auth.forgot-password.successful")));
   }
 
   @PostMapping("/reset-password")
   public ResponseEntity<GenericResponse<?>> resetPassword(@Valid @RequestBody ResetPasswordRequest body) {
     this.userService.resetPassword(body.getEmail(), body.getToken(), body.getNewPassword());
-    return ResponseEntity.ok(GenericResponse.success(null, i18n.getRequestLocalizedMessage("controller.auth.reset-password.successful")));
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.auth.reset-password.successful")));
   }
 }

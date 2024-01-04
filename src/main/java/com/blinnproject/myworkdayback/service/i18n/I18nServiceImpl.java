@@ -1,7 +1,5 @@
 package com.blinnproject.myworkdayback.service.i18n;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
@@ -20,16 +18,16 @@ public class I18nServiceImpl implements I18nService {
     this.messageSource = messageSource;
   }
 
-  @Value("${raise.app.locale}")
-  private String systemLanguage;
+//  @Value("${raise.app.locale}")
+//  private String systemLanguage;
 
   private Locale locale;
 
-  @PostConstruct
-  private void init() {
-    locale = new Locale.Builder().setLocale(Locale.of(systemLanguage)).build();
-    LocaleContextHolder.setDefaultLocale(locale);
-  }
+//  @PostConstruct
+//  private void init() {
+//    locale = new Locale.Builder().setLocale(Locale.of(systemLanguage)).build();
+//    LocaleContextHolder.setDefaultLocale(locale);
+//  }
 
   public String getMessage(String key) {
     return getMessage(key, "");
@@ -52,11 +50,11 @@ public class I18nServiceImpl implements I18nService {
     }
   }
 
-  public String getRequestLocalizedMessage(String key) {
-    return getRequestLocalizedMessage(key, new ArrayList<>());
+  public String translate(String key) {
+    return translate(key, new ArrayList<>());
   }
 
-  public String getRequestLocalizedMessage(String key, List<String> args) {
+  public String translate(String key, List<String> args) {
     return getMessage(key, args, LocaleContextHolder.getLocale());
   }
 }

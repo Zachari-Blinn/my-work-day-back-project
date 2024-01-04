@@ -36,6 +36,6 @@ public class ExerciseController {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    return ResponseEntity.ok(GenericResponse.success(exercises, i18n.getRequestLocalizedMessage("controller.exercise.list-all.successful")));
+    return ResponseEntity.ok(GenericResponse.success(exercises, i18n.translate("controller.exercise.list-all.successful")));
   }
 }
