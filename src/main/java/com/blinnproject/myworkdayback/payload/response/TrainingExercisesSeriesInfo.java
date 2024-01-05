@@ -16,17 +16,12 @@ import java.util.ArrayList;
 public class TrainingExercisesSeriesInfo {
     private Long trainingId;
     private String trainingName;
-
     private ETrainingStatus trainingStatus;
-
     private ArrayList<EDayOfWeek> trainingDays;
-
     private String trainingIconName;
     private String trainingIconHexadecimalColor;
-
     private Long exerciseId;
     private String exerciseName;
-
     private Long seriesId;
     private int seriesPositionIndex;
     private int seriesRepsCount;

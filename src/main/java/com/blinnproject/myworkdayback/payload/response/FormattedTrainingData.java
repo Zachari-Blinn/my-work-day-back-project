@@ -16,14 +16,10 @@ import java.util.List;
 public class FormattedTrainingData {
   private long trainingId;
   private String trainingName;
-
   private ETrainingStatus trainingStatus;
-
   private ArrayList<EDayOfWeek> trainingDays;
-
   private String trainingIconName;
   private String trainingIconHexadecimalColor;
-
   private List<ExerciseData> trainingExercises;
   private int numberOfExercise;
 

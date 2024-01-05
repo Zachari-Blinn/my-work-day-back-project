@@ -8,7 +8,6 @@ import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
-import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
@@ -118,28 +117,12 @@ public class TrainingController {
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, i18n.translate("controller.training.modify-and-validate.successful")));
   }
 
-  @Deprecated
-  @GetMapping("/{trainingId}/validate/{trainingDate}")
-  public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> returnTrainingSessionInfo(
-      @PathVariable("trainingId") Long trainingId,
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
-      @AuthenticationPrincipal UserDetailsImpl userDetails
-  ) {
-    List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getTrainingSeriesStatusByDate(trainingId, trainingDate, userDetails.getId());
-
-    List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
-
-    return ResponseEntity.ok(GenericResponse.success(transformedData, i18n.translate("controller.training.return-training-info.successful")));
-  }
-
   @GetMapping("/validate/{trainingDate}")
   public ResponseEntity<GenericResponse<List<FormattedTrainingData>>> returnAllTrainingSessionInfo(
       @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    List<TrainingExercisesSeriesInfo> trainingExercisesSeriesInfoList = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate, userDetails.getId());
-
-    List<FormattedTrainingData> transformedData = this.trainingService.formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDate);
+    List<FormattedTrainingData> transformedData = this.trainingService.getAllTrainingsSeriesStatusByDate(trainingDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(transformedData, i18n.translate("controller.training.return-all-trainings-info.successful")));
   }

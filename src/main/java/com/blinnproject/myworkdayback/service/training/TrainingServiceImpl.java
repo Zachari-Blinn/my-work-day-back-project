@@ -9,9 +9,8 @@ import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
-import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
-import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
+import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
@@ -139,98 +138,75 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, createdBy);
   }
 
-  public List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfo> input, Date trainingDate) {
-    Map<Long, FormattedTrainingData> trainingMap = new HashMap<>();
+  private List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfoProjection> projectionList, Date trainingDate) {
+    Map<Long, FormattedTrainingData> trainingDataMap = new HashMap<>();
 
-    for (TrainingExercisesSeriesInfo seriesInfo : input) {
-      EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
-      if (!seriesInfo.getTrainingDays().contains(providedDayDate)) {
-        continue;
-      }
-      long trainingId = seriesInfo.getTrainingId();
+    for (TrainingExercisesSeriesInfoProjection projection : projectionList) {
+      // create training template data
+      long trainingId = projection.getTrainingId();
+      trainingDataMap.computeIfAbsent(trainingId, k -> createNewFormattedTrainingData(projection));
 
-      trainingMap.computeIfAbsent(trainingId, k -> {
-        FormattedTrainingData trainingData = new FormattedTrainingData();
-        trainingData.setTrainingId(seriesInfo.getTrainingId());
-        trainingData.setTrainingName(seriesInfo.getTrainingName());
-        trainingData.setTrainingStatus(seriesInfo.getTrainingStatus());
-        trainingData.setTrainingDays(seriesInfo.getTrainingDays());
-        trainingData.setTrainingIconName(seriesInfo.getTrainingIconName());
-        trainingData.setTrainingIconHexadecimalColor(seriesInfo.getTrainingIconHexadecimalColor());
-        trainingData.setTrainingExercises(new ArrayList<>());
-        trainingData.setNumberOfExercise(0);
-        return trainingData;
-      });
+      // add exercise data
+      FormattedTrainingData trainingData = trainingDataMap.get(trainingId);
+      FormattedTrainingData.ExerciseData exerciseData = getOrCreateExerciseData(trainingData, projection);
 
-      FormattedTrainingData trainingData = trainingMap.get(trainingId);
-      List<FormattedTrainingData.ExerciseData> trainingExercises = trainingData.getTrainingExercises();
-
-      FormattedTrainingData.ExerciseData exerciseData = null;
-
-      for (FormattedTrainingData.ExerciseData existingExercise : trainingExercises) {
-        if (existingExercise.getExerciseId() == seriesInfo.getExerciseId()) {
-          exerciseData = existingExercise;
-          break;
-        }
-      }
-
-      if (exerciseData == null) {
-        exerciseData = new FormattedTrainingData.ExerciseData();
-        exerciseData.setExerciseId(seriesInfo.getExerciseId());
-        exerciseData.setExerciseName(seriesInfo.getExerciseName());
-        exerciseData.setSeries(new ArrayList<>());
-
-        trainingExercises.add(exerciseData);
-        int numberOfExercise = trainingData.getNumberOfExercise();
-        trainingData.setNumberOfExercise(numberOfExercise + 1);
-      }
-
-      List<FormattedTrainingData.ExerciseData.SeriesEntry> seriesList = exerciseData.getSeries();
-      FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry = new FormattedTrainingData.ExerciseData.SeriesEntry();
-      seriesEntry.setId(seriesInfo.getSeriesId());
-      seriesEntry.setPositionIndex(seriesInfo.getSeriesPositionIndex());
-      seriesEntry.setRepsCount(seriesInfo.getSeriesRepsCount());
-      seriesEntry.setRestTime(seriesInfo.getSeriesRestTime());
-      seriesEntry.setWeight(seriesInfo.getSeriesWeight());
-      seriesEntry.setCompleted(seriesInfo.isCompleted());
-
-      seriesList.add(seriesEntry);
+      // add series data
+      FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry = createSeriesEntry(projection);
+      exerciseData.getSeries().add(seriesEntry);
     }
 
-    // Check and update exerciseState after processing series for each exercise
-    for (FormattedTrainingData trainingData : trainingMap.values()) {
-      for (FormattedTrainingData.ExerciseData exerciseData : trainingData.getTrainingExercises()) {
-        ExerciseState exerciseState = ExerciseState.NOT_STARTED;
+    return new ArrayList<>(trainingDataMap.values());
+  }
 
-        for (FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry : exerciseData.getSeries()) {
-          if (seriesEntry.isCompleted()) {
-            exerciseState = ExerciseState.STARTED;
-            break;
-          }
-        }
+  private FormattedTrainingData createNewFormattedTrainingData(TrainingExercisesSeriesInfoProjection seriesInfo) {
+    FormattedTrainingData trainingData = new FormattedTrainingData();
 
-        if (exerciseState == ExerciseState.STARTED) {
-          boolean allSeriesCompleted = exerciseData.getSeries().stream().allMatch(FormattedTrainingData.ExerciseData.SeriesEntry::isCompleted);
-          if (allSeriesCompleted) {
-            exerciseState = ExerciseState.COMPLETED;
-          }
-        }
+    trainingData.setTrainingId(seriesInfo.getTrainingId());
+    trainingData.setTrainingName(seriesInfo.getTrainingName());
+    trainingData.setTrainingDays(seriesInfo.getTrainingDays());
+    trainingData.setTrainingStatus(seriesInfo.getTrainingStatus());
+    trainingData.setTrainingIconName(seriesInfo.getTrainingIconName());
+    trainingData.setTrainingIconHexadecimalColor(seriesInfo.getTrainingIconHexadecimalColor());
+    trainingData.setTrainingExercises(new ArrayList<>());
+    trainingData.setNumberOfExercise(0);
 
-        exerciseData.setExerciseState(exerciseState);
-      }
-    }
+    return trainingData;
+  }
 
-    return new ArrayList<>(trainingMap.values());
+  private FormattedTrainingData.ExerciseData getOrCreateExerciseData(FormattedTrainingData trainingData, TrainingExercisesSeriesInfoProjection seriesInfo) {
+    return trainingData.getTrainingExercises()
+        .stream()
+        .filter(exercise -> exercise.getExerciseId() == seriesInfo.getExerciseId())
+        .findFirst()
+        .orElseGet(() -> {
+          FormattedTrainingData.ExerciseData newExerciseData = new FormattedTrainingData.ExerciseData();
+          newExerciseData.setExerciseId(seriesInfo.getExerciseId());
+          newExerciseData.setExerciseName(seriesInfo.getExerciseName());
+          newExerciseData.setSeries(new ArrayList<>());
+          trainingData.getTrainingExercises().add(newExerciseData);
+          int numberOfExercise = trainingData.getNumberOfExercise();
+          trainingData.setNumberOfExercise(numberOfExercise + 1);
+          return newExerciseData;
+        });
+  }
+
+  private FormattedTrainingData.ExerciseData.SeriesEntry createSeriesEntry(TrainingExercisesSeriesInfoProjection seriesInfo) {
+    FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry = new FormattedTrainingData.ExerciseData.SeriesEntry();
+
+    seriesEntry.setId(seriesInfo.getSeriesId());
+    seriesEntry.setPositionIndex(seriesInfo.getSeriesPositionIndex());
+    seriesEntry.setRepsCount(seriesInfo.getSeriesRepsCount());
+    seriesEntry.setRestTime(seriesInfo.getSeriesRestTime());
+    seriesEntry.setWeight(seriesInfo.getSeriesWeight());
+    seriesEntry.setCompleted(seriesInfo.getIsCompleted());
+
+    return seriesEntry;
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercisesSeriesInfo> getTrainingSeriesStatusByDate(Long trainingId, Date trainingDay, Long createdBy) {
-    return trainingExercisesRepository.getTrainingSeriesStatusByDate(createdBy, trainingId, trainingDay);
-  }
-
-  @Transactional(readOnly = true)
-  public List<TrainingExercisesSeriesInfo> getAllTrainingsSeriesStatusByDate(Date trainingDay, Long createdBy) {
-    return trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(createdBy, trainingDay);
+  public List<FormattedTrainingData> getAllTrainingsSeriesStatusByDate(Date trainingDay, Long createdBy) {
+    List<TrainingExercisesSeriesInfoProjection> trainingExercisesSeriesInfoList = trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(createdBy, trainingDay);
+    return formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDay);
   }
 
   @Transactional

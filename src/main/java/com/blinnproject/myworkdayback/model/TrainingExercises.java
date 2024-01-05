@@ -28,7 +28,7 @@ public class TrainingExercises implements Serializable {
   private TrainingExercises parent;
 
   @ManyToOne
-  @JoinColumn(name = "trainings_id")
+  @JoinColumn(name = "training_id")
   private Training training;
 
   @ManyToOne
