@@ -9,11 +9,13 @@ import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
+import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -138,7 +140,7 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, createdBy);
   }
 
-  private List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(List<TrainingExercisesSeriesInfoProjection> projectionList, Date trainingDate) {
+  private List<FormattedTrainingData> formatTrainingExercisesSeriesInfo(@NotNull List<TrainingExercisesSeriesInfoProjection> projectionList) {
     Map<Long, FormattedTrainingData> trainingDataMap = new HashMap<>();
 
     for (TrainingExercisesSeriesInfoProjection projection : projectionList) {
@@ -155,10 +157,13 @@ public class TrainingServiceImpl implements TrainingService {
       exerciseData.getSeries().add(seriesEntry);
     }
 
+    // update exercise state
+    updateExerciseState(trainingDataMap);
+
     return new ArrayList<>(trainingDataMap.values());
   }
 
-  private FormattedTrainingData createNewFormattedTrainingData(TrainingExercisesSeriesInfoProjection seriesInfo) {
+  private FormattedTrainingData createNewFormattedTrainingData(@NotNull TrainingExercisesSeriesInfoProjection seriesInfo) {
     FormattedTrainingData trainingData = new FormattedTrainingData();
 
     trainingData.setTrainingId(seriesInfo.getTrainingId());
@@ -173,24 +178,27 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingData;
   }
 
-  private FormattedTrainingData.ExerciseData getOrCreateExerciseData(FormattedTrainingData trainingData, TrainingExercisesSeriesInfoProjection seriesInfo) {
+  private FormattedTrainingData.ExerciseData getOrCreateExerciseData(@NotNull FormattedTrainingData trainingData, @NotNull TrainingExercisesSeriesInfoProjection seriesInfo) {
     return trainingData.getTrainingExercises()
         .stream()
         .filter(exercise -> exercise.getExerciseId() == seriesInfo.getExerciseId())
         .findFirst()
         .orElseGet(() -> {
           FormattedTrainingData.ExerciseData newExerciseData = new FormattedTrainingData.ExerciseData();
+
           newExerciseData.setExerciseId(seriesInfo.getExerciseId());
           newExerciseData.setExerciseName(seriesInfo.getExerciseName());
+          newExerciseData.setExerciseState(ExerciseState.NOT_STARTED);
           newExerciseData.setSeries(new ArrayList<>());
           trainingData.getTrainingExercises().add(newExerciseData);
           int numberOfExercise = trainingData.getNumberOfExercise();
           trainingData.setNumberOfExercise(numberOfExercise + 1);
+
           return newExerciseData;
         });
   }
 
-  private FormattedTrainingData.ExerciseData.SeriesEntry createSeriesEntry(TrainingExercisesSeriesInfoProjection seriesInfo) {
+  private FormattedTrainingData.ExerciseData.SeriesEntry createSeriesEntry(@NotNull TrainingExercisesSeriesInfoProjection seriesInfo) {
     FormattedTrainingData.ExerciseData.SeriesEntry seriesEntry = new FormattedTrainingData.ExerciseData.SeriesEntry();
 
     seriesEntry.setId(seriesInfo.getSeriesId());
@@ -203,10 +211,30 @@ public class TrainingServiceImpl implements TrainingService {
     return seriesEntry;
   }
 
+  private void updateExerciseState(@NotNull Map<Long, @NotNull FormattedTrainingData> trainingDataMap) {
+    for (FormattedTrainingData trainingData : trainingDataMap.values()) {
+      for (FormattedTrainingData.ExerciseData exerciseData : trainingData.getTrainingExercises()) {
+        ExerciseState exerciseState = calculateExerciseState(exerciseData);
+        exerciseData.setExerciseState(exerciseState);
+      }
+    }
+  }
+
+  private ExerciseState calculateExerciseState(@NotNull FormattedTrainingData.ExerciseData exerciseData) {
+    boolean seriesCompleted = exerciseData.getSeries().stream().anyMatch(FormattedTrainingData.ExerciseData.SeriesEntry::isCompleted);
+
+    if (seriesCompleted) {
+      boolean allSeriesCompleted = exerciseData.getSeries().stream().allMatch(FormattedTrainingData.ExerciseData.SeriesEntry::isCompleted);
+      return allSeriesCompleted ? ExerciseState.COMPLETED : ExerciseState.STARTED;
+    }
+
+    return ExerciseState.NOT_STARTED;
+  }
+
   @Transactional(readOnly = true)
   public List<FormattedTrainingData> getAllTrainingsSeriesStatusByDate(Date trainingDay, Long createdBy) {
     List<TrainingExercisesSeriesInfoProjection> trainingExercisesSeriesInfoList = trainingExercisesRepository.getAllTrainingsSeriesStatusByDate(createdBy, trainingDay);
-    return formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList, trainingDay);
+    return formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
   }
 
   @Transactional

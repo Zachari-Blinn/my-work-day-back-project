@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.repository;
 
 import com.blinnproject.myworkdayback.model.TrainingExercises;
-import com.blinnproject.myworkdayback.payload.response.TrainingExercisesSeriesInfo;
 import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -59,7 +59,10 @@ public interface TrainingExercisesRepository extends JpaRepository<TrainingExerc
         AND (training_template.start_date IS NULL OR training_template.start_date <= CAST(:selectedTrainingDay AS DATE))
         AND (training_template.end_date IS NULL OR training_template.end_date >= CAST(:selectedTrainingDay AS DATE))
         AND EXTRACT(ISODOW FROM CAST(:selectedTrainingDay AS timestamp)) IN (SELECT unnest(training_template.training_days))
-        """,
-        nativeQuery = true)
-    List<TrainingExercisesSeriesInfoProjection> getAllTrainingsSeriesStatusByDate(Long currentUser, Date selectedTrainingDay);
+    """,
+    nativeQuery = true)
+    List<TrainingExercisesSeriesInfoProjection> getAllTrainingsSeriesStatusByDate(
+        @NotNull Long currentUser,
+        @NotNull Date selectedTrainingDay
+    );
 }
