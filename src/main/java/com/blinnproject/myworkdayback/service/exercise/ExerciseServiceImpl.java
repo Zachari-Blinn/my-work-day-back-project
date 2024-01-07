@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.service.exercise;
 
 import com.blinnproject.myworkdayback.model.Exercise;
 import com.blinnproject.myworkdayback.repository.ExerciseRepository;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +22,8 @@ public class ExerciseServiceImpl implements ExerciseService {
   }
 
   @Override
-  public List<Exercise> findAll() {
-    return exerciseRepository.findAll();
+  public List<Exercise> findAll(@NotNull Long createdBy) {
+    return exerciseRepository.findAllByCreatedByOrCreatedByIsNull(createdBy);
   }
 
   @Override
