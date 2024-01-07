@@ -1,6 +1,5 @@
 package com.blinnproject.myworkdayback.config;
 
-import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -39,16 +38,16 @@ public class WebConfig implements WebMvcConfigurer {
             .fromSerializer(new GenericJackson2JsonRedisSerializer()));
   }
 
-  @Bean
-  public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
-    return (builder) -> builder
-        .withCacheConfiguration("userCache",
-            RedisCacheConfiguration
-                .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(20)))
-        .withCacheConfiguration("dataCache",
-            RedisCacheConfiguration
-                .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(5)));
-  }
+//  @Bean
+//  public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
+//    return (builder) -> builder
+//        .withCacheConfiguration("userCache",
+//            RedisCacheConfiguration
+//                .defaultCacheConfig()
+//                .entryTtl(Duration.ofMinutes(20)))
+//        .withCacheConfiguration("dataCache",
+//            RedisCacheConfiguration
+//                .defaultCacheConfig()
+//                .entryTtl(Duration.ofMinutes(5)));
+//  }
 }
