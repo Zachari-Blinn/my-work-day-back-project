@@ -7,6 +7,7 @@ import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExe
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
 import java.util.List;
@@ -37,4 +38,6 @@ public interface TrainingService {
   void resetTrainingDay(Long trainingParentId, Date trainingDay, Long createdBy);
 
   List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate, Long createdBy) throws Exception;
+
+  List<?> getAllTrainingSessionsInfoCSV(Date startDate, Date endDate, Long createdBy);
 }

@@ -1,0 +1,27 @@
+package com.blinnproject.myworkdayback.payload.dto.training_exercises;
+
+import com.blinnproject.myworkdayback.payload.dto.exercise.ExerciseDto;
+import com.blinnproject.myworkdayback.payload.dto.series.SeriesDto;
+import com.blinnproject.myworkdayback.payload.dto.training.TrainingDto;
+import jakarta.validation.constraints.Min;
+import lombok.Value;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * DTO for {@link com.blinnproject.myworkdayback.model.TrainingExercises}
+ */
+@Value
+public class TrainingExercisesDto implements Serializable {
+  Long id;
+  TrainingExercisesDto parent;
+  TrainingDto training;
+  ExerciseDto exercise;
+  List<SeriesDto> seriesList;
+  String notes;
+  @Min(0)
+  int numberOfWarmUpSeries;
+  Date trainingDay;
+}

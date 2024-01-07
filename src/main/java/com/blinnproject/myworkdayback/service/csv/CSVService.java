@@ -1,7 +1,9 @@
 package com.blinnproject.myworkdayback.service.csv;
 
-import java.io.Writer;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Date;
 
 public interface CSVService {
-  void trainingSessionToCsv(Writer writer);
+  ByteArrayInputStream trainingSessionToCsv(Long createdBy, Date startDate, Date endDate) throws RuntimeException, IOException;
 }

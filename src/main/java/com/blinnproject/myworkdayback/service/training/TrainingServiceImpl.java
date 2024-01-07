@@ -12,6 +12,7 @@ import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseState;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
+import com.blinnproject.myworkdayback.payload.response.TrainingSessionInfoResponse;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
@@ -278,5 +279,10 @@ public class TrainingServiceImpl implements TrainingService {
       formattedData.add(formattedItem);
     }
     return formattedData;
+  }
+
+  @Transactional(readOnly = true)
+  public List<TrainingSessionInfoResponse> getAllTrainingSessionsInfoCSV(Date startDate, Date endDate, Long createdBy) {
+    return trainingRepository.findAllTrainingSession(createdBy, startDate, endDate);
   }
 }

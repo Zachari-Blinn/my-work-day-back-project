@@ -9,17 +9,22 @@ import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.FormattedTrainingData;
 import com.blinnproject.myworkdayback.payload.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
+import com.blinnproject.myworkdayback.service.csv.CSVService;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.training.TrainingService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -29,10 +34,12 @@ public class TrainingController {
 
   private final I18nService i18n;
   private final TrainingService trainingService;
+  private final CSVService csvService;
 
-  public TrainingController(I18nService i18nService, TrainingService trainingService) {
+  public TrainingController(I18nService i18nService, TrainingService trainingService, CSVService csvService) {
     this.i18n = i18nService;
     this.trainingService = trainingService;
+    this.csvService = csvService;
   }
 
   @PostMapping()
@@ -158,5 +165,20 @@ public class TrainingController {
     List<TrainingCalendarDTO> result = this.trainingService.getTrainingCalendarInfo(startDate, endDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(result, i18n.translate("controller.training.return-calendar-info.successful")));
+  }
+
+  @GetMapping("/csv/{startDate}/{endDate}")
+  public ResponseEntity<?> returnAllTrainingSessionsInfoCSV(
+      @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+      @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) throws IOException {
+    String filename = userDetails.getUsername() + "_training-sessions.csv";
+    InputStreamResource file = new InputStreamResource(csvService.trainingSessionToCsv(userDetails.getId(), startDate, endDate));
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+        .contentType(MediaType.parseMediaType("application/csv"))
+        .body(file);
   }
 }
