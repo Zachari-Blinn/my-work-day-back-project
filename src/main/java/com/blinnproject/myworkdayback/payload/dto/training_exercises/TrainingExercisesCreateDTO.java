@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.payload.dto.training_exercises;
 import com.blinnproject.myworkdayback.model.Series;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,6 +12,10 @@ import java.util.Date;
 
 @Data
 public class TrainingExercisesCreateDTO {
+
+  @Min(0)
+  int positionIndex;
+
   private String notes;
 
   @Min(0)

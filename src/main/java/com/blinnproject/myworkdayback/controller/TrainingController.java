@@ -83,7 +83,6 @@ public class TrainingController {
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, i18n.translate("controller.training.add-exercise.successful")));
   }
 
-  @Deprecated
   @GetMapping("/{trainingId}/exercises")
   public ResponseEntity<GenericResponse<List<TrainingExercises>>> getExercisesByTrainingId(
       @RequestParam(defaultValue = "false") Boolean fetchTemplate,

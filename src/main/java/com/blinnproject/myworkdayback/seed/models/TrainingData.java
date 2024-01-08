@@ -86,22 +86,22 @@ public class TrainingData {
     Exercise militaryPressExercise = this.exerciseData.getExerciseByName("Military Press");
 
     List<Series> benchPressSeriesList = new ArrayList<>();
-    Series benchPressSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
+    Series benchPressSeries1 = createSeries(8, 50, "01:00", this.user.getId());
     benchPressSeriesList.add(benchPressSeries1);
-    Series benchPressSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    Series benchPressSeries2 = createSeries(10, 60, "02:00", this.user.getId());
     benchPressSeriesList.add(benchPressSeries2);
-    Series benchPressSeries3 = createSeries(3, 10, 60, "02:00", this.user.getId());
+    Series benchPressSeries3 = createSeries(10, 60, "02:00", this.user.getId());
     benchPressSeriesList.add(benchPressSeries3);
 
     List<Series> militaryPressSeriesList = new ArrayList<>();
-    Series militaryPressSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
+    Series militaryPressSeries1 = createSeries(8, 50, "01:00", this.user.getId());
     militaryPressSeriesList.add(militaryPressSeries1);
-    Series militaryPressSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    Series militaryPressSeries2 = createSeries(10, 60, "02:00", this.user.getId());
     militaryPressSeriesList.add(militaryPressSeries2);
 
-    TrainingExercises benchPressTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, benchPressExercise, "Bench press note", benchPressSeriesList);
+    TrainingExercises benchPressTrainingExercises = this.createTrainingExercises(1, hautDuCorpsTraining, benchPressExercise, "Bench press note", benchPressSeriesList);
     this.trainingExercisesList.add(benchPressTrainingExercises);
-    TrainingExercises militaryPressTrainingExercises = this.createTrainingExercises(hautDuCorpsTraining, militaryPressExercise, "Military press note", militaryPressSeriesList);
+    TrainingExercises militaryPressTrainingExercises = this.createTrainingExercises(2, hautDuCorpsTraining, militaryPressExercise, "Military press note", militaryPressSeriesList);
     this.trainingExercisesList.add(militaryPressTrainingExercises);
 
     Training basDuCorpsTraining = this.getTrainingByName("Bas du corps");
@@ -109,22 +109,23 @@ public class TrainingData {
     Exercise squatExercise = this.exerciseData.getExerciseByName("Squat");
 
     List<Series> squatSeriesList = new ArrayList<>();
-    Series squatSeries1 = createSeries(1, 8, 50, "01:00", this.user.getId());
+    Series squatSeries1 = createSeries(8, 50, "01:00", this.user.getId());
     squatSeriesList.add(squatSeries1);
-    Series squatSeries2 = createSeries(2, 10, 60, "02:00", this.user.getId());
+    Series squatSeries2 = createSeries(10, 60, "02:00", this.user.getId());
     squatSeriesList.add(squatSeries2);
-    Series squatSeries3 = createSeries(3, 10, 60, "02:00", this.user.getId());
+    Series squatSeries3 = createSeries(10, 60, "02:00", this.user.getId());
     squatSeriesList.add(squatSeries3);
 
-    TrainingExercises squatTrainingExercises = this.createTrainingExercises(basDuCorpsTraining, squatExercise, "Squat note", squatSeriesList);
+    TrainingExercises squatTrainingExercises = this.createTrainingExercises(1, basDuCorpsTraining, squatExercise, "Squat note", squatSeriesList);
     this.trainingExercisesList.add(squatTrainingExercises);
 
     this.trainingExercisesRepository.saveAll(this.trainingExercisesList);
   }
 
-  private TrainingExercises createTrainingExercises(Training training, Exercise exercise, String notes, List<Series> seriesList) {
+  private TrainingExercises createTrainingExercises(int positionIndex, Training training, Exercise exercise, String notes, List<Series> seriesList) {
     TrainingExercises trainingExercises = new TrainingExercises();
 
+    trainingExercises.setPositionIndex(positionIndex);
     trainingExercises.setTraining(training);
     trainingExercises.setExercise(exercise);
     trainingExercises.setNotes(notes);
@@ -134,9 +135,9 @@ public class TrainingData {
     return trainingExercises;
   }
 
-  private Series createSeries(int positionIndex, int repsCount, int weight, String restTime, Long userId) {
+  private Series createSeries(int repsCount, int weight, String restTime, Long userId) {
     Series series = new Series();
-    series.setPositionIndex(positionIndex);
+
     series.setRepsCount(repsCount);
     series.setRestTime(restTime);
     series.setWeight(weight);

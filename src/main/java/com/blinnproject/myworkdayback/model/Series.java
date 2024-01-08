@@ -43,4 +43,5 @@ public class Series extends BaseEntityAudit {
     this(that.getPositionIndex(), null, that.getWeight(), that.getRestTime(), that.getNotes(), that.getRepsCount(), that.getDifficulty());
     this.setParent(that);
   }
+
 }
