@@ -90,7 +90,7 @@ CREATE TABLE training
     end_date               date,
     performed_date         date,
     description            OID,
-    has_warp_up            BOOLEAN                                 NOT NULL,
+    has_warm_up            BOOLEAN                                 NOT NULL,
     has_stretching         BOOLEAN                                 NOT NULL,
     icon_name              VARCHAR(255)                            NOT NULL,
     icon_hexadecimal_color VARCHAR(255),

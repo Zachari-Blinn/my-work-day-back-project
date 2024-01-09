@@ -25,7 +25,7 @@ public class TrainingCreateDTO {
 
   private String description;
 
-  private Boolean hasWarpUp;
+  private Boolean hasWarmUp;
 
   private Boolean hasStretching;
 

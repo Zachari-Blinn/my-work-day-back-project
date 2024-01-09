@@ -3,7 +3,6 @@ package com.blinnproject.myworkdayback.payload.dto.series;
 import com.blinnproject.myworkdayback.model.EDifficulty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
 import java.io.Serializable;

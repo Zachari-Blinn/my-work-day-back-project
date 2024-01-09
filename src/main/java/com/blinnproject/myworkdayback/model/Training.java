@@ -51,7 +51,7 @@ public class Training extends BaseEntityAudit {
   private String description;
 
   @Column(nullable = false)
-  private Boolean hasWarpUp = true;
+  private Boolean hasWarmUp = true;
 
   @Column(nullable = false)
   private Boolean hasStretching = false;
@@ -74,12 +74,12 @@ public class Training extends BaseEntityAudit {
 
   // Constructor used for clone to new entity Training
   public Training(Training that) {
-    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), that.getTrainingStatus(), that.getStartDate(), that.getEndDate(),that.getPerformedDate(), that.getDescription(), that.getHasWarpUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null, null);
+    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), that.getTrainingStatus(), that.getStartDate(), that.getEndDate(),that.getPerformedDate(), that.getDescription(), that.gethasWarmUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null, null);
 
     this.setParent(that);
   }
 
   public Training(TrainingCreateDTO that) {
-    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), null, that.getStartDate(), that.getEndDate(), null, that.getDescription(), that.getHasWarpUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null, null);
+    this(that.getName(), that.getSportPreset(), that.getTrainingDays(), null, that.getStartDate(), that.getEndDate(), null, that.getDescription(), that.gethasWarmUp(), that.getHasStretching(), that.getIconName(), that.getIconHexadecimalColor(), null, null);
   }
 }

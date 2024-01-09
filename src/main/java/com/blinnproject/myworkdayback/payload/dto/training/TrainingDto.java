@@ -29,7 +29,7 @@ public class TrainingDto implements Serializable {
   Date endDate;
   Date performedDate;
   String description;
-  Boolean hasWarpUp;
+  Boolean hasWarmUp;
   Boolean hasStretching;
   String iconName;
   String iconHexadecimalColor;
