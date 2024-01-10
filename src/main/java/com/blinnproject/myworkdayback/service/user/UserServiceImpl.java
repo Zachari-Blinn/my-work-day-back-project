@@ -61,7 +61,6 @@ public class UserServiceImpl implements UserService {
     return userRepository.findById(userId);
   }
 
-  @Transactional
   public void forgotPassword(String email) throws MessagingException {
     Optional<User> user = userRepository.findByEmail(email);
 
