@@ -33,6 +33,7 @@ public class UserData {
 
       this.userList.add(new User("jean-sebastien", "jean-sebastien@fake-email.fr", EGender.MAN, encoder.encode("Toto@123*")));
       this.userList.add(new User("jean-baptiste", "jean-baptiste@fake-email.fr", EGender.NOT_SPECIFIED, encoder.encode("Toto@123*")));
+      this.userList.add(new User("test", "test@test.fr", EGender.NOT_SPECIFIED, encoder.encode("test")));
       // Add more user here
 
       userRepository.saveAll(this.userList);
