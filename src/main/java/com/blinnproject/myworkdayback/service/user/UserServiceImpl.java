@@ -110,4 +110,23 @@ public class UserServiceImpl implements UserService {
       throw new ResetPasswordTokenInvalidException("Token invalid.");
     }
   }
+
+  public void checkResetPasswordToken(String email, String token) {
+    PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserEmail(email)
+      .orElseThrow(() -> new TokenNotFoundException("Token not found with email: " + email));
+
+    if (passwordResetToken.getAttempts() > 3) {
+      passwordResetTokenRepository.delete(passwordResetToken);
+      throw new ResetPasswordTokenAttemptsExceededException("Number of attempts exceeded.");
+    }
+
+    if (passwordResetToken.getExpiryDate().getTime() < System.currentTimeMillis()) {
+      passwordResetTokenRepository.delete(passwordResetToken);
+      throw new ResetPasswordTokenExpiredException("Token expired.");
+    }
+
+    if (!encoder.matches(String.valueOf(token), passwordResetToken.getToken())) {
+      throw new ResetPasswordTokenInvalidException("Token invalid.");
+    }
+  }
 }

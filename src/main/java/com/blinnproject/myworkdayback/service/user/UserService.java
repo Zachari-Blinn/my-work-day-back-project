@@ -21,4 +21,6 @@ public interface UserService {
   void forgotPassword(String email) throws MessagingException;
 
   void resetPassword(String email, int token, String newPassword);
+
+  void checkResetPasswordToken(String email, String token);
 }

@@ -20,10 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -101,6 +98,12 @@ public class AuthController {
   public ResponseEntity<GenericResponse<?>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest body) throws MessagingException {
     this.userService.forgotPassword(body.getEmail());
     return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.auth.forgot-password.successful")));
+  }
+
+  @GetMapping("/verify-password-token/{email}/{token}")
+  public ResponseEntity<GenericResponse<?>> validateResetPasswordToken(@PathVariable String email, @PathVariable String token) {
+    this.userService.checkResetPasswordToken(email, token);
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.auth.reset-password-token.successful")));
   }
 
   @PostMapping("/reset-password")
