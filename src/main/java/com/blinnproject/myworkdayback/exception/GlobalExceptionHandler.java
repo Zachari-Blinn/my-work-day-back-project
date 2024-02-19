@@ -162,4 +162,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.NOT_FOUND)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({TrainingSessionTemplateNotFoundException.class})
+  public ResponseEntity<Object> handleTrainingSessionTemplateNotFoundException(TrainingSessionTemplateNotFoundException exception) {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
 }

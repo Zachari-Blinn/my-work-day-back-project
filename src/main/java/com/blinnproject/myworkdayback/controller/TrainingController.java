@@ -180,4 +180,18 @@ public class TrainingController {
         .contentType(MediaType.parseMediaType("application/csv"))
         .body(file);
   }
+
+  @PatchMapping("/{trainingParentId}/validate/{trainingDate}")
+  public ResponseEntity<?> patchTrainingSession(
+      @PathVariable("trainingParentId") Long trainingParentId,
+      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date trainingDate,
+      @RequestBody ModifyAndValidateRequest requestBody,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    this.trainingService.patchTrainingSessionByParent(trainingParentId, trainingDate, requestBody, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.training.patch.successful")));
+  }
+
+  // todo patch /trainingId/validate
 }

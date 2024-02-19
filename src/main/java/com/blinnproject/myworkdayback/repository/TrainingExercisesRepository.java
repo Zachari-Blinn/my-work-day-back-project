@@ -11,8 +11,14 @@ import java.util.List;
 
 @Repository
 public interface TrainingExercisesRepository extends JpaRepository<TrainingExercises, Long> {
-    @Query("SELECT te FROM TrainingExercises te WHERE te.training.id = :trainingId AND te.parent = NULL AND te.training.createdBy = :createdBy")
-    List<TrainingExercises> findTemplateByTrainingIdAndCreatedBy(Long trainingId, Long createdBy);
+    @Query("""
+        SELECT te
+        FROM TrainingExercises te
+        WHERE te.training.id = :trainingParentId
+        AND te.parent = NULL
+        AND te.training.createdBy = :createdBy
+    """)
+    List<TrainingExercises> findTemplateByTrainingIdAndCreatedBy(Long trainingParentId, Long createdBy);
 
     List<TrainingExercises> findByTrainingIdAndTrainingCreatedBy(Long trainingId, Long createdBy);
 

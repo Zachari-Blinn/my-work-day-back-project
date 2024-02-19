@@ -1,9 +1,6 @@
 package com.blinnproject.myworkdayback.service.training;
 
-import com.blinnproject.myworkdayback.exception.InvalidDayOfWeekProvidedForTraining;
-import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
-import com.blinnproject.myworkdayback.exception.TrainingAlreadyPerformedException;
-import com.blinnproject.myworkdayback.exception.TrainingWithCurrentUserNotFound;
+import com.blinnproject.myworkdayback.exception.*;
 import com.blinnproject.myworkdayback.model.*;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
@@ -55,12 +52,13 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingRepository.findByIdAndCreatedBy(id, createdBy);
   }
 
-  @Transactional
-  public List<TrainingExercises> validateTraining(Long trainingId, Date trainingDate, Long createdBy) {
+  public List<TrainingExercises> validateTraining(Long trainingParentId, Date trainingDate, Long createdBy) {
     // Check if training with the same performed date already exists
-    checkIfTrainingAlreadyPerformed(trainingId, trainingDate, createdBy);
+    if (verifyIfTrainingSessionAlreadyPerformed(trainingParentId, trainingDate, createdBy)) {
+      throw new TrainingAlreadyPerformedException("Training with id " + trainingParentId + " and performed date " + trainingDate + " already exists");
+    }
 
-    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
+    Training training = this.trainingRepository.findByIdAndCreatedBy(trainingParentId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingParentId + " does not belong to current user"));
 
     EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
 
@@ -68,7 +66,7 @@ public class TrainingServiceImpl implements TrainingService {
       throw new InvalidDayOfWeekProvidedForTraining("The day: " + providedDayDate + " is not in training days list: " + training.getTrainingDays());
     }
 
-    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, training.getCreatedBy());
+    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingParentId, training.getCreatedBy());
 
     Training clonedTraining = new Training(training);
     clonedTraining.setTrainingStatus(ETrainingStatus.PERFORMED);
@@ -86,16 +84,15 @@ public class TrainingServiceImpl implements TrainingService {
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
-  private void checkIfTrainingAlreadyPerformed(Long trainingId, Date trainingDate, Long createdBy) {
-    if (trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy)) {
-      throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
-    }
+  private boolean verifyIfTrainingSessionAlreadyPerformed(Long trainingId, Date trainingDate, Long createdBy) {
+    return trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy);
   }
 
-  @Transactional
   public List<TrainingExercises> modifyAndValidateTraining(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy) {
     // Check if training with the same performed date already exists
-    checkIfTrainingAlreadyPerformed(trainingId, trainingDate, createdBy);
+     if (verifyIfTrainingSessionAlreadyPerformed(trainingId, trainingDate, createdBy)) {
+       throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
+     }
 
     Training originalTraining = this.trainingRepository.findByIdAndCreatedBy(trainingId, createdBy).orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
 
@@ -284,5 +281,23 @@ public class TrainingServiceImpl implements TrainingService {
   @Transactional(readOnly = true)
   public List<TrainingSessionInfoResponse> getAllTrainingSessionsInfoCSV(Date startDate, Date endDate, Long createdBy) {
     return trainingRepository.findAllTrainingSession(createdBy, startDate, endDate);
+  }
+
+  public void patchTrainingSessionByParent(Long trainingParentId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy) {
+    // check if trainingParentId exist, belong to current user and is a template
+    if (!verifyTrainingSessionTemplate(trainingParentId, createdBy)) {
+      throw new TrainingSessionTemplateNotFoundException("Training session with id " + trainingParentId + " does not exist or does not belong to current user or is not a template");
+    }
+
+    // check if training session already exists, if not create it, if yes, update it
+    if (verifyIfTrainingSessionAlreadyPerformed(trainingParentId, trainingDate, createdBy)) {
+      // todo modify training session
+    } else {
+      // todo create training session
+    }
+  }
+
+  private boolean verifyTrainingSessionTemplate(Long trainingParentId, Long createdBy) {
+    return trainingRepository.trainingSessionTemplateExists(trainingParentId, createdBy);
   }
 }

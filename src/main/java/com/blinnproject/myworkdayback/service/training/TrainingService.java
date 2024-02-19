@@ -21,7 +21,7 @@ public interface TrainingService {
 
   Optional<Training> findById(Long id, Long createdBy);
 
-  List<TrainingExercises> validateTraining(Long trainingId, Date trainingDay, Long createdBy);
+  List<TrainingExercises> validateTraining(Long trainingParentId, Date trainingDay, Long createdBy);
 
   TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO, Long createdBy);
 
@@ -40,4 +40,6 @@ public interface TrainingService {
   List<TrainingCalendarDTO> getTrainingCalendarInfo(Date startDate, Date endDate, Long createdBy) throws Exception;
 
   List<?> getAllTrainingSessionsInfoCSV(Date startDate, Date endDate, Long createdBy);
+
+  void patchTrainingSessionByParent(Long trainingParentId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy);
 }

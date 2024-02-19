@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.repository;
 
 import com.blinnproject.myworkdayback.model.ETrainingStatus;
 import com.blinnproject.myworkdayback.model.Training;
+import com.blinnproject.myworkdayback.model.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingSessionInfoResponse;
 import jakarta.validation.constraints.NotNull;
@@ -98,4 +99,15 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
     ORDER BY training.performedDate ASC, series.positionIndex ASC
   """)
   List<TrainingSessionInfoResponse> findAllTrainingSession(Long currentUserId, Date startDate, Date endDate);
+
+  @Query("""
+    SELECT CASE WHEN EXISTS (
+      SELECT training
+      FROM Training training
+      WHERE training.id = :trainingParentId
+      AND training.parent = NULL
+      AND training.createdBy = :createdBy
+    ) THEN true ELSE false END
+  """)
+  boolean trainingSessionTemplateExists(Long trainingParentId, Long createdBy);
 }
