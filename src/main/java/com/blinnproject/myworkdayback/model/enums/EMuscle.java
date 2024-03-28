@@ -1,4 +1,4 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.enums;
 
 public enum EMuscle {
   PECTORALIS_MAJOR,

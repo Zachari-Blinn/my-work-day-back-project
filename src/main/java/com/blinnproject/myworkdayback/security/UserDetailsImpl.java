@@ -4,7 +4,7 @@ import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

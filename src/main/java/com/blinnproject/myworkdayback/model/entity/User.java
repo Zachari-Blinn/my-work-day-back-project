@@ -1,6 +1,9 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.entity;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
+import com.blinnproject.myworkdayback.model.entity.ProfilePicture;
+import com.blinnproject.myworkdayback.model.entity.Role;
+import com.blinnproject.myworkdayback.model.enums.EGender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;

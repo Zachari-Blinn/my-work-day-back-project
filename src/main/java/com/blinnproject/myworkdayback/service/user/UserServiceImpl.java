@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.service.user;
 
 import com.blinnproject.myworkdayback.exception.*;
-import com.blinnproject.myworkdayback.model.PasswordResetToken;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.PasswordResetToken;
+import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
 import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.repository.PasswordResetTokenRepository;

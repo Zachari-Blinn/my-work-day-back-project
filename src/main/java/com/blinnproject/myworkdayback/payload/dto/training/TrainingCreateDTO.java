@@ -2,7 +2,7 @@ package com.blinnproject.myworkdayback.payload.dto.training;
 
 import com.blinnproject.myworkdayback.constraint.HexadecimalColorConstraint;
 import com.blinnproject.myworkdayback.constraint.IconNameConstraint;
-import com.blinnproject.myworkdayback.model.EDayOfWeek;
+import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.RefreshToken;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.RefreshToken;
+import com.blinnproject.myworkdayback.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;

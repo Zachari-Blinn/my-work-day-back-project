@@ -2,8 +2,8 @@ package com.blinnproject.myworkdayback.service.profile_picture;
 
 import com.blinnproject.myworkdayback.exception.ProfilePictureIsEmptyException;
 import com.blinnproject.myworkdayback.exception.ProfilePictureNotFoundException;
-import com.blinnproject.myworkdayback.model.ProfilePicture;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.ProfilePicture;
+import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.repository.ProfilePictureRepository;
 import com.blinnproject.myworkdayback.service.user.UserService;
 import com.blinnproject.myworkdayback.util.ImageUtil;

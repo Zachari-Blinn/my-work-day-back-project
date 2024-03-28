@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.service.exercise;
 
-import com.blinnproject.myworkdayback.model.Exercise;
+import com.blinnproject.myworkdayback.model.entity.Exercise;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;

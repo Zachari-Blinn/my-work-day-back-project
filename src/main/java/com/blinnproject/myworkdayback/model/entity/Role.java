@@ -1,5 +1,6 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.entity;
 
+import com.blinnproject.myworkdayback.model.enums.ERole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

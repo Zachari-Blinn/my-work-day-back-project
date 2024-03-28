@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.payload.response;
 
-import com.blinnproject.myworkdayback.model.EGender;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.enums.EGender;
+import com.blinnproject.myworkdayback.model.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 

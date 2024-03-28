@@ -1,4 +1,4 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

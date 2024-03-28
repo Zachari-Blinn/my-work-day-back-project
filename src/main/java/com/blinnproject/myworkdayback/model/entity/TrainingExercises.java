@@ -1,4 +1,4 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.entity;
 
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import jakarta.persistence.*;

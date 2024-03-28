@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.ProfilePicture;
+import com.blinnproject.myworkdayback.model.entity.ProfilePicture;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;

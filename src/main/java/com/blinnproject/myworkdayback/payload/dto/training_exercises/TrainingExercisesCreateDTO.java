@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.dto.training_exercises;
 
-import com.blinnproject.myworkdayback.model.Series;
+import com.blinnproject.myworkdayback.model.entity.Series;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.Data;

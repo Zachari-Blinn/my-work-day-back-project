@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.request;
 
-import com.blinnproject.myworkdayback.model.EGender;
+import com.blinnproject.myworkdayback.model.enums.EGender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

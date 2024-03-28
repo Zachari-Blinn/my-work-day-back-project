@@ -1,9 +1,8 @@
 package com.blinnproject.myworkdayback.security.services;
 
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

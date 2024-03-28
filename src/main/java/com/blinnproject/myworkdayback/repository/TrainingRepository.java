@@ -1,8 +1,7 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.ETrainingStatus;
-import com.blinnproject.myworkdayback.model.Training;
-import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
+import com.blinnproject.myworkdayback.model.entity.Training;
 import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingSessionInfoResponse;
 import jakarta.validation.constraints.NotNull;

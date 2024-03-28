@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.seed.models;
 
-import com.blinnproject.myworkdayback.model.Exercise;
-import com.blinnproject.myworkdayback.model.EMuscle;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.Exercise;
+import com.blinnproject.myworkdayback.model.enums.EMuscle;
+import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.repository.ExerciseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

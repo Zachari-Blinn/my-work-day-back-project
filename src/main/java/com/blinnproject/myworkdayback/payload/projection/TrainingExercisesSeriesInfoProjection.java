@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.payload.projection;
 
-import com.blinnproject.myworkdayback.model.EDayOfWeek;
-import com.blinnproject.myworkdayback.model.ETrainingStatus;
+import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
+import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
 
 import java.util.ArrayList;
 

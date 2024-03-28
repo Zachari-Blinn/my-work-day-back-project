@@ -1,10 +1,9 @@
 package com.blinnproject.myworkdayback.service.user;
 
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.payload.request.SignupRequest;
 import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
 import jakarta.mail.MessagingException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 

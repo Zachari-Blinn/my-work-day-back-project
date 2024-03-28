@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.payload.response;
 
-import com.blinnproject.myworkdayback.model.Exercise;
-import com.blinnproject.myworkdayback.model.Series;
+import com.blinnproject.myworkdayback.model.entity.Exercise;
+import com.blinnproject.myworkdayback.model.entity.Series;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;

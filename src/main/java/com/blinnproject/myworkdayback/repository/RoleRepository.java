@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.repository;
 
 import java.util.Optional;
-import com.blinnproject.myworkdayback.model.ERole;
-import com.blinnproject.myworkdayback.model.Role;
+import com.blinnproject.myworkdayback.model.enums.ERole;
+import com.blinnproject.myworkdayback.model.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

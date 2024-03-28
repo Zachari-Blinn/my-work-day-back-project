@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.request;
 
-import com.blinnproject.myworkdayback.model.Series;
+import com.blinnproject.myworkdayback.model.entity.Series;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

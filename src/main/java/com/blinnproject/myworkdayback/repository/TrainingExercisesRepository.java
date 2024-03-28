@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
 import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;

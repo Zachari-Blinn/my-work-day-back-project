@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.seed.models;
 
-import com.blinnproject.myworkdayback.model.EGender;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.enums.EGender;
+import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.payload.dto.exercise;
 
-import com.blinnproject.myworkdayback.model.EMuscle;
+import com.blinnproject.myworkdayback.model.entity.Exercise;
+import com.blinnproject.myworkdayback.model.enums.EMuscle;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.time.Instant;
 import java.util.Set;
 
 /**
- * DTO for {@link com.blinnproject.myworkdayback.model.Exercise}
+ * DTO for {@link Exercise}
  */
 @Value
 public class ExerciseDto implements Serializable {

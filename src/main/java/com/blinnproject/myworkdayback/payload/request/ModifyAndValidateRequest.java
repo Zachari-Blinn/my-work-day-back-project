@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.request;
 
-import com.blinnproject.myworkdayback.model.TrainingExercises;
+import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
 import lombok.*;
 
 @Data

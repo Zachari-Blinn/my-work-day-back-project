@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.seed.models;
 
-import com.blinnproject.myworkdayback.model.*;
+import com.blinnproject.myworkdayback.model.entity.*;
+import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import com.blinnproject.myworkdayback.repository.TrainingExercisesRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import org.slf4j.Logger;

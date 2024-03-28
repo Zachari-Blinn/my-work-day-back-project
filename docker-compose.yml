@@ -1,10 +1,10 @@
 version: "3.9"
 services:
 
-  postgres:
+  raise_postgres:
     image: postgres:16.1-alpine3.19
-    container_name: postgres
-    restart: always
+    container_name: raise_postgres
+    restart: no
     ports:
       - "5432:5432"
     environment:
@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: 8zAgqbfbEKzC68MJ
       POSTGRES_DB: DB_RAISE_DEV
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
 #  raise_app:
 #    build: .
@@ -24,17 +24,17 @@ services:
 #      - postgres
 #      - redis
 
-  pgadmin:
+  raise_pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin4
-    restart: always
+    container_name: raise_pgadmin4
+    restart: no
     ports:
       - "8888:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
 
 #  redis:
 #    image: redis:7.2.3-alpine
@@ -46,15 +46,15 @@ services:
 #    volumes:
 #      - redis-data:/data
 
-  mailhog:
+  raise_mailhog:
     image: mailhog/mailhog
-    container_name: mailhog
+    container_name: raise_mailhog
     ports:
       - "1025:1025"
       - "8025:8025"
 
 volumes:
-  postgres-data:
-  pgadmin-data:
-  redis-data:
-    driver: local
+  postgres_data:
+  pgadmin_data:
+#  redis_data:
+#    driver: local

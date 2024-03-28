@@ -8,7 +8,6 @@ import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import com.blinnproject.myworkdayback.model.enums.EGender;
 import com.blinnproject.myworkdayback.model.enums.EMuscle;
 import com.blinnproject.myworkdayback.payload.request.AddExerciseRequest;
-import com.blinnproject.myworkdayback.repository.ExerciseRepository;
 import com.blinnproject.myworkdayback.repository.TrainingRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,22 +17,20 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Objects;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TrainingControllerTest {
+public class TrainingSessionControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -45,7 +42,7 @@ class TrainingControllerTest {
   private TrainingRepository trainingRepository;
 
   @Autowired
-  private ExerciseRepository ExerciseRepository;
+  private com.blinnproject.myworkdayback.repository.ExerciseRepository ExerciseRepository;
 
   @Autowired
   private UserRepository userRepository;
@@ -65,35 +62,10 @@ class TrainingControllerTest {
   }
 
   @Test
-  @WithMockUser()
-  void TrainingController_Create_ReturnSavedTraining() throws Exception {
-    Training training = new Training();
-    training.setName("MMA");
-    training.setIconName("icon_dumbbell");
-    training.setIconHexadecimalColor("#0072db");
-    ArrayList<EDayOfWeek> days = new ArrayList<>();
-    days.add(EDayOfWeek.TUESDAY);
-    days.add(EDayOfWeek.THURSDAY);
-    days.add(EDayOfWeek.WEDNESDAY);
-    training.setTrainingDays(days);
-
-    mockMvc.perform(post("/api/training")
-        .contentType("application/json")
-        .content(objectMapper.writeValueAsString(training)))
-        .andExpect(status().isCreated());
-
-    Training createdTraining = trainingRepository.findByName("MMA").orElse(null);
-    assert(Objects.requireNonNull(createdTraining).getName()).equals("MMA");
-    assert(Objects.requireNonNull(createdTraining).getIconName()).equals("icon_dumbbell");
-    assert(Objects.requireNonNull(createdTraining).getIconHexadecimalColor()).equals("#0072db");
-    assert(Objects.requireNonNull(createdTraining).getTrainingDays()).equals(days);
-  }
-
-  @Test
   @WithUserDetails("mocked-user")
-  void TrainingController_AddExercise_ReturnOk() throws Exception {
+  void TrainingSessionController_ValidateTrainingSession_ReturnOk() throws Exception {
     Training training = new Training();
-    training.setName("Crossfit");
+    training.setName("Renforcement Musculaire Global");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
     ArrayList<EDayOfWeek> days = new ArrayList<>();
@@ -105,9 +77,9 @@ class TrainingControllerTest {
     mockMvc.perform(post("/api/training")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(training)))
-        .andExpect(status().isCreated());
+      .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Crossfit").orElse(null);
+    Training createdTraining = trainingRepository.findByName("Renforcement Musculaire Global").orElse(null);
     assert createdTraining != null;
 
     Exercise newExercise = new Exercise();
@@ -130,41 +102,19 @@ class TrainingControllerTest {
     mockMvc.perform(post("/api/training/{trainingId}/exercise/{exerciseId}", createdTraining.getId(), createdExercise.getId())
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(addExerciseRequest)))
-        .andExpect(status().isOk());
-  }
+      .andExpect(status().isOk());
 
-  @Test
-  @WithUserDetails("mocked-user")
-  void TrainingController_GetTrainingById_ReturnOk() throws Exception {
-    Training training = new Training();
-    training.setName("Séance de Force");
-    training.setIconName("icon_dumbbell");
-    training.setIconHexadecimalColor("#0072db");
-    ArrayList<EDayOfWeek> days = new ArrayList<>();
-    days.add(EDayOfWeek.TUESDAY);
-    days.add(EDayOfWeek.THURSDAY);
-    days.add(EDayOfWeek.WEDNESDAY);
-    training.setTrainingDays(days);
-
-    mockMvc.perform(post("/api/training")
-        .contentType("application/json")
-        .content(objectMapper.writeValueAsString(training)))
-        .andExpect(status().isCreated());
-
-    Training createdTraining = trainingRepository.findByName("Séance de Force").orElse(null);
-    assert createdTraining != null;
-
-    mockMvc.perform(get("/api/training/{id}", createdTraining.getId())
+    mockMvc.perform(post("/api/training-session/{trainingId}/validate/{trainingDate}", createdTraining.getId(), "2024-01-03")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(createdTraining)))
-        .andExpect(status().isOk());
+      .andExpect(status().isOk());
   }
 
   @Test
   @WithUserDetails("mocked-user")
-  void TrainingController_AddExerciseToTraining_ReturnOk() throws Exception {
+  void TrainingSessionController_ValidateTrainingSession_WithInvalidDayOfWeek_Return4xxClientError() throws Exception {
     Training training = new Training();
-    training.setName("Entraînement Équilibré");
+    training.setName("Séance Mixte");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
     ArrayList<EDayOfWeek> days = new ArrayList<>();
@@ -176,9 +126,9 @@ class TrainingControllerTest {
     mockMvc.perform(post("/api/training")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(training)))
-        .andExpect(status().isCreated());
+      .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Entraînement Équilibré").orElse(null);
+    Training createdTraining = trainingRepository.findByName("Séance Mixte").orElse(null);
     assert createdTraining != null;
 
     Exercise newExercise = new Exercise();
@@ -201,6 +151,17 @@ class TrainingControllerTest {
     mockMvc.perform(post("/api/training/{trainingId}/exercise/{exerciseId}", createdTraining.getId(), createdExercise.getId())
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(addExerciseRequest)))
-        .andExpect(status().isOk());
+      .andExpect(status().isOk());
+
+    mockMvc.perform(post("/api/training-session/{trainingId}/validate/{trainingDate}", createdTraining.getId(), "2024-01-05")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(createdTraining)))
+      .andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  @WithUserDetails("mocked-user")
+  void TrainingSessionController_PatchTrainingSession_ReturnOk() throws Exception {
+
   }
 }

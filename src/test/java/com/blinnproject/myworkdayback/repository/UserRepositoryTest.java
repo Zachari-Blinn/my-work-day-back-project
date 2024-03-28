@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.EGender;
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.enums.EGender;
+import com.blinnproject.myworkdayback.model.entity.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

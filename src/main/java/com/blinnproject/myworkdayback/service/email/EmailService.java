@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.service.email;
 
-import com.blinnproject.myworkdayback.model.User;
+import com.blinnproject.myworkdayback.model.entity.User;
 import jakarta.mail.MessagingException;
 
 public interface EmailService {

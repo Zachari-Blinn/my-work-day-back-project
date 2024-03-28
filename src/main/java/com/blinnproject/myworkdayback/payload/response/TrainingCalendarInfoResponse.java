@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.response;
 
-import com.blinnproject.myworkdayback.model.EDayOfWeek;
+import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

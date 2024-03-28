@@ -1,19 +1,17 @@
-package com.blinnproject.myworkdayback.model;
+package com.blinnproject.myworkdayback.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.Instant;
-import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "password_reset_token")
-public class PasswordResetToken {
+@Table(name = "refresh_token")
+public class RefreshToken {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
@@ -22,17 +20,9 @@ public class PasswordResetToken {
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private User user;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String token;
 
   @Column(nullable = false)
-  private Date expiryDate = new Date(System.currentTimeMillis() + 1800000);
-
-  @Column()
-  private int attempts = 0;
-
-  public PasswordResetToken(String token, User user) {
-    this.token = token;
-    this.user = user;
-  }
+  private Instant expiryDate;
 }

@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
-import com.blinnproject.myworkdayback.model.RefreshToken;
+import com.blinnproject.myworkdayback.model.entity.RefreshToken;
 import com.blinnproject.myworkdayback.repository.RefreshTokenRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
