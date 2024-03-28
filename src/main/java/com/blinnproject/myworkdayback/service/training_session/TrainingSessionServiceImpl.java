@@ -3,10 +3,10 @@ package com.blinnproject.myworkdayback.service.training_session;
 import com.blinnproject.myworkdayback.exception.InvalidDayOfWeekProvidedForTraining;
 import com.blinnproject.myworkdayback.exception.TrainingAlreadyPerformedException;
 import com.blinnproject.myworkdayback.exception.TrainingWithCurrentUserNotFound;
-import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
+import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
-import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
-import com.blinnproject.myworkdayback.model.entity.Training;
+import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
 import com.blinnproject.myworkdayback.payload.request.ModifyAndValidateRequest;
 import com.blinnproject.myworkdayback.payload.response.ExerciseState;
@@ -37,32 +37,32 @@ public class TrainingSessionServiceImpl implements TrainingSessionService {
     return formatTrainingExercisesSeriesInfo(trainingExercisesSeriesInfoList);
   }
 
-  public List<TrainingExercises> validateTrainingSessionWithoutChange(Long trainingParentId, Date trainingDate, Long createdBy) {
+  public List<WorkoutExercise> validateTrainingSessionWithoutChange(Long trainingParentId, Date trainingDate, Long createdBy) {
     if (verifyIfTrainingSessionAlreadyPerformed(trainingParentId, trainingDate, createdBy)) {
       throw new TrainingAlreadyPerformedException("Training with id " + trainingParentId + " and performed date " + trainingDate + " already exists");
     }
 
-    Training training = getTrainingOrThrowError(trainingParentId, createdBy);
+    WorkoutSession training = getTrainingOrThrowError(trainingParentId, createdBy);
 
     checkTrainingDayValidityOrThrowError(training, trainingDate);
 
-    Training newTraining = cloneTraining(training, trainingDate);
-    List<TrainingExercises> clonedExercises = cloneTrainingExercises(training, newTraining, trainingDate);
+    WorkoutSession newTraining = cloneTraining(training, trainingDate);
+    List<WorkoutExercise> clonedExercises = cloneTrainingExercises(training, newTraining, trainingDate);
 
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
 
-  public List<TrainingExercises> modifyDataAndValidateTrainingSession(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy) {
+  public List<WorkoutExercise> modifyDataAndValidateTrainingSession(Long trainingId, Date trainingDate, ModifyAndValidateRequest requestBody, Long createdBy) {
     if (verifyIfTrainingSessionAlreadyPerformed(trainingId, trainingDate, createdBy)) {
       throw new TrainingAlreadyPerformedException("Training with id " + trainingId + " and performed date " + trainingDate + " already exists");
     }
 
-    Training originalTraining = getTrainingOrThrowError(trainingId, createdBy);
+    WorkoutSession originalTraining = getTrainingOrThrowError(trainingId, createdBy);
 
     checkTrainingDayValidityOrThrowError(originalTraining, trainingDate);
 
-    Training newTraining = cloneTraining(originalTraining, trainingDate);
-    List<TrainingExercises> clonedExercises = updateClonedExercises(requestBody, newTraining, trainingDate);
+    WorkoutSession newTraining = cloneTraining(originalTraining, trainingDate);
+    List<WorkoutExercise> clonedExercises = updateClonedExercises(requestBody, newTraining, trainingDate);
 
     return trainingExercisesRepository.saveAll(clonedExercises);
   }
@@ -76,17 +76,17 @@ public class TrainingSessionServiceImpl implements TrainingSessionService {
 
   @Transactional
   public void cancelTrainingSessionOfTheDay(Long trainingParentId, Date trainingDayDate, Long createdBy) {
-    Training parentTraining = getTrainingOrThrowError(trainingParentId, createdBy);
+    WorkoutSession parentTraining = getTrainingOrThrowError(trainingParentId, createdBy);
 
-    Training training = trainingRepository.findByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, createdBy).orElse(null);
+    WorkoutSession training = trainingRepository.findByParentIdAndPerformedDateAndCreatedBy(trainingParentId, trainingDayDate, createdBy).orElse(null);
 
     if (training == null) {
-      Training clonedTraining = new Training(parentTraining);
-      clonedTraining.setTrainingStatus(ETrainingStatus.CANCELLED);
+      WorkoutSession clonedTraining = new WorkoutSession(parentTraining);
+      clonedTraining.setTrainingStatus(ESessionStatus.CANCELLED);
       clonedTraining.setPerformedDate(trainingDayDate);
       trainingRepository.save(clonedTraining);
     } else {
-      training.setTrainingStatus(ETrainingStatus.CANCELLED);
+      training.setTrainingStatus(ESessionStatus.CANCELLED);
       trainingRepository.save(training);
     }
   }
@@ -187,15 +187,15 @@ public class TrainingSessionServiceImpl implements TrainingSessionService {
   }
 
   private boolean verifyIfTrainingSessionAlreadyPerformed(Long trainingId, Date trainingDate, Long createdBy) {
-    return trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy);
+    return trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ESessionStatus.PERFORMED, createdBy);
   }
 
-  private Training getTrainingOrThrowError(Long trainingId, Long createdBy) {
+  private WorkoutSession getTrainingOrThrowError(Long trainingId, Long createdBy) {
     return trainingRepository.findByIdAndCreatedBy(trainingId, createdBy)
       .orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
   }
 
-  private void checkTrainingDayValidityOrThrowError(Training training, Date trainingDate) {
+  private void checkTrainingDayValidityOrThrowError(WorkoutSession training, Date trainingDate) {
     EDayOfWeek providedDayDate = EDayOfWeek.of(Integer.parseInt(new SimpleDateFormat("u").format(trainingDate)));
 
     if (!training.getTrainingDays().contains(providedDayDate)) {
@@ -203,19 +203,19 @@ public class TrainingSessionServiceImpl implements TrainingSessionService {
     }
   }
 
-  private Training cloneTraining(Training originalTraining, Date trainingDate) {
-    Training clonedTraining = new Training(originalTraining);
-    clonedTraining.setTrainingStatus(ETrainingStatus.PERFORMED);
+  private WorkoutSession cloneTraining(WorkoutSession originalTraining, Date trainingDate) {
+    WorkoutSession clonedTraining = new WorkoutSession(originalTraining);
+    clonedTraining.setTrainingStatus(ESessionStatus.PERFORMED);
     clonedTraining.setPerformedDate(trainingDate);
     return trainingRepository.save(clonedTraining);
   }
 
-  private List<TrainingExercises> cloneTrainingExercises(Training originalTraining, Training newTraining, Date trainingDate) {
-    List<TrainingExercises> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(originalTraining.getId(), originalTraining.getCreatedBy());
+  private List<WorkoutExercise> cloneTrainingExercises(WorkoutSession originalTraining, WorkoutSession newTraining, Date trainingDate) {
+    List<WorkoutExercise> trainingExercises = trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(originalTraining.getId(), originalTraining.getCreatedBy());
 
-    List<TrainingExercises> clonedExercises = new ArrayList<>();
-    for (TrainingExercises original : trainingExercises) {
-      TrainingExercises cloned = new TrainingExercises(original);
+    List<WorkoutExercise> clonedExercises = new ArrayList<>();
+    for (WorkoutExercise original : trainingExercises) {
+      WorkoutExercise cloned = new WorkoutExercise(original);
       cloned.setTraining(newTraining);
       cloned.setTrainingDay(trainingDate);
       clonedExercises.add(cloned);
@@ -223,9 +223,9 @@ public class TrainingSessionServiceImpl implements TrainingSessionService {
     return clonedExercises;
   }
 
-  private List<TrainingExercises> updateClonedExercises(ModifyAndValidateRequest requestBody, Training newTraining, Date trainingDate) {
-    List<TrainingExercises> clonedExercises = Arrays.asList(requestBody.getTrainingSession());
-    for (TrainingExercises clonedExercise : clonedExercises) {
+  private List<WorkoutExercise> updateClonedExercises(ModifyAndValidateRequest requestBody, WorkoutSession newTraining, Date trainingDate) {
+    List<WorkoutExercise> clonedExercises = Arrays.asList(requestBody.getTrainingSession());
+    for (WorkoutExercise clonedExercise : clonedExercises) {
       clonedExercise.setTraining(newTraining);
       clonedExercise.setTrainingDay(trainingDate);
     }

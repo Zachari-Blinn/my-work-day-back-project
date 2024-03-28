@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
-import com.blinnproject.myworkdayback.model.entity.Training;
+import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.payload.response.TrainingCalendarInfoResponse;
 import com.blinnproject.myworkdayback.payload.response.TrainingSessionInfoResponse;
 import jakarta.validation.constraints.NotNull;
@@ -13,17 +13,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TrainingRepository extends JpaRepository<Training, Long> {
+public interface TrainingRepository extends JpaRepository<WorkoutSession, Long> {
 
-  List<Training> findAllByCreatedBy(Long createdId);
+  List<WorkoutSession> findAllByCreatedBy(Long createdId);
 
-  Optional<Training> findByIdAndCreatedBy(Long id, Long createdId);
+  Optional<WorkoutSession> findByIdAndCreatedBy(Long id, Long createdId);
 
-  Optional<Training> findByName(String name);
+  Optional<WorkoutSession> findByName(String name);
 
-  boolean existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(Long parentId, Date performedDate, ETrainingStatus trainingStatus, Long createdId);
+  boolean existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(Long parentId, Date performedDate, ESessionStatus trainingStatus, Long createdId);
 
-  Optional<Training> findByParentIdAndPerformedDateAndCreatedBy(Long parentId, Date performedDate, Long createdId);
+  Optional<WorkoutSession> findByParentIdAndPerformedDateAndCreatedBy(Long parentId, Date performedDate, Long createdId);
 
   boolean existsByParentIdAndPerformedDateAndCreatedBy(Long parentId, Date performedDate, Long createdId);
 
@@ -38,7 +38,7 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
           training.endDate,
           training.trainingDays
       )
-      FROM Training training
+      FROM WorkoutSession training
       WHERE training.createdBy = :createdId
       AND training.parent.id IS NULL
   """)
@@ -102,7 +102,7 @@ public interface TrainingRepository extends JpaRepository<Training, Long> {
   @Query("""
     SELECT CASE WHEN EXISTS (
       SELECT training
-      FROM Training training
+      FROM WorkoutSession training
       WHERE training.id = :trainingParentId
       AND training.parent = NULL
       AND training.createdBy = :createdBy

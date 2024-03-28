@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.request;
 
-import com.blinnproject.myworkdayback.model.entity.Series;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -17,5 +17,5 @@ public class AddExerciseRequest {
 
     private String notes;
 
-    private ArrayList<Series> series;
+    private ArrayList<WorkoutSet> series;
 }

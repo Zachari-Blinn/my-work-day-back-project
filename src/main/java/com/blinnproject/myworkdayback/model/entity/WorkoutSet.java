@@ -15,34 +15,33 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "series")
-public class Series extends BaseEntityAudit {
+@Table(name = "workout_sets")
+public class WorkoutSet extends BaseEntityAudit {
   @Min(0)
-  @Column(nullable = false)
+  @Column(name = "position_index", nullable = false)
   private int positionIndex;
 
   @ManyToOne
   @JoinColumn(referencedColumnName = "id")
-  private Series parent;
+  private WorkoutSet parent;
 
+  @Column(name = "weight")
   @Min(0)
   @Max(150)
   private int weight;
 
+  @Column(name = "rest_time")
   private String restTime;
 
+  @Column(name = "notes")
   @Lob
   private String notes;
 
+  @Column(name = "reps_count")
   @Min(0)
   @Max(100)
   private int repsCount;
 
+  @Column(name = "difficulty")
   private EDifficulty difficulty;
-
-  public Series(Series that) {
-    this(that.getPositionIndex(), null, that.getWeight(), that.getRestTime(), that.getNotes(), that.getRepsCount(), that.getDifficulty());
-    this.setParent(that);
-  }
-
 }

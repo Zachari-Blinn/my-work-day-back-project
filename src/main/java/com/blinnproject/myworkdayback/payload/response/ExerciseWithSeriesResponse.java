@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.payload.response;
 
 import com.blinnproject.myworkdayback.model.entity.Exercise;
-import com.blinnproject.myworkdayback.model.entity.Series;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.List;
 @Setter
 public class ExerciseWithSeriesResponse {
     private Exercise exercise;
-    private List<Series> series;
+    private List<WorkoutSet> series;
 
-    public ExerciseWithSeriesResponse(Exercise exercise, List<Series> series) {
+    public ExerciseWithSeriesResponse(Exercise exercise, List<WorkoutSet> series) {
         this.exercise = exercise;
         this.series = series;
     }

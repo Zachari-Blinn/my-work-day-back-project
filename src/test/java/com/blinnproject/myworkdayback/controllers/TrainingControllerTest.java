@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.controllers;
 
 import com.blinnproject.myworkdayback.model.entity.Exercise;
-import com.blinnproject.myworkdayback.model.entity.Series;
-import com.blinnproject.myworkdayback.model.entity.Training;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import com.blinnproject.myworkdayback.model.enums.EGender;
@@ -67,7 +67,7 @@ class TrainingControllerTest {
   @Test
   @WithMockUser()
   void TrainingController_Create_ReturnSavedTraining() throws Exception {
-    Training training = new Training();
+    WorkoutSession training = new WorkoutSession();
     training.setName("MMA");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
@@ -82,7 +82,7 @@ class TrainingControllerTest {
         .content(objectMapper.writeValueAsString(training)))
         .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("MMA").orElse(null);
+    WorkoutSession createdTraining = trainingRepository.findByName("MMA").orElse(null);
     assert(Objects.requireNonNull(createdTraining).getName()).equals("MMA");
     assert(Objects.requireNonNull(createdTraining).getIconName()).equals("icon_dumbbell");
     assert(Objects.requireNonNull(createdTraining).getIconHexadecimalColor()).equals("#0072db");
@@ -92,7 +92,7 @@ class TrainingControllerTest {
   @Test
   @WithUserDetails("mocked-user")
   void TrainingController_AddExercise_ReturnOk() throws Exception {
-    Training training = new Training();
+    WorkoutSession training = new WorkoutSession();
     training.setName("Crossfit");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
@@ -107,7 +107,7 @@ class TrainingControllerTest {
         .content(objectMapper.writeValueAsString(training)))
         .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Crossfit").orElse(null);
+    WorkoutSession createdTraining = trainingRepository.findByName("Crossfit").orElse(null);
     assert createdTraining != null;
 
     Exercise newExercise = new Exercise();
@@ -119,8 +119,8 @@ class TrainingControllerTest {
     addExerciseRequest.setNumberOfWarmUpSeries(2);
     addExerciseRequest.setNotes("Lorem ipsum dollores");
 
-    ArrayList<Series> series = new ArrayList<>();
-    Series series1 = new Series();
+    ArrayList<WorkoutSet> series = new ArrayList<>();
+    WorkoutSet series1 = new WorkoutSet();
     series1.setRepsCount(8);
     series1.setWeight(50);
     series1.setRestTime("60");
@@ -136,7 +136,7 @@ class TrainingControllerTest {
   @Test
   @WithUserDetails("mocked-user")
   void TrainingController_GetTrainingById_ReturnOk() throws Exception {
-    Training training = new Training();
+    WorkoutSession training = new WorkoutSession();
     training.setName("Séance de Force");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
@@ -151,7 +151,7 @@ class TrainingControllerTest {
         .content(objectMapper.writeValueAsString(training)))
         .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Séance de Force").orElse(null);
+    WorkoutSession createdTraining = trainingRepository.findByName("Séance de Force").orElse(null);
     assert createdTraining != null;
 
     mockMvc.perform(get("/api/training/{id}", createdTraining.getId())
@@ -163,7 +163,7 @@ class TrainingControllerTest {
   @Test
   @WithUserDetails("mocked-user")
   void TrainingController_AddExerciseToTraining_ReturnOk() throws Exception {
-    Training training = new Training();
+    WorkoutSession training = new WorkoutSession();
     training.setName("Entraînement Équilibré");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
@@ -178,7 +178,7 @@ class TrainingControllerTest {
         .content(objectMapper.writeValueAsString(training)))
         .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Entraînement Équilibré").orElse(null);
+    WorkoutSession createdTraining = trainingRepository.findByName("Entraînement Équilibré").orElse(null);
     assert createdTraining != null;
 
     Exercise newExercise = new Exercise();
@@ -190,8 +190,8 @@ class TrainingControllerTest {
     addExerciseRequest.setNumberOfWarmUpSeries(2);
     addExerciseRequest.setNotes("Lorem ipsum dollores");
 
-    ArrayList<Series> series = new ArrayList<>();
-    Series series1 = new Series();
+    ArrayList<WorkoutSet> series = new ArrayList<>();
+    WorkoutSet series1 = new WorkoutSet();
     series1.setRepsCount(8);
     series1.setWeight(50);
     series1.setRestTime("60");

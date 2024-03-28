@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
+import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.payload.projection.TrainingExercisesSeriesInfoProjection;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,17 +10,17 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface TrainingExercisesRepository extends JpaRepository<TrainingExercises, Long> {
+public interface TrainingExercisesRepository extends JpaRepository<WorkoutExercise, Long> {
     @Query("""
         SELECT te
-        FROM TrainingExercises te
+        FROM WorkoutExercise te
         WHERE te.training.id = :trainingParentId
         AND te.parent = NULL
         AND te.training.createdBy = :createdBy
     """)
-    List<TrainingExercises> findTemplateByTrainingIdAndCreatedBy(Long trainingParentId, Long createdBy);
+    List<WorkoutExercise> findTemplateByTrainingIdAndCreatedBy(Long trainingParentId, Long createdBy);
 
-    List<TrainingExercises> findByTrainingIdAndTrainingCreatedBy(Long trainingId, Long createdBy);
+    List<WorkoutExercise> findByTrainingIdAndTrainingCreatedBy(Long trainingId, Long createdBy);
 
     @Query(value = """
         SELECT

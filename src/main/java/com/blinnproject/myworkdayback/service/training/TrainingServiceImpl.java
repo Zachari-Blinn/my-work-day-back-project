@@ -2,9 +2,9 @@ package com.blinnproject.myworkdayback.service.training;
 
 import com.blinnproject.myworkdayback.exception.*;
 import com.blinnproject.myworkdayback.model.entity.Exercise;
-import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
-import com.blinnproject.myworkdayback.model.entity.Training;
-import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
+import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
+import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
@@ -35,39 +35,39 @@ public class TrainingServiceImpl implements TrainingService {
 
   @Override
   @Transactional
-  public Training create(TrainingCreateDTO training) {
-    return trainingRepository.save(new Training(training));
+  public WorkoutSession create(TrainingCreateDTO training) {
+    return trainingRepository.save(new WorkoutSession(training));
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<Training> getAllTrainingsByCreatedBy(Long createdBy) {
+  public List<WorkoutSession> getAllTrainingsByCreatedBy(Long createdBy) {
     return trainingRepository.findAllByCreatedBy(createdBy);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<Training> findById(Long id, Long createdBy) {
+  public Optional<WorkoutSession> findById(Long id, Long createdBy) {
     return trainingRepository.findByIdAndCreatedBy(id, createdBy);
   }
 
   @Transactional
-  public TrainingExercises addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO, Long createdBy) {
-    Training training = getTrainingOrThrowError(trainingId, createdBy);
+  public WorkoutExercise addExercise(Long trainingId, Long exerciseId, TrainingExercisesCreateDTO trainingExercisesCreateDTO, Long createdBy) {
+    WorkoutSession training = getTrainingOrThrowError(trainingId, createdBy);
     Exercise exercise = this.exerciseService.findById(exerciseId).orElseThrow(() -> new ResourceNotFoundException("Exercise", "id", exerciseId));
 
-    TrainingExercises trainingExercises = new TrainingExercises(training, exercise, trainingExercisesCreateDTO);
+    WorkoutExercise trainingExercises = new WorkoutExercise(training, exercise, trainingExercisesCreateDTO);
 
     return trainingExercisesRepository.save(trainingExercises);
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercises> getExercisesByTrainingId(Long trainingId, Long createdBy) {
+  public List<WorkoutExercise> getExercisesByTrainingId(Long trainingId, Long createdBy) {
     return trainingExercisesRepository.findByTrainingIdAndTrainingCreatedBy(trainingId, createdBy);
   }
 
   @Transactional(readOnly = true)
-  public List<TrainingExercises> getTemplateExercisesByTrainingId(Long trainingId, Long createdBy) {
+  public List<WorkoutExercise> getTemplateExercisesByTrainingId(Long trainingId, Long createdBy) {
     return trainingExercisesRepository.findTemplateByTrainingIdAndCreatedBy(trainingId, createdBy);
   }
 
@@ -119,10 +119,10 @@ public class TrainingServiceImpl implements TrainingService {
   }
 
   private boolean verifyIfTrainingSessionAlreadyPerformed(Long trainingId, Date trainingDate, Long createdBy) {
-    return trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ETrainingStatus.PERFORMED, createdBy);
+    return trainingRepository.existsByParentIdAndPerformedDateAndTrainingStatusAndCreatedBy(trainingId, trainingDate, ESessionStatus.PERFORMED, createdBy);
   }
 
-  private Training getTrainingOrThrowError(Long trainingId, Long createdBy) {
+  private WorkoutSession getTrainingOrThrowError(Long trainingId, Long createdBy) {
     return trainingRepository.findByIdAndCreatedBy(trainingId, createdBy)
       .orElseThrow(() -> new TrainingWithCurrentUserNotFound("Training with id " + trainingId + " does not belong to current user"));
   }

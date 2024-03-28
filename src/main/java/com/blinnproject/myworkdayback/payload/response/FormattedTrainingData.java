@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.payload.response;
 
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
-import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
+import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.List;
 public class FormattedTrainingData {
   private long trainingId;
   private String trainingName;
-  private ETrainingStatus trainingStatus;
+  private ESessionStatus trainingStatus;
   private ArrayList<EDayOfWeek> trainingDays;
   private String trainingIconName;
   private String trainingIconHexadecimalColor;

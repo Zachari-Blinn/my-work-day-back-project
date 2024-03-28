@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.dto.series;
 
-import com.blinnproject.myworkdayback.model.entity.Series;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import com.blinnproject.myworkdayback.model.enums.EDifficulty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * DTO for {@link Series}
+ * DTO for {@link WorkoutSet}
  */
 @Value
 public class SeriesDto implements Serializable {

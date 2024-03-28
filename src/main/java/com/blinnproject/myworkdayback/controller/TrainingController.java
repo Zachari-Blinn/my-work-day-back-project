@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.controller;
 
-import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
-import com.blinnproject.myworkdayback.model.entity.Training;
+import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingCreateDTO;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesCreateDTO;
 import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
@@ -38,8 +38,8 @@ public class TrainingController {
 
   @Operation(summary = "Create Training", description = "Creates a new training.")
   @PostMapping()
-  public ResponseEntity<GenericResponse<Training>> create(@Valid @RequestBody TrainingCreateDTO trainingDTO) {
-    Training training = trainingService.create(trainingDTO);
+  public ResponseEntity<GenericResponse<WorkoutSession>> create(@Valid @RequestBody TrainingCreateDTO trainingDTO) {
+    WorkoutSession training = trainingService.create(trainingDTO);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(GenericResponse.success(training, i18n.translate("controller.training.create.successful")));
   }
@@ -49,9 +49,9 @@ public class TrainingController {
    */
   @Deprecated(since = "1.0", forRemoval = false)
   @GetMapping("/current-user")
-  public ResponseEntity<GenericResponse<List<Training>>> getCurrentUserTrainings() {
+  public ResponseEntity<GenericResponse<List<WorkoutSession>>> getCurrentUserTrainings() {
     UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    List<Training> trainings = trainingService.getAllTrainingsByCreatedBy(userDetails.getId());
+    List<WorkoutSession> trainings = trainingService.getAllTrainingsByCreatedBy(userDetails.getId());
 
     if (trainings.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -61,21 +61,21 @@ public class TrainingController {
 
   @Operation(summary = "Get Training by ID", description = "Retrieves a training by its ID.")
   @GetMapping("/{id}")
-  public ResponseEntity<GenericResponse<Training>> getTrainingById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    Optional<Training> trainingData = trainingService.findById(id, userDetails.getId());
+  public ResponseEntity<GenericResponse<WorkoutSession>> getTrainingById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    Optional<WorkoutSession> trainingData = trainingService.findById(id, userDetails.getId());
 
     return trainingData.map(training -> ResponseEntity.ok(GenericResponse.success(training, i18n.translate("controller.training.return-training-by-id.successful")))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   @Operation(summary = "Add Exercise to Training", description = "Adds an exercise to a training.")
   @PostMapping("/{trainingId}/exercise/{exerciseId}")
-  public ResponseEntity<GenericResponse<TrainingExercises>> addExerciseToTraining(
+  public ResponseEntity<GenericResponse<WorkoutExercise>> addExerciseToTraining(
       @PathVariable("trainingId") Long trainingId,
       @PathVariable("exerciseId") Long exerciseId,
       @Valid @RequestBody TrainingExercisesCreateDTO trainingExercisesDTO,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    TrainingExercises createdTrainingExercises = this.trainingService.addExercise(trainingId, exerciseId, trainingExercisesDTO, userDetails.getId());
+    WorkoutExercise createdTrainingExercises = this.trainingService.addExercise(trainingId, exerciseId, trainingExercisesDTO, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(createdTrainingExercises, i18n.translate("controller.training.add-exercise.successful")));
   }
@@ -83,12 +83,12 @@ public class TrainingController {
   // todo move to exercise controller ?
   @Operation(summary = "Get Exercises by Training ID", description = "Retrieves exercises associated with a training by its ID.")
   @GetMapping("/{trainingId}/exercises")
-  public ResponseEntity<GenericResponse<List<TrainingExercises>>> getExercisesByTrainingId(
+  public ResponseEntity<GenericResponse<List<WorkoutExercise>>> getExercisesByTrainingId(
       @RequestParam(defaultValue = "false") Boolean fetchTemplate,
       @PathVariable("trainingId") Long trainingId,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    List<TrainingExercises> trainingExercises;
+    List<WorkoutExercise> trainingExercises;
 
     if (Boolean.TRUE.equals(fetchTemplate)) {
       trainingExercises = this.trainingService.getTemplateExercisesByTrainingId(trainingId, userDetails.getId());

@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.payload.dto.training_exercises;
 
-import com.blinnproject.myworkdayback.model.entity.TrainingExercises;
+import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.payload.dto.exercise.ExerciseDto;
 import com.blinnproject.myworkdayback.payload.dto.series.SeriesDto;
 import com.blinnproject.myworkdayback.payload.dto.training.TrainingDto;
@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * DTO for {@link TrainingExercises}
+ * DTO for {@link WorkoutExercise}
  */
 @Value
 public class TrainingExercisesDto implements Serializable {

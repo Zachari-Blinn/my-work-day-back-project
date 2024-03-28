@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.controllers;
 
 import com.blinnproject.myworkdayback.model.entity.Exercise;
-import com.blinnproject.myworkdayback.model.entity.Series;
-import com.blinnproject.myworkdayback.model.entity.Training;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import com.blinnproject.myworkdayback.model.enums.EGender;
@@ -64,7 +64,7 @@ public class TrainingSessionControllerTest {
   @Test
   @WithUserDetails("mocked-user")
   void TrainingSessionController_ValidateTrainingSession_ReturnOk() throws Exception {
-    Training training = new Training();
+    WorkoutSession training = new WorkoutSession();
     training.setName("Renforcement Musculaire Global");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
@@ -79,7 +79,7 @@ public class TrainingSessionControllerTest {
         .content(objectMapper.writeValueAsString(training)))
       .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Renforcement Musculaire Global").orElse(null);
+    WorkoutSession createdTraining = trainingRepository.findByName("Renforcement Musculaire Global").orElse(null);
     assert createdTraining != null;
 
     Exercise newExercise = new Exercise();
@@ -91,8 +91,8 @@ public class TrainingSessionControllerTest {
     addExerciseRequest.setNumberOfWarmUpSeries(2);
     addExerciseRequest.setNotes("Lorem ipsum dollores");
 
-    ArrayList<Series> series = new ArrayList<>();
-    Series series1 = new Series();
+    ArrayList<WorkoutSet> series = new ArrayList<>();
+    WorkoutSet series1 = new WorkoutSet();
     series1.setRepsCount(8);
     series1.setWeight(50);
     series1.setRestTime("60");
@@ -113,7 +113,7 @@ public class TrainingSessionControllerTest {
   @Test
   @WithUserDetails("mocked-user")
   void TrainingSessionController_ValidateTrainingSession_WithInvalidDayOfWeek_Return4xxClientError() throws Exception {
-    Training training = new Training();
+    WorkoutSession training = new WorkoutSession();
     training.setName("Séance Mixte");
     training.setIconName("icon_dumbbell");
     training.setIconHexadecimalColor("#0072db");
@@ -128,7 +128,7 @@ public class TrainingSessionControllerTest {
         .content(objectMapper.writeValueAsString(training)))
       .andExpect(status().isCreated());
 
-    Training createdTraining = trainingRepository.findByName("Séance Mixte").orElse(null);
+    WorkoutSession createdTraining = trainingRepository.findByName("Séance Mixte").orElse(null);
     assert createdTraining != null;
 
     Exercise newExercise = new Exercise();
@@ -140,8 +140,8 @@ public class TrainingSessionControllerTest {
     addExerciseRequest.setNumberOfWarmUpSeries(2);
     addExerciseRequest.setNotes("Lorem ipsum dollores");
 
-    ArrayList<Series> series = new ArrayList<>();
-    Series series1 = new Series();
+    ArrayList<WorkoutSet> series = new ArrayList<>();
+    WorkoutSet series1 = new WorkoutSet();
     series1.setRepsCount(8);
     series1.setWeight(50);
     series1.setRestTime("60");

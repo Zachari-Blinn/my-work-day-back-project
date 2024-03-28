@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.payload.projection;
 
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
-import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
+import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
 
 import java.util.ArrayList;
 
@@ -23,8 +23,8 @@ public interface TrainingExercisesSeriesInfoProjection {
 
   // format enum
 
-  default ETrainingStatus getTrainingStatus() {
-    return (getRawTrainingStatus() != null) ? ETrainingStatus.of(getRawTrainingStatus()) : null;
+  default ESessionStatus getTrainingStatus() {
+    return (getRawTrainingStatus() != null) ? ESessionStatus.of(getRawTrainingStatus()) : null;
   }
 
   default ArrayList<EDayOfWeek> getTrainingDays() {

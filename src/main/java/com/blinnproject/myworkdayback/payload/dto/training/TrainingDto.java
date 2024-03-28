@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.payload.dto.training;
 
-import com.blinnproject.myworkdayback.model.entity.Training;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
-import com.blinnproject.myworkdayback.model.enums.ETrainingStatus;
+import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
 import com.blinnproject.myworkdayback.payload.dto.training_exercises.TrainingExercisesDto;
 import lombok.Value;
 
@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * DTO for {@link Training}
+ * DTO for {@link WorkoutSession}
  */
 @Value
 public class TrainingDto implements Serializable {
@@ -25,7 +25,7 @@ public class TrainingDto implements Serializable {
   String name;
   String sportPreset;
   EDayOfWeek trainingDays;
-  ETrainingStatus trainingStatus;
+  ESessionStatus trainingStatus;
   Date startDate;
   Date endDate;
   Date performedDate;
