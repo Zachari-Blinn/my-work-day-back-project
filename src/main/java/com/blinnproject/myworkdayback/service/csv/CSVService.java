@@ -5,5 +5,5 @@ import java.io.IOException;
 import java.util.Date;
 
 public interface CSVService {
-  ByteArrayInputStream trainingSessionToCsv(Long createdBy, Date startDate, Date endDate) throws RuntimeException, IOException;
+//  ByteArrayInputStream trainingSessionToCsv(Long createdBy, Date startDate, Date endDate) throws RuntimeException, IOException;
 }

@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "roles")
+@Table(name = "ROLES")
 public class Role implements Serializable {
   @Serial
   private static final long serialVersionUID = 1L;

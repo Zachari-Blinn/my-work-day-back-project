@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.controllers;
 
-import com.blinnproject.myworkdayback.payload.request.LoginRequest;
-import com.blinnproject.myworkdayback.payload.request.SignupRequest;
+import com.blinnproject.myworkdayback.model.request.LoginRequest;
+import com.blinnproject.myworkdayback.model.request.SignupRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

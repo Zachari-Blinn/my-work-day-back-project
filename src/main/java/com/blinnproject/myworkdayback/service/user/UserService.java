@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.service.user;
 
 import com.blinnproject.myworkdayback.model.entity.User;
-import com.blinnproject.myworkdayback.payload.request.SignupRequest;
-import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
+import com.blinnproject.myworkdayback.model.request.SignupRequest;
+import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
 import jakarta.mail.MessagingException;
 
 import java.util.Optional;

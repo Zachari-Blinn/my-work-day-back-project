@@ -1,7 +1,8 @@
-﻿package com.blinnproject.myworkdayback.model.entity;
+package com.blinnproject.myworkdayback.model.entity;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
+import com.blinnproject.myworkdayback.model.enums.EFrequency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "schedule")
+@Table(name = "SCHEDULE")
 public class Schedule extends BaseEntityAudit {
 
   @Column(name = "start_date")
@@ -37,13 +38,27 @@ public class Schedule extends BaseEntityAudit {
   private LocalTime endTime;
 
   @Column(name = "frequency")
-  private String frequency;
-
-  @Column(name = "days_of_week")
   @Enumerated(EnumType.ORDINAL)
-  private ArrayList<EDayOfWeek> daysOfWeek;
+  private EFrequency frequency;
 
-  @ManyToOne
-  @JoinColumn(name = "workout_model_id")
-  private WorkoutModel workoutModel;
+  @Column(name = "monday")
+  private Boolean monday;
+
+  @Column(name = "tuesday")
+  private Boolean tuesday;
+
+  @Column(name = "wednesday")
+  private Boolean wednesday;
+
+  @Column(name = "thursday")
+  private Boolean thursday;
+
+  @Column(name = "friday")
+  private Boolean friday;
+
+  @Column(name = "saturday")
+  private Boolean saturday;
+
+  @Column(name = "sunday")
+  private Boolean sunday;
 }

@@ -2,11 +2,11 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.entity.RefreshToken;
-import com.blinnproject.myworkdayback.payload.request.*;
-import com.blinnproject.myworkdayback.payload.response.GenericResponse;
-import com.blinnproject.myworkdayback.payload.response.JwtResponse;
-import com.blinnproject.myworkdayback.payload.response.TokenRefreshResponse;
-import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
+import com.blinnproject.myworkdayback.model.request.*;
+import com.blinnproject.myworkdayback.model.response.GenericResponse;
+import com.blinnproject.myworkdayback.model.response.JwtResponse;
+import com.blinnproject.myworkdayback.model.response.TokenRefreshResponse;
+import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;

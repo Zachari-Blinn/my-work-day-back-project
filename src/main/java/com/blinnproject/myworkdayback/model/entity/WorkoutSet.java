@@ -15,15 +15,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "workout_sets")
+@Table(name = "WORKOUT_SETS")
 public class WorkoutSet extends BaseEntityAudit {
   @Min(0)
   @Column(name = "position_index", nullable = false)
   private int positionIndex;
-
-  @ManyToOne
-  @JoinColumn(referencedColumnName = "id")
-  private WorkoutSet parent;
 
   @Column(name = "weight")
   @Min(0)
@@ -34,14 +30,10 @@ public class WorkoutSet extends BaseEntityAudit {
   private String restTime;
 
   @Column(name = "notes")
-  @Lob
   private String notes;
 
   @Column(name = "reps_count")
   @Min(0)
   @Max(100)
   private int repsCount;
-
-  @Column(name = "difficulty")
-  private EDifficulty difficulty;
 }

@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.controller;
 
-import com.blinnproject.myworkdayback.payload.response.GenericResponse;
+import com.blinnproject.myworkdayback.model.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.profile_picture.ProfilePictureService;
