@@ -1,0 +1,151 @@
+package com.blinnproject.myworkdayback.repository;
+
+import com.blinnproject.myworkdayback.model.entity.*;
+import com.blinnproject.myworkdayback.model.enums.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.annotation.DirtiesContext;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
+
+@SpringBootTest()
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class WorkoutSessionRepositoryTest {
+
+  @Autowired
+  private WorkoutSessionRepository workoutSessionRepository;
+
+  @Autowired
+  private WorkoutModelRepository workoutModelRepository;
+
+  @Autowired
+  private WorkoutExerciseRepository workoutExerciseRepository;
+
+  @Autowired
+  private ExerciseRepository exerciseRepository;
+
+  @Autowired
+  private UserRepository userRepository;
+
+  private User user;
+
+  @BeforeEach
+  void beforeAllTests() {
+    createMockedUser();
+  }
+
+  void createMockedUser() {
+    user = new User();
+    user.setUsername("mocked-user");
+    user.setPassword("Toto@123*");
+    user.setEmail("mocked-user@email.fr");
+    user.setGender(EGender.MAN);
+    userRepository.save(user);
+  }
+
+   @Test
+   void WorkoutSessionRepository_findAllSessionByDate_ReturnWorkoutSessionList() {
+    LocalDate date = LocalDate.parse("2021-09-06");
+    int dayOfWeek = 2;
+
+    // Create workout model
+    WorkoutModel workoutModel = createWorkoutModel();
+    List<WorkoutExercise> workoutExercises = createWorkoutExercises(workoutModel);
+
+    // Create workout session
+    WorkoutSession workoutSession = new WorkoutSession();
+    workoutSession.setName("Session " + workoutModel.getName());
+    workoutSession.setWorkoutModel(workoutModel);
+    workoutSession.setSessionStatus(ESessionStatus.IN_PROGRESS);
+    workoutSession.setStartedAt(LocalDate.parse("2021-09-06"));
+    workoutSession.setCreatedBy(user.getId());
+    workoutSession.setEndedAt(null);
+    workoutSession.setWorkoutExerciseList(new ArrayList<>(workoutExercises));
+
+    workoutSessionRepository.save(workoutSession);
+
+    List<Object[]> result = workoutSessionRepository.findAllSessionByDate(dayOfWeek, LocalDate.parse("2021-09-13"), user.getId());
+    assert result != null;
+   }
+
+  private WorkoutModel createWorkoutModel() {
+    Schedule schedule = new Schedule();
+    schedule.setCreatedBy(this.user.getId());
+    schedule.setStartTime(LocalTime.parse("18:00"));
+    schedule.setEndTime(LocalTime.parse("20:00"));
+    schedule.setStartDate(LocalDate.parse("2021-09-06"));
+    schedule.setMonday(true);
+    schedule.setFriday(true);
+    schedule.setFrequency(EFrequency.WEEKLY);
+
+    WorkoutModel workoutModel = new WorkoutModel(
+        "Upper Body Workout",
+        "Upper body workout for beginners",
+        null,
+        String.valueOf(ESport.WEIGHTLIFTING),
+        true,
+        true,
+        "icon_dumbbell",
+        "#0072db"
+    );
+    workoutModel.setCreatedBy(this.user.getId());
+    workoutModel.setSchedules(List.of(schedule));
+
+    return workoutModelRepository.saveAndFlush(workoutModel);
+  }
+
+  private List<WorkoutExercise> createWorkoutExercises(WorkoutModel workoutModel) {
+    List<WorkoutExercise> workoutExercises = new ArrayList<>();
+
+    Exercise benchPressExercise = new Exercise();
+    benchPressExercise.setName("Bench press");
+    benchPressExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.PECTORALIS_MAJOR, EMuscle.TRICEPS)));
+    benchPressExercise.setCreatedBy(user.getId());
+
+    Exercise benchPressExerciseResult = exerciseRepository.saveAndFlush(benchPressExercise);
+
+    WorkoutExercise workoutExercise1 = new WorkoutExercise();
+    workoutExercise1.setExercise(benchPressExerciseResult);
+    workoutExercise1.setWorkout(workoutModel);
+    workoutExercise1.setPositionIndex(1);
+    workoutExercise1.setNotes("Coup de pied direct");
+    workoutExercise1.setNumberOfWarmUpSets(0);
+    workoutExercise1.setCreatedBy(this.user.getId());
+
+    WorkoutSet workoutSet1 = new WorkoutSet();
+    workoutSet1.setRepsCount(2);
+    workoutSet1.setWeight(0);
+    workoutSet1.setPositionIndex(1);
+    workoutSet1.setRestTime("0");
+    workoutSet1.setNotes("Premier aller-retour");
+    workoutSet1.setCreatedBy(this.user.getId());
+
+    WorkoutSet workoutSet2 = new WorkoutSet();
+    workoutSet2.setRepsCount(2);
+    workoutSet2.setWeight(0);
+    workoutSet2.setPositionIndex(2);
+    workoutSet2.setRestTime("0");
+    workoutSet2.setNotes("Deuxième aller-retour");
+    workoutSet2.setCreatedBy(this.user.getId());
+
+    WorkoutSet workoutSet3 = new WorkoutSet();
+    workoutSet3.setRepsCount(2);
+    workoutSet3.setWeight(0);
+    workoutSet3.setPositionIndex(3);
+    workoutSet3.setRestTime("0");
+    workoutSet3.setNotes("Troisième aller-retour");
+    workoutSet3.setCreatedBy(this.user.getId());
+
+    workoutExercise1.addWorkoutSets(List.of(workoutSet1, workoutSet2, workoutSet3));
+
+    workoutExercises.add(workoutExercise1);
+
+    return workoutExerciseRepository.saveAll(workoutExercises);
+  }
+}

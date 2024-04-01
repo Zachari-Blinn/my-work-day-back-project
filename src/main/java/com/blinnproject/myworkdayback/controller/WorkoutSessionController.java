@@ -36,16 +36,16 @@ public class WorkoutSessionController {
   }
 
   // Not implemented
-  @Operation(summary = "Get workout session by date", description = "Retrieves a workout session by its date.")
-  @GetMapping("/{trainingDate}")
-  public ResponseEntity<GenericResponse<List<WorkoutSession>>> getAllWorkoutSessionsByDate(
-      @PathVariable("trainingDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate trainingDate,
-      @AuthenticationPrincipal UserDetailsImpl userDetails
-  ) {
-    List<WorkoutSession> workoutSessions = workoutSessionService.findAllByDate(trainingDate, userDetails.getId());
-
-    return ResponseEntity.ok(GenericResponse.success(workoutSessions, i18n.translate("controller.workout.session.return-by-date.successful")));
-  }
+//  @Operation(summary = "Get workout session by date", description = "Retrieves a workout session by its date.")
+//  @GetMapping("/{workoutDate}")
+//  public ResponseEntity<GenericResponse<List<Object[]>>> getAllWorkoutSessionsByDate(
+//      @PathVariable("workoutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate workoutDate,
+//      @AuthenticationPrincipal UserDetailsImpl userDetails
+//  ) {
+//    List<Object[]> workoutSessions = workoutSessionService.findAllByDate(workoutDate, userDetails.getId());
+//
+//    return ResponseEntity.ok(GenericResponse.success(workoutSessions, i18n.translate("controller.workout.session.return-by-date.successful")));
+//  }
 
   @Operation(summary = "Create workout session", description = "Creates a workout session by workout model and date.")
   @PostMapping(value = "/{startedAt}/workout-model/{workoutModelId}")

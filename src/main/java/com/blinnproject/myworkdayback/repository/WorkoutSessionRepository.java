@@ -1,14 +1,13 @@
 package com.blinnproject.myworkdayback.repository;
 
+import com.blinnproject.myworkdayback.model.dto.WorkoutModelSessionDateDTO;
 import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
-import com.blinnproject.myworkdayback.model.enums.EDayOfWeek;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -16,10 +15,10 @@ import java.util.List;
 public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, Long> {
 
   @Query("""
-      SELECT workoutSession
+      SELECT workoutModel, workoutSession
       FROM WorkoutSession workoutSession
-      JOIN workoutSession.workoutModel workoutModel
-      JOIN workoutModel.schedules schedule
+      LEFT JOIN workoutSession.workoutModel workoutModel
+      LEFT JOIN workoutModel.schedules schedule
       WHERE
         CASE
           WHEN :dayOfWeek = 1 AND schedule.sunday = TRUE THEN TRUE
@@ -32,12 +31,11 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
           ELSE FALSE
         END = TRUE
       AND workoutSession.createdBy = :createdBy
-      AND workoutSession.startedAt >= :currentDate
-      AND workoutSession.endedAt <= :currentDate
+      AND (workoutSession.startedAt = :currentDate OR workoutSession.endedAt = :currentDate)
   """)
-  List<WorkoutSession> findAllSessionByDate(
+  List<Object[]> findAllSessionByDate(
       @Param("dayOfWeek") int dayOfWeek,
-      @Param("currentDate") Timestamp currentDate,
+      @Param("currentDate") LocalDate currentDate,
       @Param("createdBy") Long createdBy
   );
 }

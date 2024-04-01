@@ -29,10 +29,8 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
   }
 
   @Override
-  public List<WorkoutSession> findAllByDate(LocalDate startedAt, Long createdBy) {
-    int dayOfWeek = startedAt.getDayOfWeek().getValue();
-    Timestamp currentDate = Timestamp.valueOf(startedAt.atStartOfDay());
-    return workoutSessionRepository.findAllSessionByDate(dayOfWeek, currentDate, createdBy);
+  public List<Object[]> findAllByDate(LocalDate startedAt, Long createdBy) {
+    return workoutSessionRepository.findAllSessionByDate(2, startedAt, createdBy);
   }
 
   @Override
@@ -45,7 +43,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     workoutSession.setName("Session " + workoutModel.getName());
     workoutSession.setWorkoutModel(workoutModel);
     workoutSession.setSessionStatus(ESessionStatus.IN_PROGRESS);
-    workoutSession.setStartedAt(Timestamp.valueOf(startedAt));
+    workoutSession.setStartedAt(startedAt.toLocalDate());
 
     workoutSession.setWorkoutExerciseList(new ArrayList<>(workoutModel.getWorkoutExerciseList())); // Cloning the list
 

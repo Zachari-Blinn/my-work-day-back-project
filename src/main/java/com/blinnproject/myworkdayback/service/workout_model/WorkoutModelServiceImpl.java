@@ -5,6 +5,7 @@ import com.blinnproject.myworkdayback.exception.WorkoutModelWithCurrentUserNotFo
 import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
+import com.blinnproject.myworkdayback.model.dto.WorkoutModelSessionDateDTO;
 import com.blinnproject.myworkdayback.model.entity.Exercise;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
@@ -17,7 +18,9 @@ import com.blinnproject.myworkdayback.service.workout_exercise.WorkoutExerciseSe
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -119,6 +122,11 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
   @Override
   public void removeSchedule(Long scheduleId, Long createdBy) {
     scheduleService.delete(scheduleId, createdBy);
+  }
+
+  @Override
+  public List<WorkoutModelSessionDateDTO> getAllWorkoutModelPlanSessionsByDate(LocalDate startDate, LocalDate endDate, Long createdBy) {
+    return workoutModelRepository.findAllWorkoutModelSessionBetweenDates(startDate, endDate, createdBy);
   }
 
 

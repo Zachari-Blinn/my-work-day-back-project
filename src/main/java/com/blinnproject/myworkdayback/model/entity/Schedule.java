@@ -37,7 +37,7 @@ public class Schedule extends BaseEntityAudit {
   private LocalTime endTime;
 
   @Column(name = "frequency")
-  @Enumerated(EnumType.ORDINAL)
+  @Enumerated(EnumType.STRING)
   private EFrequency frequency;
 
   @Column(name = "monday")

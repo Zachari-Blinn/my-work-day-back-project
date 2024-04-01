@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface WorkoutSessionService {
-  List<WorkoutSession> findAllByDate(LocalDate startedAt, Long createdBy);
+  List<Object[]> findAllByDate(LocalDate startedAt, Long createdBy);
 
   WorkoutSession createWorkoutSession(LocalDateTime startedAt, Long workoutModelId, Long createdBy);
 }

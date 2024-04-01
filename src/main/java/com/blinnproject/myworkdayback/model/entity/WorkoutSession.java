@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -29,10 +30,10 @@ public class WorkoutSession extends Workout {
   private ESessionStatus sessionStatus = ESessionStatus.IN_PROGRESS;
 
   @Column(name = "started_at")
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date startedAt;
+  @Temporal(TemporalType.DATE)
+  private LocalDate startedAt;
 
   @Column(name = "ended_at")
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date endedAt;
+  @Temporal(TemporalType.DATE)
+  private LocalDate endedAt;
 }

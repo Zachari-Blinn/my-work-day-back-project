@@ -1,7 +1,6 @@
 package com.blinnproject.myworkdayback.model.entity;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
-import com.blinnproject.myworkdayback.model.enums.EDifficulty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

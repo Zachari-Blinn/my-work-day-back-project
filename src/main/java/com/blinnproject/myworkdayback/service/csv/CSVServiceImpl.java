@@ -1,16 +1,11 @@
 package com.blinnproject.myworkdayback.service.csv;
 
-import com.blinnproject.myworkdayback.model.response.TrainingSessionInfoResponse;
 import com.blinnproject.myworkdayback.repository.WorkoutSessionRepository;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+
 
 @Service
 public class CSVServiceImpl implements CSVService {
