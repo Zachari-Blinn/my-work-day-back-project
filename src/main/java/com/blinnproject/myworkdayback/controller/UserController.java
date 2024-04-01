@@ -18,7 +18,7 @@ import java.io.IOException;
 @Tag(name="User", description = "Endpoints related to user operations")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/api/user/")
+@RequestMapping(value = "/api/user/")
 public class UserController {
 
   private final I18nService i18n;
@@ -30,7 +30,7 @@ public class UserController {
   }
 
   @Operation(summary = "Upload Profile Picture", description = "Uploads a profile picture for the authenticated user.")
-  @PostMapping("profile-picture")
+  @PostMapping(value = "profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
   public ResponseEntity<GenericResponse<String>> uploadProfilePicture(
       @RequestParam("picture") MultipartFile file,
       @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -41,7 +41,7 @@ public class UserController {
   }
 
   @Operation(summary = "Get Profile Picture by Username", description = "Retrieves the profile picture of a user by username.")
-  @GetMapping("{username}/profile-picture")
+  @GetMapping(value = "{username}/profile-picture", produces = MediaType.IMAGE_PNG_VALUE)
   public ResponseEntity<?> getProfilePictureByUsername(@PathVariable("username") String username) {
     byte[] image = this.profilePictureService.getProfilePictureByUsername(username);
 

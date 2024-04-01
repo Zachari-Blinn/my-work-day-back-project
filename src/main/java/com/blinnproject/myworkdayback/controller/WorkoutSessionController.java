@@ -9,6 +9,7 @@ import com.blinnproject.myworkdayback.service.workout_session.WorkoutSessionServ
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +23,7 @@ import java.util.List;
 @Tag(name="Workout Session", description = "Endpoints related to user workout sessions.")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/api/workout-session")
+@RequestMapping(value = "/api/workout-session", consumes="application/json", produces="application/json")
 public class WorkoutSessionController {
   private final I18nService i18n;
   private final WorkoutSessionService workoutSessionService;
@@ -46,9 +47,8 @@ public class WorkoutSessionController {
     return ResponseEntity.ok(GenericResponse.success(workoutSessions, i18n.translate("controller.workout.session.return-by-date.successful")));
   }
 
-  // todo create session workout by workout model and date
   @Operation(summary = "Create workout session", description = "Creates a workout session by workout model and date.")
-  @PostMapping("/{startedAt}/workout-model/{workoutModelId}")
+  @PostMapping(value = "/{startedAt}/workout-model/{workoutModelId}")
   public ResponseEntity<GenericResponse<WorkoutSession>> createWorkoutSession(
       @PathVariable("startedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startedAt,
       @PathVariable("workoutModelId") Long workoutModelId,
@@ -56,7 +56,9 @@ public class WorkoutSessionController {
   ) {
     WorkoutSession workoutSession = workoutSessionService.createWorkoutSession(startedAt, workoutModelId, userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.create.successful")));
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.create.successful")));
   }
 
   // todo add workout_exercise/set ?? by session id

@@ -26,7 +26,7 @@ import java.util.Optional;
 @Tag(name="Workout model", description = "Endpoints related to user workout model.")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/api/workout-model")
+@RequestMapping(value = "/api/workout-model", consumes="application/json", produces="application/json")
 public class WorkoutModelController {
 
   private final I18nService i18n;
@@ -128,4 +128,7 @@ public class WorkoutModelController {
     this.workoutModelService.removeSchedule(scheduleId, userDetails.getId());
     return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.workout.model.remove-schedule.successful")));
   }
+
+  // todo update schedule, update exercise, remove exercise, remove schedule
+
 }

@@ -26,7 +26,7 @@ public class WorkoutSession extends Workout {
 
   @Column(name = "session_status")
   @Enumerated(EnumType.ORDINAL)
-  private ESessionStatus sessionStatus;
+  private ESessionStatus sessionStatus = ESessionStatus.IN_PROGRESS;
 
   @Column(name = "started_at")
   @Temporal(TemporalType.TIMESTAMP)

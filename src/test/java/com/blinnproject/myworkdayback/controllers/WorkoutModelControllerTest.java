@@ -181,6 +181,7 @@ class WorkoutModelControllerTest {
 
     WorkoutSet workoutSet1 = new WorkoutSet(
         1,
+        null,
         10,
         "10",
         "10",
@@ -189,6 +190,7 @@ class WorkoutModelControllerTest {
 
     WorkoutSet workoutSet2 = new WorkoutSet(
         2,
+        null,
         10,
         "10",
         "10",
@@ -231,6 +233,7 @@ class WorkoutModelControllerTest {
 
     WorkoutSet workoutSet1 = new WorkoutSet(
         1,
+        null,
         10,
         "10",
         "10",
@@ -239,6 +242,7 @@ class WorkoutModelControllerTest {
 
     WorkoutSet workoutSet2 = new WorkoutSet(
         2,
+        null,
         10,
         "10",
         "10",

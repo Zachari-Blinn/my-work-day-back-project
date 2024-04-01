@@ -63,8 +63,8 @@ public class WorkoutExercise  extends BaseEntityAudit {
     this.numberOfWarmUpSets = numberOfWarmUpSets;
   }
 
-  @PreUpdate
-  public void preUpdate() {
+  @PrePersist
+  public void prePersist() {
     if (this.getWorkout() instanceof WorkoutModel) {
       this.setPerformStatus(EPerformStatus.NOT_PERFORMED);
     }

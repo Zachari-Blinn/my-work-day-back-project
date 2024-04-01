@@ -132,7 +132,7 @@ public class WorkoutModelData {
   }
 
   public void loadWorkoutExercise() throws ChangeSetPersister.NotFoundException {
-    List<WorkoutExercise> kungFuworkoutExercises = new ArrayList<>();
+    List<WorkoutExercise> kungFuWorkoutExercises = new ArrayList<>();
 
     Exercise tanTuiCrossing = this.exerciseData.getExerciseByName("Tan Tui Crossing");
 
@@ -170,7 +170,7 @@ public class WorkoutModelData {
 
     tanTuiCrossingWorkoutExercise.addWorkoutSets(List.of(tanTuiCrossingWorkoutSet1, tanTuiCrossingWorkoutSet2, tanTuiCrossingWorkoutSet3));
 
-    kungFuworkoutExercises.add(tanTuiCrossingWorkoutExercise);
+    kungFuWorkoutExercises.add(tanTuiCrossingWorkoutExercise);
 
     // second workout exercise
     Exercise wayBaiTuiCrossing = this.exerciseData.getExerciseByName("Wai Bai Tui Crossing");
@@ -209,9 +209,9 @@ public class WorkoutModelData {
 
     wayBaiTuiCrossingWorkoutExercise.addWorkoutSets(List.of(wayBaiTuiCrossingWorkoutSet1, wayBaiTuiCrossingWorkoutSet2, wayBaiTuiCrossingWorkoutSet3));
 
-    kungFuworkoutExercises.add(wayBaiTuiCrossingWorkoutExercise);
+    kungFuWorkoutExercises.add(wayBaiTuiCrossingWorkoutExercise);
 
-    workoutExerciseRepository.saveAll(kungFuworkoutExercises);
+    workoutExerciseRepository.saveAll(kungFuWorkoutExercises);
   }
 
   public WorkoutModel getWorkoutModelByName(String name) throws ChangeSetPersister.NotFoundException {

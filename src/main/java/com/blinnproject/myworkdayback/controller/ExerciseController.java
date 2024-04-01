@@ -21,7 +21,7 @@ import java.util.Optional;
 @Tag(name="Exercise", description = "Endpoints related to exercises.")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/api/exercise")
+@RequestMapping(value = "/api/exercise", consumes="application/json", produces="application/json")
 public class ExerciseController {
 
   private final I18nService i18n;
