@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class WorkoutSessionController {
     this.csvService = csvService;
   }
 
+  // Not implemented
   @Operation(summary = "Get workout session by date", description = "Retrieves a workout session by its date.")
   @GetMapping("/{trainingDate}")
   public ResponseEntity<GenericResponse<List<WorkoutSession>>> getAllWorkoutSessionsByDate(
@@ -44,9 +46,24 @@ public class WorkoutSessionController {
     return ResponseEntity.ok(GenericResponse.success(workoutSessions, i18n.translate("controller.workout.session.return-by-date.successful")));
   }
 
-  // todo start session
+  // todo create session workout by workout model and date
+  @Operation(summary = "Create workout session", description = "Creates a workout session by workout model and date.")
+  @PostMapping("/{startedAt}/workout-model/{workoutModelId}")
+  public ResponseEntity<GenericResponse<WorkoutSession>> createWorkoutSession(
+      @PathVariable("startedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startedAt,
+      @PathVariable("workoutModelId") Long workoutModelId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    WorkoutSession workoutSession = workoutSessionService.createWorkoutSession(startedAt, workoutModelId, userDetails.getId());
 
-  // todo update session
+    return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.create.successful")));
+  }
+
+  // todo add workout_exercise/set ?? by session id
+
+  // todo update workout_exercise/set ?? by session id
+
+  // todo remove workout_exercise/set ?? by session id
 
   // todo set manually session data (with data change with model)
 

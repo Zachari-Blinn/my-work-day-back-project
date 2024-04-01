@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -20,4 +22,7 @@ public class Workout extends BaseEntityAudit {
 
   @Column(name = "description")
   private String description;
+
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "workout")
+  private List<WorkoutExercise> workoutExerciseList;
 }

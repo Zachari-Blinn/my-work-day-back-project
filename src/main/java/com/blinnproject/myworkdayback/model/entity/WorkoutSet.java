@@ -21,6 +21,9 @@ public class WorkoutSet extends BaseEntityAudit {
   @Column(name = "position_index", nullable = false)
   private int positionIndex;
 
+  @Column(name = "is_performed")
+  private Boolean isPerformed = false;
+
   @Column(name = "weight")
   @Min(0)
   @Max(150)

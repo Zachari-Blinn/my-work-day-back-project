@@ -1,7 +1,6 @@
 package com.blinnproject.myworkdayback.seed;
 
 import com.blinnproject.myworkdayback.seed.models.ExerciseData;
-import com.blinnproject.myworkdayback.seed.models.TrainingData;
 import com.blinnproject.myworkdayback.seed.models.UserData;
 import com.blinnproject.myworkdayback.seed.models.WorkoutModelData;
 import org.slf4j.Logger;

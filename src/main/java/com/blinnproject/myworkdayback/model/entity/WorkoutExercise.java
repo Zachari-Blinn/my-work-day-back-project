@@ -2,6 +2,8 @@ package com.blinnproject.myworkdayback.model.entity;
 
 import com.blinnproject.myworkdayback.model.common.BaseEntityAudit;
 import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
+import com.blinnproject.myworkdayback.model.enums.EPerformStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
@@ -20,9 +22,12 @@ public class WorkoutExercise  extends BaseEntityAudit {
   @Column(nullable = false)
   private int positionIndex;
 
-  // Relation avec workout (session or model)
-  @ManyToOne
+  @Column(name = "perform_status", nullable = true)
+  private EPerformStatus performStatus;
+
+  @ManyToOne()
   @JoinColumn(name = "workout_id")
+  @JsonIgnore
   private Workout workout;
 
   @ManyToOne
@@ -56,6 +61,13 @@ public class WorkoutExercise  extends BaseEntityAudit {
     this.positionIndex = positionIndex;
     this.notes = notes;
     this.numberOfWarmUpSets = numberOfWarmUpSets;
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    if (this.getWorkout() instanceof WorkoutModel) {
+      this.setPerformStatus(EPerformStatus.NOT_PERFORMED);
+    }
   }
 
   // methods

@@ -24,10 +24,10 @@ public class WorkoutModel extends Workout {
   @Enumerated(EnumType.STRING)
   private ESport sportPreset;
 
-  @Column(name = "has_warm_up", nullable = false)
+  @Column(name = "has_warm_up")
   private Boolean hasWarmUp = true;
 
-  @Column(name = "has_stretching", nullable = false)
+  @Column(name = "has_stretching")
   private Boolean hasStretching = false;
 
   @Column(name = "icon_name")
@@ -42,8 +42,8 @@ public class WorkoutModel extends Workout {
   @JoinColumn(name = "workout_model_id")
   private List<Schedule> schedules = new ArrayList<>();
 
-  public WorkoutModel(String name, String description, String sportPreset, boolean hasWarmUp, boolean hasStretching, String icon_name, String icon_hexadecimal_color) {
-    super(name, description);
+  public WorkoutModel(String name, String description, List<WorkoutExercise> workoutExerciseList, String sportPreset, boolean hasWarmUp, boolean hasStretching, String icon_name, String icon_hexadecimal_color) {
+    super(name, description, workoutExerciseList);
     this.sportPreset = ESport.valueOf(sportPreset);
     this.hasWarmUp = hasWarmUp;
     this.hasStretching = hasStretching;

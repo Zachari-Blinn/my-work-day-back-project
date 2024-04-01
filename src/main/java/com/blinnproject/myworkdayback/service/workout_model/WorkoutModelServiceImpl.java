@@ -121,6 +121,7 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
     scheduleService.delete(scheduleId, createdBy);
   }
 
+
   /**
    * PRIVATE METHODS
    */
