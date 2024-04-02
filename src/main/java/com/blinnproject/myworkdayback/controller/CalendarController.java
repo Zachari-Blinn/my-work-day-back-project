@@ -22,7 +22,7 @@ import java.util.List;
 @Tag(name="Calendar", description = "Endpoints related to user calendar.")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping(value = "/api/calendar", consumes="application/json", produces="application/json")
+@RequestMapping(value = "/api/calendar", produces="application/json")
 public class CalendarController {
 
   private final I18nService i18n;

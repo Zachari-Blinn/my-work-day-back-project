@@ -23,7 +23,7 @@ import java.util.List;
 @Tag(name="Workout Session", description = "Endpoints related to user workout sessions.")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@RequestMapping(value = "/api/workout-session", consumes="application/json", produces="application/json")
+@RequestMapping(value = "/api/workout-session", produces="application/json")
 public class WorkoutSessionController {
   private final I18nService i18n;
   private final WorkoutSessionService workoutSessionService;

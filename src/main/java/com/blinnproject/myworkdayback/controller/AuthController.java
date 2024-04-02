@@ -30,7 +30,7 @@ import java.util.List;
 
 @Tag(name="Authentication", description = "Endpoints related to user authentication and authorization.")
 @RestController
-@RequestMapping(value = "/api/auth/", consumes="application/json", produces="application/json")
+@RequestMapping(value = "/api/auth/", produces="application/json")
 public class AuthController {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthController.class);

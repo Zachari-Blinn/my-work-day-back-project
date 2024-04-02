@@ -3,14 +3,17 @@ package com.blinnproject.myworkdayback.controllers;
 import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
+import com.blinnproject.myworkdayback.model.entity.Exercise;
 import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
 import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import com.blinnproject.myworkdayback.model.enums.EFrequency;
 import com.blinnproject.myworkdayback.model.enums.ESport;
+import com.blinnproject.myworkdayback.repository.ExerciseRepository;
 import com.blinnproject.myworkdayback.repository.WorkoutModelRepository;
 import com.blinnproject.myworkdayback.model.enums.EGender;
 import com.blinnproject.myworkdayback.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -47,6 +51,9 @@ class WorkoutModelControllerTest {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private ExerciseRepository exerciseRepository;
+
   @BeforeAll
   void beforeAllTests() {
     createMockedUser();
@@ -65,8 +72,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_Create_ReturnSavedWorkoutModel() throws Exception {
      WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Quantum Slam",
+        "Quantum Slam",
          String.valueOf(ESport.MMA),
         true,
         true,
@@ -79,9 +86,9 @@ class WorkoutModelControllerTest {
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated());
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert(Objects.requireNonNull(workoutModelCreated).getName()).equals("MMA");
-    assert(Objects.requireNonNull(workoutModelCreated).getDescription()).equals("Mixed Martial Arts");
+    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("Quantum Slam").orElse(null);
+    assert(Objects.requireNonNull(workoutModelCreated).getName()).equals("Quantum Slam");
+    assert(Objects.requireNonNull(workoutModelCreated).getDescription()).equals("Quantum Slam");
     assert(Objects.requireNonNull(workoutModelCreated).getSportPreset()).equals(ESport.MMA);
     assert(Objects.requireNonNull(workoutModelCreated).getHasWarmUp()).equals(true);
     assert(Objects.requireNonNull(workoutModelCreated).getHasStretching()).equals(true);
@@ -93,8 +100,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_GetWorkoutModelById_ReturnWorkoutModel() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Infinicourse",
+        "Infinicourse",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -107,9 +114,9 @@ class WorkoutModelControllerTest {
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated());
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert(Objects.requireNonNull(workoutModelCreated).getName()).equals("MMA");
-    assert(Objects.requireNonNull(workoutModelCreated).getDescription()).equals("Mixed Martial Arts");
+    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("Infinicourse").orElse(null);
+    assert(Objects.requireNonNull(workoutModelCreated).getName()).equals("Infinicourse");
+    assert(Objects.requireNonNull(workoutModelCreated).getDescription()).equals("Infinicourse");
     assert(Objects.requireNonNull(workoutModelCreated).getSportPreset()).equals(ESport.MMA);
     assert(Objects.requireNonNull(workoutModelCreated).getHasWarmUp()).equals(true);
     assert(Objects.requireNonNull(workoutModelCreated).getHasStretching()).equals(true);
@@ -131,8 +138,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_addExerciseToWorkoutModelWithoutSets_ReturnsWorkoutModelWithExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Trick War",
+        "Trick War",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -140,10 +147,12 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     WorkoutExerciseCreateDTO workoutExercise = new WorkoutExerciseCreateDTO(
         1,
@@ -152,10 +161,7 @@ class WorkoutModelControllerTest {
         null
     );
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert workoutModelCreated != null;
-
-    mockMvc.perform(post("/api/workout-model/" + workoutModelCreated.getId() + "/exercise/1")
+    mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/exercise/1")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutExercise)))
         .andExpect(status().isOk());
@@ -165,8 +171,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_addExerciseToWorkoutModelWithSets_ReturnsWorkoutModelWithExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Rosurf",
+        "Rosurf",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -174,10 +180,12 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
+      .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     WorkoutSet workoutSet1 = new WorkoutSet(
         1,
@@ -204,10 +212,7 @@ class WorkoutModelControllerTest {
         new ArrayList<>(Arrays.asList(workoutSet1, workoutSet2))
     );
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert workoutModelCreated != null;
-
-    mockMvc.perform(post("/api/workout-model/" + workoutModelCreated.getId() + "/exercise/1")
+    mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/exercise/1")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutExercise)))
         .andExpect(status().isOk());
@@ -217,8 +222,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_removeExerciseFromWorkoutModel_ReturnsWorkoutModelWithoutExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Demolition Draft",
+        "Demolition Draft",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -226,10 +231,12 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
+      .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     WorkoutSet workoutSet1 = new WorkoutSet(
         1,
@@ -256,21 +263,30 @@ class WorkoutModelControllerTest {
         new ArrayList<>(Arrays.asList(workoutSet1, workoutSet2))
     );
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert workoutModelCreated != null;
+    Exercise exercise = new Exercise(
+      "Demolition Draft exercise",
+      null
+    );
+    Exercise savedExercise = exerciseRepository.saveAndFlush(exercise);
 
-    mockMvc.perform(post("/api/workout-model/" + workoutModelCreated.getId() + "/exercise/1")
+    MvcResult workoutExerciseResult = mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/exercise/" + savedExercise.getId())
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutExercise)))
+        .andExpect(status().isOk())
+      .andReturn();
+
+    mockMvc.perform(get("/api/workout-model/" + workoutModelId))
+        .andExpect(status().isOk())
+      ;
+
+    String response = workoutExerciseResult.getResponse().getContentAsString();
+    JsonNode jsonNode = objectMapper.readTree(response);
+    long workoutExerciseId = jsonNode.at("/data/id").asLong();
+
+    mockMvc.perform(delete("/api/workout-model/exercise/" + workoutExerciseId))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/api/workout-model/" + workoutModelCreated.getId()))
-        .andExpect(status().isOk());
-
-    mockMvc.perform(delete("/api/workout-model/exercise/1"))
-        .andExpect(status().isOk());
-
-    mockMvc.perform(get("/api/workout-model/" + workoutModelCreated.getId()))
+    mockMvc.perform(get("/api/workout-model/" + workoutModelId))
         .andExpect(status().isOk());
   }
 
@@ -278,8 +294,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_deleteWorkoutModel_ReturnsWorkoutModelDeleted() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Grimglide",
+        "Grimglide",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -287,15 +303,14 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert workoutModelCreated != null;
-
-    mockMvc.perform(delete("/api/workout-model/" + workoutModelCreated.getId()))
+    mockMvc.perform(delete("/api/workout-model/" + workoutModelId))
         .andExpect(status().isOk());
   }
 
@@ -347,26 +362,24 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_updateWorkoutModel_ReturnsUpdatedWorkoutModel() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
-        String.valueOf(ESport.MMA),
+        "Amadraft",
+        "Amadraft",
+        String.valueOf(ESport.WEIGHTLIFTING),
         true,
         true,
         "icon_dumbbell",
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
-
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert workoutModelCreated != null;
+        .andExpect(status().isCreated()).andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     WorkoutModelCreateDTO updatedWorkoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "New Amadraft",
+        "New amadraft",
         String.valueOf(ESport.MMA),
         false,
         false,
@@ -374,12 +387,12 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(patch("/api/workout-model/" + workoutModelCreated.getId())
+    mockMvc.perform(patch("/api/workout-model/" + workoutModelId)
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(updatedWorkoutModel)))
         .andExpect(status().isOk());
 
-    WorkoutModel updatedWorkoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
+    WorkoutModel updatedWorkoutModelCreated = workoutModelRepository.findByName("New Amadraft").orElse(null);
     assert updatedWorkoutModelCreated != null;
     assert updatedWorkoutModelCreated.getHasWarmUp().equals(false);
     assert updatedWorkoutModelCreated.getHasStretching().equals(false);
@@ -410,8 +423,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_findAllExercises_ReturnsAllExercises() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "MMA",
-        "Mixed Martial Arts",
+        "Vitaliglide",
+        "Vitaliglide",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -419,15 +432,14 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("MMA").orElse(null);
-    assert workoutModelCreated != null;
-
-    mockMvc.perform(get("/api/workout-model/" + workoutModelCreated.getId() + "/exercises"))
+    mockMvc.perform(get("/api/workout-model/" + workoutModelId + "/exercises"))
         .andExpect(status().isOk());
   }
 
@@ -451,13 +463,12 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
-
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("KUNG FU").orElse(null);
-    assert workoutModelCreated != null;
+      .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     ScheduleCreateDTO schedule = new ScheduleCreateDTO(
         LocalDate.parse("2023-12-01"),
@@ -474,7 +485,7 @@ class WorkoutModelControllerTest {
         false
     );
 
-    mockMvc.perform(post("/api/workout-model/" + workoutModelCreated.getId() + "/schedule")
+    mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/schedule")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(schedule)))
         .andExpect(status().isOk());
@@ -484,8 +495,8 @@ class WorkoutModelControllerTest {
   @WithUserDetails("mocked-user")
   void WorkoutModelController_removeScheduleFromWorkoutModel_ReturnsWorkoutModelWithoutSchedule() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
-        "KUNG FU",
-        "Martial Arts",
+        "Icemix",
+        "Icemix",
         String.valueOf(ESport.MMA),
         true,
         true,
@@ -493,13 +504,12 @@ class WorkoutModelControllerTest {
         "#0072db"
     );
 
-    mockMvc.perform(post("/api/workout-model")
+    MvcResult workoutModelResult = mockMvc.perform(post("/api/workout-model")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutModel)))
-        .andExpect(status().isCreated());
-
-    WorkoutModel workoutModelCreated = workoutModelRepository.findByName("KUNG FU").orElse(null);
-    assert workoutModelCreated != null;
+        .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     ScheduleCreateDTO schedule = new ScheduleCreateDTO(
         LocalDate.parse("2023-12-01"),
@@ -516,18 +526,18 @@ class WorkoutModelControllerTest {
         false
     );
 
-    mockMvc.perform(post("/api/workout-model/" + workoutModelCreated.getId() + "/schedule")
+    mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/schedule")
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(schedule)))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/api/workout-model/" + workoutModelCreated.getId()))
+    mockMvc.perform(get("/api/workout-model/" + workoutModelId))
         .andExpect(status().isOk());
 
     mockMvc.perform(delete("/api/workout-model/schedule/1"))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/api/workout-model/" + workoutModelCreated.getId()))
+    mockMvc.perform(get("/api/workout-model/" + workoutModelId))
         .andExpect(status().isOk());
   }
 }
