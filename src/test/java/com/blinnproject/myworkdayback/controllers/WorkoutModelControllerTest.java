@@ -54,18 +54,27 @@ class WorkoutModelControllerTest {
   @Autowired
   private ExerciseRepository exerciseRepository;
 
+  private User user;
+
   @BeforeAll
   void beforeAllTests() {
     createMockedUser();
   }
 
   void createMockedUser() {
-    User user = new User();
-    user.setUsername("mocked-user");
-    user.setPassword("Toto@123*");
-    user.setEmail("mocked-user@email.fr");
-    user.setGender(EGender.MAN);
-    userRepository.save(user);
+    user = new User();
+
+    userRepository.findByUsername("mocked-user").ifPresent(data -> {
+      user = data;
+    });
+
+    if (user.getId() == null) {
+      user.setUsername("mocked-user");
+      user.setPassword("Toto@123*");
+      user.setEmail("mocked-user@email.fr");
+      user.setGender(EGender.MAN);
+      user = userRepository.save(user);
+    }
   }
 
   @Test

@@ -17,6 +17,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Optional;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,11 +49,18 @@ class ExerciseControllerTest {
 
   void createMockedUser() {
     user = new User();
-    user.setUsername("mocked-user");
-    user.setPassword("Toto@123*");
-    user.setEmail("mocked-user@email.fr");
-    user.setGender(EGender.MAN);
-    user = userRepository.save(user);
+
+    userRepository.findByUsername("mocked-user").ifPresent(data -> {
+      user = data;
+    });
+
+    if (user.getId() == null) {
+      user.setUsername("mocked-user");
+      user.setPassword("Toto@123*");
+      user.setEmail("mocked-user@email.fr");
+      user.setGender(EGender.MAN);
+      user = userRepository.save(user);
+    }
   }
 
   @Test
@@ -135,7 +144,7 @@ class ExerciseControllerTest {
 
     mockMvc.perform(get("/api/exercise"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data[0].name").value("mocked-exercise"))
+        .andExpect(jsonPath("$.data[0].name").value("Bench press"))
         .andExpect(jsonPath("$.data[0].createdBy").value(user.getId()));
   }
 

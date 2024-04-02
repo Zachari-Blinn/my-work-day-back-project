@@ -61,11 +61,18 @@ class WorkoutSessionControllerTest {
 
   void createMockedUser() {
     user = new User();
-    user.setUsername("mocked-user");
-    user.setPassword("Toto@123*");
-    user.setEmail("mocked-user@email.fr");
-    user.setGender(EGender.MAN);
-    userRepository.save(user);
+
+    userRepository.findByUsername("mocked-user").ifPresent(data -> {
+      user = data;
+    });
+
+    if (user.getId() == null) {
+      user.setUsername("mocked-user");
+      user.setPassword("Toto@123*");
+      user.setEmail("mocked-user@email.fr");
+      user.setGender(EGender.MAN);
+      user = userRepository.save(user);
+    }
   }
 
   private WorkoutModel createWorkoutModel() {
