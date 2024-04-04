@@ -15,16 +15,17 @@ import com.blinnproject.myworkdayback.model.enums.EGender;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -37,6 +38,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WorkoutModelControllerTest {
   @Autowired
@@ -55,6 +59,16 @@ class WorkoutModelControllerTest {
   private ExerciseRepository exerciseRepository;
 
   private User user;
+
+  @Container
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+      .withDatabaseName("DB_RAISE_TEST")
+      .withUsername("username")
+      .withPassword("password");
+
+  static {
+    postgreSQLContainer.start();
+  }
 
   @BeforeAll
   void beforeAllTests() {
@@ -78,6 +92,15 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 1)
+  void testConnectionToDatabase() {
+    Assertions.assertNotNull(userRepository);
+    Assertions.assertNotNull(workoutModelRepository);
+    Assertions.assertNotNull(exerciseRepository);
+  }
+
+  @Test
+  @Order(value = 2)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_Create_ReturnSavedWorkoutModel() throws Exception {
      WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -106,6 +129,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 3)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_GetWorkoutModelById_ReturnWorkoutModel() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -137,6 +161,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 4)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_GetWorkoutModelById_WhenNotExists_ReturnsNotFound() throws Exception {
     mockMvc.perform(get("/api/workout-model/{id}", "42"))
@@ -144,8 +169,14 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 5)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_addExerciseToWorkoutModelWithoutSets_ReturnsWorkoutModelWithExercise() throws Exception {
+    Exercise exercise = new Exercise();
+    exercise.setName("Punching");
+    exercise.setCreatedBy(user.getId());
+    Exercise savedExercise = exerciseRepository.saveAndFlush(exercise);
+
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Trick War",
         "Trick War",
@@ -170,13 +201,14 @@ class WorkoutModelControllerTest {
         null
     );
 
-    mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/exercise/1")
+    mockMvc.perform(post("/api/workout-model/" + workoutModelId + "/exercise/" + savedExercise.getId())
         .contentType("application/json")
         .content(objectMapper.writeValueAsString(workoutExercise)))
         .andExpect(status().isOk());
   }
 
   @Test
+  @Order(value = 6)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_addExerciseToWorkoutModelWithSets_ReturnsWorkoutModelWithExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -228,6 +260,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 7)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_removeExerciseFromWorkoutModel_ReturnsWorkoutModelWithoutExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -300,6 +333,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 8)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_deleteWorkoutModel_ReturnsWorkoutModelDeleted() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -324,6 +358,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 9)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_deleteWorkoutModel_WhenNotExists_ReturnsNotFound() throws Exception {
     mockMvc.perform(delete("/api/workout-model/{id}", "42"))
@@ -331,6 +366,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 10)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_findAllWorkoutModel_ReturnsAllWorkoutModels() throws Exception {
     WorkoutModelCreateDTO workoutModel1 = new WorkoutModelCreateDTO(
@@ -368,6 +404,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 11)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_updateWorkoutModel_ReturnsUpdatedWorkoutModel() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -410,6 +447,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 12)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_updateWorkoutModel_WhenNotExists_ReturnsNotFound() throws Exception {
     WorkoutModelCreateDTO updatedWorkoutModel = new WorkoutModelCreateDTO(
@@ -429,6 +467,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 13)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_findAllExercises_ReturnsAllExercises() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -453,6 +492,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 14)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_findAllExercises_WhenNotExists_ReturnsNotNoneExercise() throws Exception {
     mockMvc.perform(get("/api/workout-model/{id}/exercises", "42"))
@@ -460,6 +500,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 15)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_addScheduleToWorkoutModel_ReturnsWorkoutModelWithSchedule() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
@@ -501,6 +542,7 @@ class WorkoutModelControllerTest {
   }
 
   @Test
+  @Order(value = 16)
   @WithUserDetails("mocked-user")
   void WorkoutModelController_removeScheduleFromWorkoutModel_ReturnsWorkoutModelWithoutSchedule() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(

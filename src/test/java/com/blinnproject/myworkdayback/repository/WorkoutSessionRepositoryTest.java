@@ -2,20 +2,25 @@ package com.blinnproject.myworkdayback.repository;
 
 import com.blinnproject.myworkdayback.model.entity.*;
 import com.blinnproject.myworkdayback.model.enums.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-@SpringBootTest()
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest
+@AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WorkoutSessionRepositoryTest {
 
   @Autowired
@@ -35,21 +40,49 @@ class WorkoutSessionRepositoryTest {
 
   private User user;
 
-  @BeforeEach
+  @Container
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+      .withDatabaseName("DB_RAISE_TEST")
+      .withUsername("username")
+      .withPassword("password");
+
+  static {
+    postgreSQLContainer.start();
+  }
+
+  @BeforeAll
   void beforeAllTests() {
     createMockedUser();
   }
 
   void createMockedUser() {
     user = new User();
-    user.setUsername("mocked-user");
-    user.setPassword("Toto@123*");
-    user.setEmail("mocked-user@email.fr");
-    user.setGender(EGender.MAN);
-    userRepository.save(user);
+
+    userRepository.findByUsername("mocked-user").ifPresent(data -> {
+      user = data;
+    });
+
+    if (user.getId() == null) {
+      user.setUsername("mocked-user");
+      user.setPassword("Toto@123*");
+      user.setEmail("mocked-user@email.fr");
+      user.setGender(EGender.MAN);
+      user = userRepository.save(user);
+    }
+  }
+
+  @Test
+  @Order(value = 1)
+  void testConnectionToDatabase() {
+    Assertions.assertNotNull(userRepository);
+    Assertions.assertNotNull(workoutModelRepository);
+    Assertions.assertNotNull(workoutExerciseRepository);
+    Assertions.assertNotNull(exerciseRepository);
+    Assertions.assertNotNull(workoutSessionRepository);
   }
 
    @Test
+   @Order(value = 2)
    void WorkoutSessionRepository_findAllSessionByDate_ReturnWorkoutSessionList() {
     LocalDate date = LocalDate.parse("2021-09-06");
     int dayOfWeek = 2;

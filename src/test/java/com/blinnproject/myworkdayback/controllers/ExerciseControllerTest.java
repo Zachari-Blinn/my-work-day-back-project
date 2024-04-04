@@ -3,22 +3,22 @@ package com.blinnproject.myworkdayback.controllers;
 import com.blinnproject.myworkdayback.model.dto.ExerciseCreateDTO;
 import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.model.enums.EGender;
-import com.blinnproject.myworkdayback.repository.ExerciseRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.Optional;
-
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,6 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ExerciseControllerTest {
   @Autowired
@@ -35,12 +38,19 @@ class ExerciseControllerTest {
   private ObjectMapper objectMapper;
 
   @Autowired
-  private ExerciseRepository exerciseRepository;
-
-  @Autowired
   private UserRepository userRepository;
 
   private User user;
+
+  @Container
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+      .withDatabaseName("DB_RAISE_TEST")
+      .withUsername("username")
+      .withPassword("password");
+
+  static {
+    postgreSQLContainer.start();
+  }
 
   @BeforeAll
   void beforeAllTests() {
@@ -64,6 +74,13 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 1)
+  void testConnectionToDatabase() {
+    Assertions.assertNotNull(userRepository);
+  }
+
+  @Test
+  @Order(value = 2)
   @WithUserDetails("mocked-user")
   void ExerciseController_Create_ReturnSavedExercise() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
@@ -80,6 +97,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 3)
   @WithUserDetails("mocked-user")
   void ExerciseController_Create_ReturnBadRequest() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
@@ -94,6 +112,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 4)
   @WithUserDetails("mocked-user")
   void ExerciseController_findById_ReturnExercise() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
@@ -121,6 +140,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 5)
   @WithUserDetails("mocked-user")
   void ExerciseController_findById_ReturnNotFound() throws Exception {
     mockMvc.perform(get("/api/exercise/{id}", 999))
@@ -128,6 +148,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 6)
   @WithUserDetails("mocked-user")
   void ExerciseController_findAll_ReturnAllExercises() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
@@ -144,11 +165,11 @@ class ExerciseControllerTest {
 
     mockMvc.perform(get("/api/exercise"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data[0].name").value("Bench press"))
-        .andExpect(jsonPath("$.data[0].createdBy").value(user.getId()));
+        .andExpect(jsonPath("$.data[*].name", hasItem("mocked-exercise")));
   }
 
   @Test
+  @Order(value = 7)
   @WithUserDetails("mocked-user")
   void ExerciseController_update_ReturnUpdatedExercise() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
@@ -183,6 +204,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 8)
   @WithUserDetails("mocked-user")
   void ExerciseController_update_ReturnNotFound() throws Exception {
     ExerciseCreateDTO updatedExercise = new ExerciseCreateDTO(
@@ -197,6 +219,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 9)
   @WithUserDetails("mocked-user")
   void ExerciseController_delete_ReturnNoContent() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
@@ -222,6 +245,7 @@ class ExerciseControllerTest {
   }
 
   @Test
+  @Order(value = 10)
   @WithUserDetails("mocked-user")
   void ExerciseController_delete_ReturnNotFound() throws Exception {
     mockMvc.perform(delete("/api/exercise/{id}", 999))

@@ -5,15 +5,17 @@ import com.blinnproject.myworkdayback.model.enums.*;
 import com.blinnproject.myworkdayback.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WorkoutSessionControllerTest {
 
@@ -36,9 +41,6 @@ class WorkoutSessionControllerTest {
 
   @Autowired
   private ObjectMapper objectMapper;
-
-  @Autowired
-  private WorkoutSessionRepository workoutSessionRepository;
 
   @Autowired
   private WorkoutModelRepository workoutModelRepository;
@@ -53,6 +55,16 @@ class WorkoutSessionControllerTest {
   private UserRepository userRepository;
 
   private User user;
+
+  @Container
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+      .withDatabaseName("DB_RAISE_TEST")
+      .withUsername("username")
+      .withPassword("password");
+
+  static {
+    postgreSQLContainer.start();
+  }
 
   @BeforeAll
   void beforeAllTests() {
@@ -151,6 +163,16 @@ class WorkoutSessionControllerTest {
   }
 
   @Test
+  @Order(value = 1)
+  void testConnectionToDatabase() {
+    Assertions.assertNotNull(userRepository);
+    Assertions.assertNotNull(workoutModelRepository);
+    Assertions.assertNotNull(workoutExerciseRepository);
+    Assertions.assertNotNull(exerciseRepository);
+  }
+
+  @Test
+  @Order(value = 2)
   @WithUserDetails("mocked-user")
   void workoutSessionController_createWorkoutSessionWithoutBody_ReturnOk() throws Exception {
     // Seed data
@@ -182,6 +204,7 @@ class WorkoutSessionControllerTest {
   }
 
   @Test
+  @Order(value = 3)
   void workoutSessionController_createWorkoutSessionWithoutAuth_ReturnUnauthorized() throws Exception {
     mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", 1L)
             .contentType("application/json"))
