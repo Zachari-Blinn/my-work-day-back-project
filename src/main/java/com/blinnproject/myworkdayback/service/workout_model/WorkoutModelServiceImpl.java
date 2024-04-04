@@ -76,13 +76,14 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
   }
 
   @Override
-  public Optional<WorkoutModel> delete(Long id, Long createdBy) {
-    return workoutModelRepository.findByIdAndCreatedBy(id, createdBy)
-        .map(workoutModel -> {
-          workoutModelRepository.delete(workoutModel);
-          return Optional.of(workoutModel);
-        })
-        .orElse(Optional.empty());
+  public void delete(Long id, Long createdBy) {
+    Optional<WorkoutModel>  workoutModel = workoutModelRepository.findByIdAndCreatedBy(id, createdBy);
+    workoutModel.ifPresent(
+      wm -> workoutModelRepository.deleteById(wm.getId())
+    );
+    if(workoutModel.isEmpty()) {
+      throw new ResourceNotFoundException();
+    }
   }
 
   @Override

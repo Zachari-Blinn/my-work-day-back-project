@@ -22,7 +22,7 @@ public interface WorkoutModelService {
 
   WorkoutExercise removeExercise(Long workoutExerciseId, Long createdBy);
 
-  Optional<WorkoutModel> delete(Long id, Long createdBy);
+  void delete(Long id, Long createdBy);
 
   ArrayList<WorkoutModel> findAll(Long createdBy);
 

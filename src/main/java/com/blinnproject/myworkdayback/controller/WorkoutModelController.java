@@ -82,9 +82,11 @@ public class WorkoutModelController {
   @Operation(summary = "Delete workout model", description = "Deletes a workout model by its ID.")
   @DeleteMapping("/{id}")
   public ResponseEntity<GenericResponse<WorkoutModel>> deleteWorkoutModel(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    Optional<WorkoutModel> workoutModel = workoutModelService.delete(id, userDetails.getId());
+    workoutModelService.delete(id, userDetails.getId());
 
-    return workoutModel.map(model -> ResponseEntity.ok(GenericResponse.success(model, i18n.translate("controller.workout.model.delete.successful")))).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return ResponseEntity
+      .status(HttpStatus.NO_CONTENT)
+      .body(GenericResponse.success(null, i18n.translate("controller.workout.model.delete.successful")));
   }
 
   @Operation(summary = "Get all workout model", description = "Retrieves all workout model.")

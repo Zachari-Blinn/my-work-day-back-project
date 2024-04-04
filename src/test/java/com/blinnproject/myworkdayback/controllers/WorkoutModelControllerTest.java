@@ -319,8 +319,8 @@ class WorkoutModelControllerTest {
       .andReturn();
     long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
-    mockMvc.perform(delete("/api/workout-model/" + workoutModelId))
-        .andExpect(status().isOk());
+    mockMvc.perform(delete("/api/workout-model/{id}", workoutModelId))
+        .andExpect(status().isNoContent());
   }
 
   @Test
