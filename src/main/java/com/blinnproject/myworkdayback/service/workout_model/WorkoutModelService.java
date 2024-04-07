@@ -1,12 +1,11 @@
 package com.blinnproject.myworkdayback.service.workout_model;
 
-import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
-import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
-import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
-import com.blinnproject.myworkdayback.model.dto.WorkoutModelSessionDateDTO;
+import com.blinnproject.myworkdayback.model.dto.*;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
+import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
+import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,6 +32,4 @@ public interface WorkoutModelService {
   Schedule addSchedule(Long workoutModelId, ScheduleCreateDTO scheduleCreateDTO, Long createdBy);
 
   void removeSchedule(Long scheduleId, Long createdBy);
-
-  List<WorkoutModelSessionDateDTO> getAllWorkoutModelPlanSessionsByDate(LocalDate startDate, LocalDate endDate, Long createdBy);
 }

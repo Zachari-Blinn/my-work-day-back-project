@@ -43,7 +43,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     workoutSession.setName("Session " + workoutModel.getName());
     workoutSession.setWorkoutModel(workoutModel);
     workoutSession.setSessionStatus(ESessionStatus.IN_PROGRESS);
-    workoutSession.setStartedAt(startedAt.toLocalDate());
+    workoutSession.setStartedAt(startedAt);
 
     workoutSession.setWorkoutExerciseList(new ArrayList<>(workoutModel.getWorkoutExerciseList())); // Cloning the list
 

@@ -12,6 +12,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -96,7 +97,7 @@ class WorkoutSessionRepositoryTest {
     workoutSession.setName("Session " + workoutModel.getName());
     workoutSession.setWorkoutModel(workoutModel);
     workoutSession.setSessionStatus(ESessionStatus.IN_PROGRESS);
-    workoutSession.setStartedAt(LocalDate.parse("2021-09-06"));
+    workoutSession.setStartedAt(LocalDateTime.parse("2021-09-06"));
     workoutSession.setCreatedBy(user.getId());
     workoutSession.setEndedAt(null);
     workoutSession.setWorkoutExerciseList(new ArrayList<>(workoutExercises));

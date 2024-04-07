@@ -1,6 +1,5 @@
 package com.blinnproject.myworkdayback.repository;
 
-import com.blinnproject.myworkdayback.model.dto.WorkoutModelSessionDateDTO;
 import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

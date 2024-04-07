@@ -1,9 +1,9 @@
-package com.blinnproject.myworkdayback.model.dto;
+package com.blinnproject.myworkdayback.model.projection;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public interface WorkoutModelSessionDateDTO {
+public interface WorkoutScheduleDTO {
   LocalDate getDate();
   Long getWorkoutModelId();
   String getWorkoutModelName();

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -26,14 +27,14 @@ public class WorkoutSession extends Workout {
   private WorkoutModel workoutModel;
 
   @Column(name = "session_status")
-  @Enumerated(EnumType.ORDINAL)
+  @Enumerated(EnumType.STRING)
   private ESessionStatus sessionStatus = ESessionStatus.IN_PROGRESS;
 
   @Column(name = "started_at")
-  @Temporal(TemporalType.DATE)
-  private LocalDate startedAt;
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime startedAt;
 
   @Column(name = "ended_at")
-  @Temporal(TemporalType.DATE)
-  private LocalDate endedAt;
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime endedAt;
 }

@@ -2,16 +2,16 @@ package com.blinnproject.myworkdayback.service.workout_model;
 
 import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
 import com.blinnproject.myworkdayback.exception.WorkoutModelWithCurrentUserNotFound;
-import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
-import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
-import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
-import com.blinnproject.myworkdayback.model.dto.WorkoutModelSessionDateDTO;
+import com.blinnproject.myworkdayback.model.dto.*;
 import com.blinnproject.myworkdayback.model.entity.Exercise;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
+import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
+import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 import com.blinnproject.myworkdayback.repository.WorkoutModelRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
+import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.mapper.WorkoutModelMapper;
 import com.blinnproject.myworkdayback.service.schedule.ScheduleService;
 import com.blinnproject.myworkdayback.service.workout_exercise.WorkoutExerciseService;
@@ -125,15 +125,10 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
     scheduleService.delete(scheduleId, createdBy);
   }
 
-  @Override
-  public List<WorkoutModelSessionDateDTO> getAllWorkoutModelPlanSessionsByDate(LocalDate startDate, LocalDate endDate, Long createdBy) {
-    return workoutModelRepository.findAllWorkoutModelSessionBetweenDates(startDate, endDate, createdBy);
-  }
-
-
   /**
    * PRIVATE METHODS
    */
+
   private WorkoutModel getWorkoutModelOrThrowError(Long workoutModelId, Long createdBy) {
     return workoutModelRepository.findByIdAndCreatedBy(workoutModelId, createdBy)
         .orElseThrow(() -> new WorkoutModelWithCurrentUserNotFound("Workout model with id " + workoutModelId + " does not belong to current user"));

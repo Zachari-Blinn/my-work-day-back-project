@@ -34,7 +34,6 @@ import java.util.List;
 public class AuthController {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
   private final I18nService i18n;
   private final AuthenticationManager authenticationManager;
   private final JwtUtils jwtUtils;
