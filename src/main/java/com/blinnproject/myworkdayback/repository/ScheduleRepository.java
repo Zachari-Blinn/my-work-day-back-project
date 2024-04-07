@@ -18,26 +18,26 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
   @Query(value = """
     SELECT
-      d::date AS date,
-      workout_model.id AS workout_model_id,
-      workout_model.name AS workout_model_name,
-      workout_model.icon_name AS workout_model_icon_name,
-      workout_model.icon_hexadecimal_color AS workout_model_icon_hexadecimal_color,
-      schedule.start_time AS start_time,
-      schedule.end_time AS end_time
+      CAST(d AS date) AS rawDate,
+      workout_model.id AS workoutModelId,
+      workout_model.name AS workoutModelName,
+      workout_model.icon_name AS workoutModelIconName,
+      workout_model.icon_hexadecimal_color AS workoutModelIconHexadecimalColor,
+      schedule.start_time AS rawStartTime,
+      schedule.end_time AS rawEndTime
     FROM
-      generate_series(:startDate::timestamp, :endDate::timestamp, '1 day') AS d
+      generate_series(CAST(:startDate AS timestamp), CAST(:endDate AS timestamp), interval '1 day') AS d
     LEFT JOIN
-      schedule ON d::date >= schedule.start_date
-               AND (d::date <= schedule.end_date OR schedule.end_date IS NULL)
+      schedule ON CAST(d AS date) >= schedule.start_date
+               AND (CAST(d AS date) <= schedule.end_date OR schedule.end_date IS NULL)
                AND (
-                  (EXTRACT(ISODOW FROM d::date) = 1 AND schedule.monday) OR
-                  (EXTRACT(ISODOW FROM d::date) = 2 AND schedule.tuesday) OR
-                  (EXTRACT(ISODOW FROM d::date) = 3 AND schedule.wednesday) OR
-                  (EXTRACT(ISODOW FROM d::date) = 4 AND schedule.thursday) OR
-                  (EXTRACT(ISODOW FROM d::date) = 5 AND schedule.friday) OR
-                  (EXTRACT(ISODOW FROM d::date) = 6 AND schedule.saturday) OR
-                  (EXTRACT(ISODOW FROM d::date) = 7 AND schedule.sunday)
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 1 AND schedule.monday) OR
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 2 AND schedule.tuesday) OR
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 3 AND schedule.wednesday) OR
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 4 AND schedule.thursday) OR
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 5 AND schedule.friday) OR
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 6 AND schedule.saturday) OR
+                  (EXTRACT(ISODOW FROM CAST(d AS date)) = 7 AND schedule.sunday)
               )
     LEFT JOIN
       workout workout_model ON schedule.workout_model_id = workout_model.id
@@ -45,26 +45,26 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
       workout_model.is_active = true
       AND workout_model.created_by = :createdBy
     ORDER BY
-      d::date, workout_model.name
+      CAST(d AS date), workout_model.name
   """, nativeQuery = true)
   List<WorkoutScheduleDTO> findAllModelsSessionsByDateRange(
-      @Param("startDate") LocalDate startDate,
-      @Param("endDate") LocalDate endDate,
-      @Param("createdBy") Long createdBy
+      LocalDate startDate,
+      LocalDate endDate,
+      Long createdBy
   );
 
   @Query(value = """
     SELECT * FROM (
         SELECT
-            generated_date::date AS date,
-            'MODEL' AS workout_type,
-            workout_model.id AS workout_model_id,
-            NULL AS workout_session_id,
-            workout_model.name AS workout_model_name,
-            workout_model.icon_name AS workout_model_icon_name,
-            workout_model.icon_hexadecimal_color AS workout_model_icon_hexadecimal_color,
-            schedule.start_time AS start_time,
-            schedule.end_time AS end_time,
+            CAST(generated_date AS date) AS date,
+            'MODEL' AS workoutType,
+            workout_model.id AS workoutModelId,
+            NULL AS workoutSessionId,
+            workout_model.name AS workoutModelName,
+            workout_model.icon_name AS workoutModelIconName,
+            workout_model.icon_hexadecimal_color AS workoutModelIconHexadecimalColor,
+            schedule.start_time AS startTime,
+            schedule.end_time AS endTime,
             (
                 SELECT
                     CASE
@@ -78,21 +78,21 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                     workout_session.is_active = true
                     AND workout_session.created_by = :createdBy
                     AND workout_session.workout_type = 'SESSION'
-                    AND workout_session.started_at::date = generated_date::date
-            ) AS session_status
+                    AND CAST(workout_session.started_at AS date) = CAST(generated_date AS date)
+            ) AS sessionStatus
         FROM
-            generate_series(:startDate::timestamp, :endDate::timestamp, '1 day') AS generated_date
+            generate_series(CAST(:startDate AS timestamp), CAST(:endDate AS timestamp), interval '1 day') AS generated_date
         JOIN
-            schedule schedule ON generated_date::date >= schedule.start_date
-                     AND (generated_date::date <= schedule.end_date OR schedule.end_date IS NULL)
+            schedule schedule ON CAST(generated_date AS date) >= schedule.start_date
+                     AND (CAST(generated_date AS date) <= schedule.end_date OR schedule.end_date IS NULL)
                      AND (
-                        (EXTRACT(ISODOW FROM generated_date::date) = 1 AND schedule.monday) OR
-                        (EXTRACT(ISODOW FROM generated_date::date) = 2 AND schedule.tuesday) OR
-                        (EXTRACT(ISODOW FROM generated_date::date) = 3 AND schedule.wednesday) OR
-                        (EXTRACT(ISODOW FROM generated_date::date) = 4 AND schedule.thursday) OR
-                        (EXTRACT(ISODOW FROM generated_date::date) = 5 AND schedule.friday) OR
-                        (EXTRACT(ISODOW FROM generated_date::date) = 6 AND schedule.saturday) OR
-                        (EXTRACT(ISODOW FROM generated_date::date) = 7 AND schedule.sunday)
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 1 AND schedule.monday) OR
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 2 AND schedule.tuesday) OR
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 3 AND schedule.wednesday) OR
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 4 AND schedule.thursday) OR
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 5 AND schedule.friday) OR
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 6 AND schedule.saturday) OR
+                        (EXTRACT(ISODOW FROM CAST(generated_date AS date)) = 7 AND schedule.sunday)
                     )
         LEFT JOIN
             workout workout_model ON schedule.workout_model_id = workout_model.id
@@ -103,16 +103,16 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         UNION
         
         SELECT
-            workout_session.started_at::date AS date,
-            'SESSION' AS workout_type,
-            workout_session.workout_model_id AS workout_model_id,
-            workout_session.id AS workout_session_id,
-            workout_model.name AS workout_model_name,
-            workout_model.icon_name AS workout_model_icon_name,
-            workout_model.icon_hexadecimal_color AS workout_model_icon_hexadecimal_color,
-            workout_session.started_at::time AS start_time,
-            workout_session.ended_at::time AS end_time,
-            workout_session.session_status AS session_status
+            CAST(workout_session.started_at AS date) AS date,
+            'SESSION' AS workoutType,
+            workout_session.workout_model_id AS workoutModelId,
+            workout_session.id AS workoutSessionId,
+            workout_model.name AS workoutModelName,
+            workout_model.icon_name AS workoutModelIconName,
+            workout_model.icon_hexadecimal_color AS workoutModelIconHexadecimalColor,
+            CAST(workout_session.started_at AS time) AS startTime,
+            CAST(workout_session.ended_at AS time) AS endTime,
+            workout_session.session_status AS sessionStatus
         FROM
             workout workout_session
         JOIN
@@ -121,10 +121,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             workout_session.is_active = true
             AND workout_session.created_by = :createdBy
             AND workout_session.workout_type = 'SESSION'
-            AND workout_session.started_at::date BETWEEN :startDate AND :endDate
+            AND CAST(workout_session.started_at AS date) BETWEEN :startDate AND :endDate
     ) AS combined_results
     ORDER BY
-      date, workout_model_name
+      date, workoutModelName
   """, nativeQuery = true)
   List<CombinedWorkoutInfoDTO> findAllSessionsAndModelsByDateRange(
       @Param("startDate") LocalDate startDate,

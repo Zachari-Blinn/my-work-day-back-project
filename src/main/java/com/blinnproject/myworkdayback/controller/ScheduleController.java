@@ -59,4 +59,6 @@ public class ScheduleController {
     return ResponseEntity.ok(GenericResponse.success(workoutModelSessionsDate, i18n.translate("controller.exercise.return-all.successful")));
   }
 
+  // todo get details of a specific workout session
+
 }
