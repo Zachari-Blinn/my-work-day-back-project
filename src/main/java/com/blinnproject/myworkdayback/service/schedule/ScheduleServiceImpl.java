@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.service.schedule;
 
+import com.blinnproject.myworkdayback.model.dto.WorkoutSessionsScheduleDTO;
 import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
 import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 import com.blinnproject.myworkdayback.repository.ScheduleRepository;
@@ -7,7 +8,7 @@ import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -33,10 +34,55 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   @Override
-  public List<CombinedWorkoutInfoDTO> getWorkoutSessionsForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy) {
+  public List<WorkoutSessionsScheduleDTO> getWorkoutSessionsForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy) {
     validateDates(startDate, endDate);
 
-    return scheduleRepository.findAllSessionsAndModelsByDateRange(startDate, endDate, createdBy);
+    List<CombinedWorkoutInfoDTO> combinedWorkoutInfoDTOList = scheduleRepository.findAllSessionsAndModelsByDateRange(startDate, endDate, createdBy);
+
+    Map<LocalDate, WorkoutSessionsScheduleDTO> workoutSessionsMap = new HashMap<>();
+
+    for (CombinedWorkoutInfoDTO workoutInfo : combinedWorkoutInfoDTOList) {
+      LocalDate date = workoutInfo.getDate();
+
+      // Retrieve or create a new WorkoutSessionsScheduleDTO for the current date
+      WorkoutSessionsScheduleDTO workoutSessionsScheduleDTO = workoutSessionsMap.getOrDefault(date, new WorkoutSessionsScheduleDTO());
+      workoutSessionsScheduleDTO.setDate(date);
+
+      // Depending on the workout type, set the appropriate fields
+      if ("MODEL".equals(workoutInfo.getWorkoutType())) {
+        workoutSessionsScheduleDTO.setWorkoutModelId(workoutInfo.getWorkoutModelId());
+        workoutSessionsScheduleDTO.setWorkoutModelName(workoutInfo.getWorkoutModelName());
+        workoutSessionsScheduleDTO.setWorkoutModelIconName(workoutInfo.getWorkoutModelIconName());
+        workoutSessionsScheduleDTO.setWorkoutModelIconHexadecimalColor(workoutInfo.getWorkoutModelIconHexadecimalColor());
+        workoutSessionsScheduleDTO.setStartTime(workoutInfo.getStartTime());
+        workoutSessionsScheduleDTO.setEndTime(workoutInfo.getEndTime());
+        workoutSessionsScheduleDTO.setSessionStatus(workoutInfo.getSessionStatus());
+      } else if ("SESSION".equals(workoutInfo.getWorkoutType())) {
+        // Create a new WorkoutSessionListDTO
+        WorkoutSessionsScheduleDTO.WorkoutSessionListDTO session = new WorkoutSessionsScheduleDTO.WorkoutSessionListDTO();
+        session.setWorkoutSessionId(workoutInfo.getWorkoutSessionId());
+        session.setStatus(workoutInfo.getSessionStatus());
+        session.setStartTime(workoutInfo.getStartTime());
+        session.setEndTime(workoutInfo.getEndTime());
+
+        // Retrieve or create the list of workout sessions for the current date
+        ArrayList<WorkoutSessionsScheduleDTO.WorkoutSessionListDTO> workoutSessionList = workoutSessionsScheduleDTO.getWorkoutSessionList();
+        if (workoutSessionList == null) {
+          workoutSessionList = new ArrayList<>();
+        }
+        workoutSessionList.add(session);
+        workoutSessionsScheduleDTO.setWorkoutSessionList(workoutSessionList);
+      }
+
+      // Update the map with the modified WorkoutSessionsScheduleDTO
+      workoutSessionsMap.put(date, workoutSessionsScheduleDTO);
+    }
+
+    // Sort the values of the map by date
+    List<WorkoutSessionsScheduleDTO> sortedWorkoutSessions = new ArrayList<>(workoutSessionsMap.values());
+    sortedWorkoutSessions.sort(Comparator.comparing(WorkoutSessionsScheduleDTO::getDate));
+
+    return sortedWorkoutSessions;
   }
 
   /**

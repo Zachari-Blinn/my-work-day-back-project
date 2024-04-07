@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.controller;
 
+import com.blinnproject.myworkdayback.model.dto.WorkoutSessionsScheduleDTO;
 import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
 import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 import com.blinnproject.myworkdayback.model.response.GenericResponse;
@@ -49,12 +50,12 @@ public class ScheduleController {
 
   @Operation(summary = "List program of completed and upcoming sessions for a given period", description = "This function lists the program of completed and upcoming sessions for a user over a specified period.")
   @GetMapping("/workout-session/{startDate}/{endDate}")
-  public ResponseEntity<GenericResponse<List<CombinedWorkoutInfoDTO>>> getWorkoutSessionsForPeriod(
+  public ResponseEntity<GenericResponse<List<WorkoutSessionsScheduleDTO>>> getWorkoutSessionsForPeriod(
       @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
       @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    List<CombinedWorkoutInfoDTO> workoutModelSessionsDate = scheduleService.getWorkoutSessionsForPeriod(startDate, endDate, userDetails.getId());
+    List<WorkoutSessionsScheduleDTO> workoutModelSessionsDate = scheduleService.getWorkoutSessionsForPeriod(startDate, endDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(workoutModelSessionsDate, i18n.translate("controller.exercise.return-all.successful")));
   }

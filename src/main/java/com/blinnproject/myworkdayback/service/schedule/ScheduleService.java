@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.service.schedule;
 
+import com.blinnproject.myworkdayback.model.dto.WorkoutSessionsScheduleDTO;
 import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
 import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 
@@ -11,5 +12,5 @@ public interface ScheduleService {
 
   List<WorkoutScheduleDTO> getWorkoutScheduleForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy);
 
-  List<CombinedWorkoutInfoDTO> getWorkoutSessionsForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy);
+  List<WorkoutSessionsScheduleDTO> getWorkoutSessionsForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy);
 }
