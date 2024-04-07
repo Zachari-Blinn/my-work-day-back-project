@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.service.schedule;
 
 import com.blinnproject.myworkdayback.model.dto.WorkoutSessionsScheduleDTO;
-import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
-import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
+import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoView;
+import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleView;
 import com.blinnproject.myworkdayback.repository.ScheduleRepository;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   @Override
-  public List<WorkoutScheduleDTO> getWorkoutScheduleForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy) {
+  public List<WorkoutScheduleView> getWorkoutScheduleForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy) {
     validateDates(startDate, endDate);
 
     return scheduleRepository.findAllModelsSessionsByDateRange(startDate, endDate, createdBy);
@@ -37,11 +37,11 @@ public class ScheduleServiceImpl implements ScheduleService {
   public List<WorkoutSessionsScheduleDTO> getWorkoutSessionsForPeriod(LocalDate startDate, LocalDate endDate, Long createdBy) {
     validateDates(startDate, endDate);
 
-    List<CombinedWorkoutInfoDTO> combinedWorkoutInfoDTOList = scheduleRepository.findAllSessionsAndModelsByDateRange(startDate, endDate, createdBy);
+    List<CombinedWorkoutInfoView> combinedWorkoutInfoViewList = scheduleRepository.findAllSessionsAndModelsByDateRange(startDate, endDate, createdBy);
 
     Map<LocalDate, WorkoutSessionsScheduleDTO> workoutSessionsMap = new HashMap<>();
 
-    for (CombinedWorkoutInfoDTO workoutInfo : combinedWorkoutInfoDTOList) {
+    for (CombinedWorkoutInfoView workoutInfo : combinedWorkoutInfoViewList) {
       LocalDate date = workoutInfo.getDate();
 
       // Retrieve or create a new WorkoutSessionsScheduleDTO for the current date

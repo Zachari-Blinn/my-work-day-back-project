@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -34,7 +35,7 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
   """)
   List<Object[]> findAllSessionByDate(
       @Param("dayOfWeek") int dayOfWeek,
-      @Param("currentDate") LocalDate currentDate,
+      @Param("currentDate") LocalDateTime currentDate,
       @Param("createdBy") Long createdBy
   );
 }

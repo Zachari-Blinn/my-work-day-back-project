@@ -7,20 +7,15 @@ import com.blinnproject.myworkdayback.model.entity.Exercise;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
-import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
-import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 import com.blinnproject.myworkdayback.repository.WorkoutModelRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
-import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.mapper.WorkoutModelMapper;
 import com.blinnproject.myworkdayback.service.schedule.ScheduleService;
 import com.blinnproject.myworkdayback.service.workout_exercise.WorkoutExerciseService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

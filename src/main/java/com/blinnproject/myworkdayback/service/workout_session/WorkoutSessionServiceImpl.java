@@ -29,7 +29,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
   }
 
   @Override
-  public List<Object[]> findAllByDate(LocalDate startedAt, Long createdBy) {
+  public List<Object[]> findAllByDate(LocalDateTime startedAt, Long createdBy) {
     return workoutSessionRepository.findAllSessionByDate(2, startedAt, createdBy);
   }
 

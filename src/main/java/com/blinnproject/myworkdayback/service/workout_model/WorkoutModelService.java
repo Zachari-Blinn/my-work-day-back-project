@@ -4,12 +4,8 @@ import com.blinnproject.myworkdayback.model.dto.*;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
-import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
-import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public interface WorkoutModelService {

@@ -1,8 +1,7 @@
 package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.dto.WorkoutSessionsScheduleDTO;
-import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
-import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
+import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleView;
 import com.blinnproject.myworkdayback.model.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
@@ -38,12 +37,12 @@ public class ScheduleController {
 
   @Operation(summary = "Retrieve scheduled workout for a given period", description = "This function allows retrieving the workout schedule for a user over a specified period.")
   @GetMapping("/workout/{startDate}/{endDate}")
-  public ResponseEntity<GenericResponse<List<WorkoutScheduleDTO>>> getScheduledWorkoutForPeriod(
+  public ResponseEntity<GenericResponse<List<WorkoutScheduleView>>> getScheduledWorkoutForPeriod(
       @PathVariable("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
       @PathVariable("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    List<WorkoutScheduleDTO> workoutModelSessionsDate = scheduleService.getWorkoutScheduleForPeriod(startDate, endDate, userDetails.getId());
+    List<WorkoutScheduleView> workoutModelSessionsDate = scheduleService.getWorkoutScheduleForPeriod(startDate, endDate, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(workoutModelSessionsDate, i18n.translate("controller.exercise.return-all.successful")));
   }

@@ -97,14 +97,14 @@ class WorkoutSessionRepositoryTest {
     workoutSession.setName("Session " + workoutModel.getName());
     workoutSession.setWorkoutModel(workoutModel);
     workoutSession.setSessionStatus(ESessionStatus.IN_PROGRESS);
-    workoutSession.setStartedAt(LocalDateTime.parse("2021-09-06"));
+    workoutSession.setStartedAt(LocalDateTime.parse("2021-09-06T18:00:00"));
     workoutSession.setCreatedBy(user.getId());
     workoutSession.setEndedAt(null);
     workoutSession.setWorkoutExerciseList(new ArrayList<>(workoutExercises));
 
     workoutSessionRepository.save(workoutSession);
 
-    List<Object[]> result = workoutSessionRepository.findAllSessionByDate(dayOfWeek, LocalDate.parse("2021-09-13"), user.getId());
+    List<Object[]> result = workoutSessionRepository.findAllSessionByDate(dayOfWeek, LocalDateTime.of(date, LocalTime.MIN), user.getId());
     assert result != null;
    }
 

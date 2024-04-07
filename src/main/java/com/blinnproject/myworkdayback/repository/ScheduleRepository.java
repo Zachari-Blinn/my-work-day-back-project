@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.repository;
 
 import com.blinnproject.myworkdayback.model.entity.Schedule;
-import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoDTO;
-import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleDTO;
+import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoView;
+import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleView;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,13 +18,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
   @Query(value = """
     SELECT
-      CAST(d AS date) AS rawDate,
+      CAST(d AS date) AS date,
       workout_model.id AS workoutModelId,
       workout_model.name AS workoutModelName,
       workout_model.icon_name AS workoutModelIconName,
       workout_model.icon_hexadecimal_color AS workoutModelIconHexadecimalColor,
-      schedule.start_time AS rawStartTime,
-      schedule.end_time AS rawEndTime
+      schedule.start_time AS startTime,
+      schedule.end_time AS endTime
     FROM
       generate_series(CAST(:startDate AS timestamp), CAST(:endDate AS timestamp), interval '1 day') AS d
     LEFT JOIN
@@ -47,7 +47,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     ORDER BY
       CAST(d AS date), workout_model.name
   """, nativeQuery = true)
-  List<WorkoutScheduleDTO> findAllModelsSessionsByDateRange(
+  List<WorkoutScheduleView> findAllModelsSessionsByDateRange(
       LocalDate startDate,
       LocalDate endDate,
       Long createdBy
@@ -126,7 +126,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     ORDER BY
       date, workoutModelName
   """, nativeQuery = true)
-  List<CombinedWorkoutInfoDTO> findAllSessionsAndModelsByDateRange(
+  List<CombinedWorkoutInfoView> findAllSessionsAndModelsByDateRange(
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate,
       @Param("createdBy") Long createdBy
