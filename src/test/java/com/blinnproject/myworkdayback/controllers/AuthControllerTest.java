@@ -150,38 +150,56 @@ class AuthControllerTest {
     assertTrue(responseContent.contains("\"username\""));
   }
 
-//  @Test
-//  void AuthController_RefreshToken_ReturnUserAndTokenResponse() throws Exception {
-//    SignupRequest signupRequest = new SignupRequest();
-//    signupRequest.setUsername("mocked-user");
-//    signupRequest.setPassword("Toto@123*");
-//    signupRequest.setEmail("mocked-user@email.fr");
-//
-//    mockMvc.perform(post("/api/auth/signup")
-//            .contentType("application/json")
-//            .content(objectMapper.writeValueAsString(signupRequest)))
-//        .andExpect(status().isOk())
-//        .andReturn();
-//
-//    ResultActions loginResult = mockMvc.perform(post("/api/auth/signin")
-//              .contentType("application/json")
-//              .content(objectMapper.writeValueAsString(signupRequest)))
-//          .andExpect(status().isOk())
-//          .andExpect(jsonPath("$.data.accessToken").exists())
-//          .andExpect(jsonPath("$.data.refreshToken").exists())
-//          .andExpect(jsonPath("$.data.id").exists());
-//
-//    String accessToken = loginResult.andReturn().getResponse().getContentAsString();
-//
-//    mockMvc.perform(post("/api/auth/refresh-token")
-//            .contentType("application/json")
-//            .header("Authorization", "Bearer " + accessToken))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.data.accessToken").exists())
-//        .andExpect(jsonPath("$.data.refreshToken").exists())
-//        .andExpect(jsonPath("$.data.id").exists())
-//        .andExpect(jsonPath("$.data.username").exists())
-//        .andExpect(jsonPath("$.data.email").exists())
-//        .andExpect(jsonPath("$.data.roles").exists());
-//  }
+  @Test
+  @DisplayName("Get refresh token after login")
+  void AuthController_RefreshToken_ReturnUserAndTokenResponse() throws Exception {
+    SignupRequest signupRequest = new SignupRequest();
+    signupRequest.setUsername("RseNianS");
+    signupRequest.setEmail("rsenians@fake-email.com");
+    signupRequest.setPassword("Toto@123*");
+
+    mockMvc.perform(post("/api/auth/signup")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(signupRequest)))
+        .andExpect(status().isOk());
+
+    LoginRequest loginRequest = new LoginRequest();
+    loginRequest.setUsername("RseNianS");
+    loginRequest.setPassword("Toto@123*");
+
+    ResultActions result = mockMvc.perform(post("/api/auth/signin")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(loginRequest)))
+        .andExpect(status().isOk());
+
+    String responseContent = result.andReturn().getResponse().getContentAsString();
+
+    String refreshToken = objectMapper.readTree(responseContent).get("data").get("refreshToken").asText();
+
+    mockMvc.perform(post("/api/auth/refreshtoken")
+            .contentType("application/json")
+            .content("{\"refreshToken\": \"" + refreshToken + "\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.accessToken").exists())
+        .andExpect(jsonPath("$.refreshToken").exists())
+        .andExpect(jsonPath("$.tokenType").exists());
+  }
+
+  @Test
+  @DisplayName("Get refresh token with invalid token")
+  void AuthController_RefreshTokenWithInvalidToken_ReturnUnauthorizedError() throws Exception {
+    mockMvc.perform(post("/api/auth/refreshtoken")
+            .contentType("application/json")
+            .content("{\"refreshToken\": \"invalid-token\"}"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  @DisplayName("Get refresh token with blank token")
+  void AuthController_RefreshTokenWithBlankToken_ReturnUnauthorizedError() throws Exception {
+    mockMvc.perform(post("/api/auth/refreshtoken")
+            .contentType("application/json")
+            .content("{\"refreshToken\": \"\"}"))
+        .andExpect(status().isBadRequest());
+  }
 }
