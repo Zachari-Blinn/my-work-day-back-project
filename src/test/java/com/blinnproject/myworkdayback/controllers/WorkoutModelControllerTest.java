@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.controllers;
 
+import com.blinnproject.myworkdayback.AbstractIntegrationTest;
 import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
@@ -42,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class WorkoutModelControllerTest {
+class WorkoutModelControllerTest extends AbstractIntegrationTest {
   @Autowired
   private MockMvc mockMvc;
 

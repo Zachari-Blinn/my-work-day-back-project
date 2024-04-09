@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.repository;
 
+import com.blinnproject.myworkdayback.AbstractIntegrationTest;
 import com.blinnproject.myworkdayback.model.entity.*;
 import com.blinnproject.myworkdayback.model.enums.*;
 import org.junit.jupiter.api.*;
@@ -7,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
@@ -22,7 +21,7 @@ import java.util.*;
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class WorkoutSessionRepositoryTest {
+class WorkoutSessionRepositoryTest extends AbstractIntegrationTest {
 
   @Autowired
   private WorkoutSessionRepository workoutSessionRepository;
@@ -40,16 +39,6 @@ class WorkoutSessionRepositoryTest {
   private UserRepository userRepository;
 
   private User user;
-
-  @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
-      .withDatabaseName("DB_RAISE_TEST")
-      .withUsername("username")
-      .withPassword("password");
-
-  static {
-    postgreSQLContainer.start();
-  }
 
   @BeforeAll
   void beforeAllTests() {

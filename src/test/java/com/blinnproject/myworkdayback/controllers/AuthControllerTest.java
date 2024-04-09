@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.controllers;
 
+import com.blinnproject.myworkdayback.AbstractIntegrationTest;
 import com.blinnproject.myworkdayback.model.request.LoginRequest;
 import com.blinnproject.myworkdayback.model.request.SignupRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,8 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,22 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AuthControllerTest {
+class AuthControllerTest extends AbstractIntegrationTest {
   @Autowired
   private MockMvc mockMvc;
 
   @Autowired
   private ObjectMapper objectMapper;
-
-  @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
-      .withDatabaseName("DB_RAISE_TEST")
-      .withUsername("username")
-      .withPassword("password");
-
-  static {
-    postgreSQLContainer.start();
-  }
 
   @Test
   @Order(value = 1)

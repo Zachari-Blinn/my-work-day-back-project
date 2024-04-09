@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.repository;
 
+import com.blinnproject.myworkdayback.AbstractIntegrationTest;
 import com.blinnproject.myworkdayback.model.enums.EGender;
 import com.blinnproject.myworkdayback.model.entity.User;
 import org.assertj.core.api.Assertions;
@@ -8,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
@@ -20,20 +19,10 @@ import java.util.Optional;
 @Testcontainers
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserRepositoryTest {
+class UserRepositoryTest extends AbstractIntegrationTest {
 
   @Autowired
   private UserRepository userRepository;
-
-  @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
-      .withDatabaseName("DB_RAISE_TEST")
-      .withUsername("username")
-      .withPassword("password");
-
-  static {
-    postgreSQLContainer.start();
-  }
 
   @Test
   @Order(value = 1)
