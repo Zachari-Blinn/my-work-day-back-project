@@ -3,10 +3,7 @@ package com.blinnproject.myworkdayback.repository;
 import com.blinnproject.myworkdayback.model.enums.EGender;
 import com.blinnproject.myworkdayback.model.entity.User;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +26,7 @@ class UserRepositoryTest {
   private UserRepository userRepository;
 
   @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
       .withDatabaseName("DB_RAISE_TEST")
       .withUsername("username")
       .withPassword("password");
@@ -40,12 +37,14 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 1)
+  @DisplayName("Test connection to database")
   void testConnectionToDatabase() {
     org.junit.jupiter.api.Assertions.assertNotNull(userRepository);
   }
 
   @Test
   @Order(value = 2)
+  @DisplayName("Test save user")
   void UserRepository_Save_ReturnSavedUser() {
     User user = User.builder()
       .username("jean-abernathy")
@@ -65,6 +64,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 3)
+  @DisplayName("Test get all users")
   void UserRepository_GetAll_ReturnMoreThanOneUser() {
     User user1 = User.builder()
       .username("jean-marc")
@@ -89,6 +89,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 4)
+  @DisplayName("Test get user by username")
   void UserRepository_FindByUsername_ReturnUserByUsername() {
     User user1 = User.builder()
       .username("Jean-Adam")
@@ -114,6 +115,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 5)
+  @DisplayName("Test get user by username with no user found")
   void UserRepository_FindByUsername_ReturnNoUserWithThisUsername() {
     User user1 = User.builder()
       .username("Jean-André")
@@ -130,6 +132,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 6)
+  @DisplayName("Test get user by email")
   void UserRepository_ExistsByUsername_ReturnTrueWithExistingUsername() {
     User user1 = User.builder()
       .username("Jean-Antoine")
@@ -146,6 +149,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 7)
+  @DisplayName("Test get user by email with no user found")
   void UserRepository_ExistsByUsername_ReturnFalseWithNoExistingUsername() {
     User user1 = User.builder()
       .username("Jean-Arthur")
@@ -162,6 +166,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 8)
+  @DisplayName("Test get user by email")
   void UserRepository_ExistsByEmail_ReturnTrueWithExistingEmail() {
     User user1 = User.builder()
       .username("Jean-Augustin")
@@ -178,6 +183,7 @@ class UserRepositoryTest {
 
   @Test
   @Order(value = 9)
+  @DisplayName("Test get user by email with no user found")
   void UserRepository_ExistsByEmail_ReturnFalseWithNoExistingEmail() {
     User user1 = User.builder()
       .username("Jean-Auguste")

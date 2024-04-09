@@ -43,7 +43,7 @@ class ExerciseControllerTest {
   private User user;
 
   @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
       .withDatabaseName("DB_RAISE_TEST")
       .withUsername("username")
       .withPassword("password");
@@ -75,6 +75,7 @@ class ExerciseControllerTest {
 
   @Test
   @Order(value = 1)
+  @DisplayName("Test Connection to Database")
   void testConnectionToDatabase() {
     Assertions.assertNotNull(userRepository);
   }
@@ -82,6 +83,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 2)
   @WithUserDetails("mocked-user")
+  @DisplayName("Create Exercise")
   void ExerciseController_Create_ReturnSavedExercise() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
         "mocked-exercise",
@@ -99,6 +101,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 3)
   @WithUserDetails("mocked-user")
+  @DisplayName("Create Exercise with null values returns BadRequest")
   void ExerciseController_Create_ReturnBadRequest() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
         null,
@@ -114,6 +117,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 4)
   @WithUserDetails("mocked-user")
+  @DisplayName("Find Exercise by Id")
   void ExerciseController_findById_ReturnExercise() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
         "mocked-exercise",
@@ -142,6 +146,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 5)
   @WithUserDetails("mocked-user")
+  @DisplayName("Find Exercise with wrong id")
   void ExerciseController_findById_ReturnNotFound() throws Exception {
     mockMvc.perform(get("/api/exercise/{id}", 999))
         .andExpect(status().isNotFound());
@@ -150,6 +155,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 6)
   @WithUserDetails("mocked-user")
+  @DisplayName("Find All Exercises")
   void ExerciseController_findAll_ReturnAllExercises() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
         "mocked-exercise",
@@ -171,6 +177,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 7)
   @WithUserDetails("mocked-user")
+  @DisplayName("Update Exercise")
   void ExerciseController_update_ReturnUpdatedExercise() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
         "mocked-exercise",
@@ -206,6 +213,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 8)
   @WithUserDetails("mocked-user")
+  @DisplayName("Update Exercise with wrong id")
   void ExerciseController_update_ReturnNotFound() throws Exception {
     ExerciseCreateDTO updatedExercise = new ExerciseCreateDTO(
         "updated-mocked-exercise",
@@ -221,6 +229,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 9)
   @WithUserDetails("mocked-user")
+  @DisplayName("Delete Exercise")
   void ExerciseController_delete_ReturnNoContent() throws Exception {
     ExerciseCreateDTO exercise = new ExerciseCreateDTO(
         "mocked-exercise",
@@ -247,6 +256,7 @@ class ExerciseControllerTest {
   @Test
   @Order(value = 10)
   @WithUserDetails("mocked-user")
+  @DisplayName("Delete Exercise with wrong id")
   void ExerciseController_delete_ReturnNotFound() throws Exception {
     mockMvc.perform(delete("/api/exercise/{id}", 999))
         .andExpect(status().isNotFound());

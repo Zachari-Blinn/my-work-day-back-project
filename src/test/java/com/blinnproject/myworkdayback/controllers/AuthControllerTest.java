@@ -32,7 +32,7 @@ class AuthControllerTest {
   private ObjectMapper objectMapper;
 
   @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
       .withDatabaseName("DB_RAISE_TEST")
       .withUsername("username")
       .withPassword("password");
@@ -43,6 +43,7 @@ class AuthControllerTest {
 
   @Test
   @Order(value = 1)
+  @DisplayName("Register a new user")
   void AuthController_Register_ReturnSavedUser() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("mocked-user");
@@ -57,6 +58,7 @@ class AuthControllerTest {
 
   @Test
   @Order(value = 2)
+  @DisplayName("Register a new user with blank values")
   void AuthController_RegisterWithBlankValues_ReturnError() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("");
@@ -77,6 +79,7 @@ class AuthControllerTest {
 
   @Test
   @Order(value = 3)
+  @DisplayName("Login with a registered user")
   void AuthController_Login_ReturnUserAndTokenResponse() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("atopgeezaboardsignal");
@@ -106,6 +109,7 @@ class AuthControllerTest {
 
   @Test
   @Order(value = 4)
+  @DisplayName("Login with wrong credentials")
   void AuthController_LoginWithWrongCredentials_ReturnUnauthorizedError() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("atopalongsiderevenue");
@@ -129,6 +133,7 @@ class AuthControllerTest {
 
   @Test
   @Order(value = 5)
+  @DisplayName("Login with blank values")
   void AuthController_LoginWithBlankValues_ReturnError() throws Exception {
     LoginRequest loginRequest = new LoginRequest();
     loginRequest.setUsername("");

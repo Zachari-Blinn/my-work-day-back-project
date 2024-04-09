@@ -58,7 +58,7 @@ class WorkoutSessionControllerTest {
   private User user;
 
   @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
       .withDatabaseName("DB_RAISE_TEST")
       .withUsername("username")
       .withPassword("password");
@@ -165,6 +165,7 @@ class WorkoutSessionControllerTest {
 
   @Test
   @Order(value = 1)
+  @DisplayName("Test connection to database")
   void testConnectionToDatabase() {
     Assertions.assertNotNull(userRepository);
     Assertions.assertNotNull(workoutModelRepository);
@@ -175,6 +176,7 @@ class WorkoutSessionControllerTest {
   @Test
   @Order(value = 2)
   @WithUserDetails("mocked-user")
+  @DisplayName("Create workout session without body")
   void workoutSessionController_createWorkoutSessionWithoutBody_ReturnOk() throws Exception {
     // Seed data
     WorkoutModel workoutModel = createWorkoutModel();
@@ -206,6 +208,7 @@ class WorkoutSessionControllerTest {
 
   @Test
   @Order(value = 3)
+  @DisplayName("Create workout session without auth")
   void workoutSessionController_createWorkoutSessionWithoutAuth_ReturnUnauthorized() throws Exception {
     mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", 1L)
             .contentType("application/json"))
@@ -215,6 +218,7 @@ class WorkoutSessionControllerTest {
   @Test
   @Order(value = 4)
   @WithUserDetails("mocked-user")
+  @DisplayName("Get workout session details")
   void workoutSessionController_getDetails_returnDetails() throws Exception {
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
@@ -242,6 +246,7 @@ class WorkoutSessionControllerTest {
   @Test
   @Order(value = 5)
   @WithUserDetails("mocked-user")
+  @DisplayName("Get workout session details with wrong id")
   void workoutSessionController_getDetailsWithWrongId_returnNotFound() throws Exception {
     mockMvc.perform(get("/api/workout-session/{id}", 9999L)
       .contentType("application/json"))
@@ -250,6 +255,7 @@ class WorkoutSessionControllerTest {
 
   @Test
   @Order(value = 6)
+  @DisplayName("Get workout session details without auth")
   void workoutSessionController_getDetailsWithoutAuth_returnUnauthorized() throws Exception {
     mockMvc.perform(get("/api/workout-session/{id}", 1L)
       .contentType("application/json"))

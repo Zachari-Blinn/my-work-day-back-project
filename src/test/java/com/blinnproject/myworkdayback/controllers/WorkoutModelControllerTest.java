@@ -61,7 +61,7 @@ class WorkoutModelControllerTest {
   private User user;
 
   @Container
-  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:11.1")
+  private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.19")
       .withDatabaseName("DB_RAISE_TEST")
       .withUsername("username")
       .withPassword("password");
@@ -93,6 +93,7 @@ class WorkoutModelControllerTest {
 
   @Test
   @Order(value = 1)
+  @DisplayName("Test connection to database")
   void testConnectionToDatabase() {
     Assertions.assertNotNull(userRepository);
     Assertions.assertNotNull(workoutModelRepository);
@@ -102,6 +103,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 2)
   @WithUserDetails("mocked-user")
+  @DisplayName("Create a workout model")
   void WorkoutModelController_Create_ReturnSavedWorkoutModel() throws Exception {
      WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Quantum Slam",
@@ -131,6 +133,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 3)
   @WithUserDetails("mocked-user")
+  @DisplayName("Get a workout model by id")
   void WorkoutModelController_GetWorkoutModelById_ReturnWorkoutModel() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Infinicourse",
@@ -163,6 +166,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 4)
   @WithUserDetails("mocked-user")
+  @DisplayName("Get a workout model by id when not exists")
   void WorkoutModelController_GetWorkoutModelById_WhenNotExists_ReturnsNotFound() throws Exception {
     mockMvc.perform(get("/api/workout-model/{id}", "42"))
         .andExpect(status().isNotFound());
@@ -171,6 +175,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 5)
   @WithUserDetails("mocked-user")
+  @DisplayName("Add exercise to workout model without sets")
   void WorkoutModelController_addExerciseToWorkoutModelWithoutSets_ReturnsWorkoutModelWithExercise() throws Exception {
     Exercise exercise = new Exercise();
     exercise.setName("Punching");
@@ -210,6 +215,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 6)
   @WithUserDetails("mocked-user")
+  @DisplayName("Add exercise to workout model with sets")
   void WorkoutModelController_addExerciseToWorkoutModelWithSets_ReturnsWorkoutModelWithExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Rosurf",
@@ -262,6 +268,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 7)
   @WithUserDetails("mocked-user")
+  @DisplayName("Remove exercise from workout model")
   void WorkoutModelController_removeExerciseFromWorkoutModel_ReturnsWorkoutModelWithoutExercise() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Demolition Draft",
@@ -335,6 +342,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 8)
   @WithUserDetails("mocked-user")
+  @DisplayName("Delete workout model")
   void WorkoutModelController_deleteWorkoutModel_ReturnsWorkoutModelDeleted() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Grimglide",
@@ -406,6 +414,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 11)
   @WithUserDetails("mocked-user")
+  @DisplayName("Update workout model")
   void WorkoutModelController_updateWorkoutModel_ReturnsUpdatedWorkoutModel() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Amadraft",
@@ -449,6 +458,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 12)
   @WithUserDetails("mocked-user")
+  @DisplayName("Update workout model when not exists")
   void WorkoutModelController_updateWorkoutModel_WhenNotExists_ReturnsNotFound() throws Exception {
     WorkoutModelCreateDTO updatedWorkoutModel = new WorkoutModelCreateDTO(
         "MMA",
@@ -469,6 +479,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 13)
   @WithUserDetails("mocked-user")
+  @DisplayName("Find all exercises")
   void WorkoutModelController_findAllExercises_ReturnsAllExercises() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Vitaliglide",
@@ -494,6 +505,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 14)
   @WithUserDetails("mocked-user")
+  @DisplayName("Find all exercises when not exists")
   void WorkoutModelController_findAllExercises_WhenNotExists_ReturnsNotNoneExercise() throws Exception {
     mockMvc.perform(get("/api/workout-model/{id}/exercises", "42"))
         .andExpect(status().isOk());
@@ -502,6 +514,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 15)
   @WithUserDetails("mocked-user")
+  @DisplayName("Add schedule to workout model")
   void WorkoutModelController_addScheduleToWorkoutModel_ReturnsWorkoutModelWithSchedule() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "KUNG FU",
@@ -544,6 +557,7 @@ class WorkoutModelControllerTest {
   @Test
   @Order(value = 16)
   @WithUserDetails("mocked-user")
+  @DisplayName("Add schedule to workout model when not exists")
   void WorkoutModelController_removeScheduleFromWorkoutModel_ReturnsWorkoutModelWithoutSchedule() throws Exception {
     WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
         "Icemix",
