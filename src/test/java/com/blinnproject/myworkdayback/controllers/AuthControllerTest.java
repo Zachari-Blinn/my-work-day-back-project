@@ -8,6 +8,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -40,10 +41,10 @@ class AuthControllerTest extends AbstractIntegrationTest {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("IcIaleaL");
     signupRequest.setPassword("Toto@123*");
-    signupRequest.setEmail("mocked-user@email.fr");
+    signupRequest.setEmail("IcIaleaL@email.fr");
 
     mockMvc.perform(post(API_PATH + "/signup")
-      .contentType("application/json")
+      .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(signupRequest)))
       .andExpect(status().isOk());
   }
@@ -58,7 +59,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     signupRequest.setEmail("");
 
     ResultActions result = mockMvc.perform(post(API_PATH + "/signup")
-      .contentType("application/json")
+      .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(signupRequest)))
       .andExpect(status().isBadRequest());
 
@@ -76,10 +77,10 @@ class AuthControllerTest extends AbstractIntegrationTest {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("AvYinDna");
     signupRequest.setPassword("Toto@123*");
-    signupRequest.setEmail("atopgeezaboardsignal@email.fr");
+    signupRequest.setEmail("AvYinDna@email.fr");
 
     mockMvc.perform(post(API_PATH + "/signup")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(signupRequest)))
         .andExpect(status().isOk());
 
@@ -88,7 +89,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setPassword("Toto@123*");
 
     mockMvc.perform(post(API_PATH + "/signin")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.accessToken").exists())
@@ -108,10 +109,10 @@ class AuthControllerTest extends AbstractIntegrationTest {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("PSimheIn");
     signupRequest.setPassword("Toto@123*");
-    signupRequest.setEmail("atopalongsiderevenue@email.fr");
+    signupRequest.setEmail("PSimheIn@email.fr");
 
     mockMvc.perform(post(API_PATH + "/signup")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(signupRequest)))
         .andExpect(status().isOk());
 
@@ -120,7 +121,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setPassword("Wrong-password@123*");
 
     mockMvc.perform(post(API_PATH + "/signin")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isUnauthorized());
   }
@@ -134,7 +135,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setPassword("");
 
     ResultActions result = mockMvc.perform(post(API_PATH + "/signin")
-      .contentType("application/json")
+      .contentType(MediaType.APPLICATION_JSON)
       .content(objectMapper.writeValueAsString(loginRequest)))
       .andExpect(status().isBadRequest());
 
@@ -149,11 +150,11 @@ class AuthControllerTest extends AbstractIntegrationTest {
   void AuthController_RefreshToken_ReturnUserAndTokenResponse() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
     signupRequest.setUsername("RseNianS");
-    signupRequest.setEmail("rsenians@fake-email.com");
+    signupRequest.setEmail("RseNianS@fake-email.com");
     signupRequest.setPassword("Toto@123*");
 
     mockMvc.perform(post(API_PATH + "/signup")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(signupRequest)))
         .andExpect(status().isOk());
 
@@ -162,7 +163,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setPassword("Toto@123*");
 
     ResultActions result = mockMvc.perform(post(API_PATH + "/signin")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isOk());
 
@@ -171,7 +172,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     String refreshToken = objectMapper.readTree(responseContent).get("data").get("refreshToken").asText();
 
     mockMvc.perform(post(API_PATH + "/refreshtoken")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content("{\"refreshToken\": \"" + refreshToken + "\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").exists())
@@ -188,7 +189,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @DisplayName("Get refresh token with invalid token")
   void AuthController_RefreshTokenWithInvalidToken_ReturnUnauthorizedError() throws Exception {
     mockMvc.perform(post(API_PATH + "/refreshtoken")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content("{\"refreshToken\": \"invalid-token\"}"))
         .andExpect(status().isForbidden());
   }
@@ -197,7 +198,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @DisplayName("Get refresh token with blank token")
   void AuthController_RefreshTokenWithBlankToken_ReturnUnauthorizedError() throws Exception {
     mockMvc.perform(post(API_PATH + "/refreshtoken")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content("{\"refreshToken\": \"\"}"))
         .andExpect(status().isBadRequest());
   }

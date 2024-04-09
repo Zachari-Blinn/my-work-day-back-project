@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -175,7 +176,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
 
     // Test request
     MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
-            .contentType("application/json"))
+            .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
         .andReturn();
 
@@ -215,14 +216,14 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     createWorkoutExercises(workoutModel);
 
     MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
-      .contentType("application/json"))
+      .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
 
     long workoutSessionId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/id").asLong();
 
     mockMvc.perform(get(API_PATH + "/{id}", workoutSessionId)
-      .contentType("application/json"))
+      .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.data.id").value(workoutSessionId))
       .andExpect(jsonPath("$.data.createdBy").value(user.getId()))
@@ -240,7 +241,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   @DisplayName("Get workout session details with wrong id")
   void workoutSessionController_getDetailsWithWrongId_returnNotFound() throws Exception {
     mockMvc.perform(get(API_PATH + "/{id}", 9999L)
-      .contentType("application/json"))
+      .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isNotFound());
   }
 
@@ -249,7 +250,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   @DisplayName("Get workout session details without auth")
   void workoutSessionController_getDetailsWithoutAuth_returnUnauthorized() throws Exception {
     mockMvc.perform(get(API_PATH + "/{id}", 1L)
-      .contentType("application/json"))
+      .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isUnauthorized());
   }
 }

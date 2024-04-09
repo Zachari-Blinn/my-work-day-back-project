@@ -11,6 +11,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -83,7 +84,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post("/api/exercise")
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))
@@ -101,7 +102,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isBadRequest());
   }
@@ -117,7 +118,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult postResult = mockMvc.perform(post(API_PATH)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))
@@ -155,7 +156,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))
@@ -177,7 +178,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult postResult = mockMvc.perform(post(API_PATH)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))
@@ -195,7 +196,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(put(API_PATH + "/{id}", exerciseId)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updatedExercise)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.name").value("updated-mocked-exercise"))
@@ -213,7 +214,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(put(API_PATH + "/{id}", 999)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(updatedExercise)))
         .andExpect(status().isNotFound());
   }
@@ -229,7 +230,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult postResult = mockMvc.perform(post(API_PATH)
-            .contentType("application/json")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))

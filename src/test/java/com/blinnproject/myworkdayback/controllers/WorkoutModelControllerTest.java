@@ -20,12 +20,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
@@ -110,7 +109,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
      );
 
     mockMvc.perform(post("/api/workout-model")
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated());
 
@@ -140,7 +139,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated());
 
@@ -187,7 +186,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated())
       .andReturn();
@@ -201,7 +200,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/exercise/" + savedExercise.getId())
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutExercise)))
         .andExpect(status().isOk());
   }
@@ -222,7 +221,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
       .andExpect(status().isCreated())
       .andReturn();
@@ -254,7 +253,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/exercise/1")
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutExercise)))
         .andExpect(status().isOk());
   }
@@ -275,7 +274,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
       .andExpect(status().isCreated())
       .andReturn();
@@ -313,7 +312,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     Exercise savedExercise = exerciseRepository.saveAndFlush(exercise);
 
     MvcResult workoutExerciseResult = mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/exercise/" + savedExercise.getId())
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutExercise)))
         .andExpect(status().isOk())
       .andReturn();
@@ -349,7 +348,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated())
       .andReturn();
@@ -392,12 +391,12 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel1)))
         .andExpect(status().isCreated());
 
     mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel2)))
         .andExpect(status().isCreated());
 
@@ -421,7 +420,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated()).andReturn();
     long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
@@ -437,7 +436,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(patch(API_PATH + "/" + workoutModelId)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(updatedWorkoutModel)))
         .andExpect(status().isOk());
 
@@ -465,7 +464,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(patch(API_PATH + "/{id}", "42")
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(updatedWorkoutModel)))
         .andExpect(status().isNotFound());
   }
@@ -486,7 +485,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated())
       .andReturn();
@@ -521,7 +520,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
       .andExpect(status().isCreated())
       .andReturn();
@@ -543,7 +542,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/schedule")
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(schedule)))
         .andExpect(status().isOk());
   }
@@ -564,7 +563,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(workoutModel)))
         .andExpect(status().isCreated())
       .andReturn();
@@ -586,7 +585,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
     );
 
     mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/schedule")
-        .contentType("application/json")
+        .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(schedule)))
         .andExpect(status().isOk());
 
