@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -177,7 +178,7 @@ class WorkoutSessionControllerTest {
   void workoutSessionController_createWorkoutSessionWithoutBody_ReturnOk() throws Exception {
     // Seed data
     WorkoutModel workoutModel = createWorkoutModel();
-    List<WorkoutExercise> workoutExercises = createWorkoutExercises(workoutModel);
+    createWorkoutExercises(workoutModel);
 
     // Test request
     MvcResult postResult = mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
@@ -209,5 +210,49 @@ class WorkoutSessionControllerTest {
     mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", 1L)
             .contentType("application/json"))
         .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  @Order(value = 4)
+  @WithUserDetails("mocked-user")
+  void workoutSessionController_getDetails_returnDetails() throws Exception {
+    WorkoutModel workoutModel = createWorkoutModel();
+    createWorkoutExercises(workoutModel);
+
+    MvcResult postResult = mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+      .contentType("application/json"))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    long workoutSessionId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/id").asLong();
+
+    mockMvc.perform(get("/api/workout-session/{id}", workoutSessionId)
+      .contentType("application/json"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.data.id").value(workoutSessionId))
+      .andExpect(jsonPath("$.data.createdBy").value(user.getId()))
+      .andExpect(jsonPath("$.data.name").value(workoutModel.getName()))
+      .andExpect(jsonPath("$.data.sessionStatus").value(String.valueOf(ESessionStatus.IN_PROGRESS)))
+      .andExpect(jsonPath("$.data.workoutModel.id").value(workoutModel.getId()))
+      .andExpect(jsonPath("$.data.workoutModel.name").value(workoutModel.getName()))
+      .andExpect(jsonPath("$.data.workoutExerciseList").isArray())
+      .andExpect(jsonPath("$.data.workoutExerciseList").isNotEmpty());
+  }
+
+  @Test
+  @Order(value = 5)
+  @WithUserDetails("mocked-user")
+  void workoutSessionController_getDetailsWithWrongId_returnNotFound() throws Exception {
+    mockMvc.perform(get("/api/workout-session/{id}", 9999L)
+      .contentType("application/json"))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @Order(value = 6)
+  void workoutSessionController_getDetailsWithoutAuth_returnUnauthorized() throws Exception {
+    mockMvc.perform(get("/api/workout-session/{id}", 1L)
+      .contentType("application/json"))
+      .andExpect(status().isUnauthorized());
   }
 }

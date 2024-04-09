@@ -18,10 +18,6 @@ import java.util.Date;
 @NoArgsConstructor
 @DiscriminatorValue("SESSION")
 public class WorkoutSession extends Workout {
-
-  @Column(name = "name")
-  private String name;
-
   @ManyToOne
   @JoinColumn(name = "workout_model_id")
   private WorkoutModel workoutModel;

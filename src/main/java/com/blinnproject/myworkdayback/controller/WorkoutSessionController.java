@@ -35,18 +35,6 @@ public class WorkoutSessionController {
     this.csvService = csvService;
   }
 
-  // Not implemented
-//  @Operation(summary = "Get workout session by date", description = "Retrieves a workout session by its date.")
-//  @GetMapping("/{workoutDate}")
-//  public ResponseEntity<GenericResponse<List<Object[]>>> getAllWorkoutSessionsByDate(
-//      @PathVariable("workoutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate workoutDate,
-//      @AuthenticationPrincipal UserDetailsImpl userDetails
-//  ) {
-//    List<Object[]> workoutSessions = workoutSessionService.findAllByDate(workoutDate, userDetails.getId());
-//
-//    return ResponseEntity.ok(GenericResponse.success(workoutSessions, i18n.translate("controller.workout.session.return-by-date.successful")));
-//  }
-
   @Operation(summary = "Create workout session", description = "Creates a workout session by workout model and date.")
   @PostMapping(value = "/{startedAt}/workout-model/{workoutModelId}")
   public ResponseEntity<GenericResponse<WorkoutSession>> createWorkoutSession(
@@ -59,6 +47,17 @@ public class WorkoutSessionController {
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.create.successful")));
+  }
+
+  @Operation(summary = "Get workout session details", description = "")
+  @GetMapping(value = "/{id}")
+  public ResponseEntity<GenericResponse<WorkoutSession>> getWorkoutSessionDetails(
+    @PathVariable("id") Long id,
+    @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    WorkoutSession workoutSession = workoutSessionService.find(id, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.return-details.successful")));
   }
 
   // todo add workout_exercise/set ?? by session id

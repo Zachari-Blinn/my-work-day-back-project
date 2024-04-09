@@ -23,6 +23,6 @@ public class Workout extends BaseEntityAudit {
   @Column(name = "description")
   private String description;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "workout")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "workout", cascade = CascadeType.ALL)
   private List<WorkoutExercise> workoutExerciseList;
 }
