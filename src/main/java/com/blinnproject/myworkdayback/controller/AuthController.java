@@ -26,6 +26,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name="Authentication", description = "Endpoints related to user authentication and authorization.")
@@ -68,8 +70,15 @@ public class AuthController {
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-      userDetails.getUsername(), userDetails.getEmail(), roles), i18n.translate("controller.auth.login.successful")));
+    return ResponseEntity.ok(GenericResponse.success(new JwtResponse(
+      jwt,
+      refreshToken.getToken(),
+      refreshToken.getExpiryDate(),
+      userDetails.getId(),
+      userDetails.getUsername(),
+      userDetails.getEmail(),
+      roles
+    ), i18n.translate("controller.auth.login.successful")));
   }
 
   @Operation(summary = "Register User", description = "Registers a new user account.")
@@ -102,10 +111,10 @@ public class AuthController {
 
     return refreshTokenService.findByToken(requestRefreshToken)
       .map(refreshTokenService::verifyExpiration)
-      .map(RefreshToken::getUser)
-      .map(user -> {
-        String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-        return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+      .map(refreshToken -> {
+        String token = jwtUtils.generateTokenFromUsername(refreshToken.getUser().getUsername());
+        Instant expirationDate = refreshToken.getExpiryDate();
+        return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, expirationDate));
       })
       .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, i18n.translate("refreshToken.error.notFound")));
   }

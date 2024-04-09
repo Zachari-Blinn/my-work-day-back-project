@@ -71,7 +71,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @DisplayName("Login with a registered user")
   void AuthController_Login_ReturnUserAndTokenResponse() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
-    signupRequest.setUsername("atopgeezaboardsignal");
+    signupRequest.setUsername("AvYinDna");
     signupRequest.setPassword("Toto@123*");
     signupRequest.setEmail("atopgeezaboardsignal@email.fr");
 
@@ -81,7 +81,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
         .andExpect(status().isOk());
 
     LoginRequest loginRequest = new LoginRequest();
-    loginRequest.setUsername("mocked-user");
+    loginRequest.setUsername("AvYinDna");
     loginRequest.setPassword("Toto@123*");
 
     mockMvc.perform(post("/api/auth/signin")
@@ -90,6 +90,8 @@ class AuthControllerTest extends AbstractIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.accessToken").exists())
         .andExpect(jsonPath("$.data.refreshToken").exists())
+        .andExpect(jsonPath("$.data.tokenType").value("Bearer"))
+        .andExpect(jsonPath("$.data.expirationDate").exists())
         .andExpect(jsonPath("$.data.id").exists())
         .andExpect(jsonPath("$.data.username").exists())
         .andExpect(jsonPath("$.data.email").exists())
@@ -101,7 +103,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @DisplayName("Login with wrong credentials")
   void AuthController_LoginWithWrongCredentials_ReturnUnauthorizedError() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
-    signupRequest.setUsername("atopalongsiderevenue");
+    signupRequest.setUsername("PSimheIn");
     signupRequest.setPassword("Toto@123*");
     signupRequest.setEmail("atopalongsiderevenue@email.fr");
 
@@ -111,7 +113,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
         .andExpect(status().isOk());
 
     LoginRequest loginRequest = new LoginRequest();
-    loginRequest.setUsername("mocked-user");
+    loginRequest.setUsername("PSimheIn");
     loginRequest.setPassword("Wrong-password@123*");
 
     mockMvc.perform(post("/api/auth/signin")
@@ -170,8 +172,13 @@ class AuthControllerTest extends AbstractIntegrationTest {
             .content("{\"refreshToken\": \"" + refreshToken + "\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken").exists())
+        .andExpect(jsonPath("$.accessToken").isNotEmpty())
         .andExpect(jsonPath("$.refreshToken").exists())
-        .andExpect(jsonPath("$.tokenType").exists());
+        .andExpect(jsonPath("$.refreshToken").isNotEmpty())
+        .andExpect(jsonPath("$.tokenType").exists())
+        .andExpect(jsonPath("$.tokenType").value("Bearer"))
+        .andExpect(jsonPath("$.expirationDate").exists())
+        .andExpect(jsonPath("$.expirationDate").isNotEmpty());
   }
 
   @Test
