@@ -253,4 +253,30 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isUnauthorized());
   }
+
+  @Test
+  @Order(value = 7)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Update workout set of workout session")
+  void workoutSessionController_updateWorkoutSet_returnOk() throws Exception {
+    WorkoutModel workoutModel = createWorkoutModel();
+    List<WorkoutExercise> workoutExercises = createWorkoutExercises(workoutModel);
+
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    long workoutSessionId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/id").asLong();
+    long workoutSessionSetId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/workoutExerciseList/0/workoutSets/0/id").asLong();
+
+    MvcResult result = mockMvc.perform(put(API_PATH + "/{workoutSessionId}/workout-set/{workoutSetId}", workoutSessionId, workoutSessionSetId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"isPerformed\": true}"))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
+    // todo
+  }
 }

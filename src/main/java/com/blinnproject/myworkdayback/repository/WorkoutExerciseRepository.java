@@ -15,4 +15,6 @@ public interface WorkoutExerciseRepository extends JpaRepository<WorkoutExercise
   Optional<WorkoutExercise> findByIdAndCreatedBy(Long id, Long createdBy);
 
   ArrayList<WorkoutExercise> findAllByWorkoutIdAndCreatedBy(Long id, Long createdBy);
+
+  Optional<WorkoutExercise> findOneByWorkoutSetsId(Long workoutSetId);
 }

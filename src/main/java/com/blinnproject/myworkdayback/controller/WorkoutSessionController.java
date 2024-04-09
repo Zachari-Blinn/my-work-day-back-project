@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
+import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import com.blinnproject.myworkdayback.model.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.csv.CSVService;
@@ -8,6 +9,7 @@ import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.workout_session.WorkoutSessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +60,19 @@ public class WorkoutSessionController {
     WorkoutSession workoutSession = workoutSessionService.find(id, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.return-details.successful")));
+  }
+
+  @Operation(summary = "Update set of workout session", description = "Updates a set of workout session by id.")
+  @PutMapping(value = "/{id}/workout-set/{workoutSetId}")
+  public ResponseEntity<GenericResponse<WorkoutSession>> updateWorkoutSessionSet(
+    @PathVariable("id") Long id,
+    @PathVariable("workoutSetId") Long workoutSetId,
+    @Valid @RequestBody WorkoutSet workoutSet,
+    @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    WorkoutSession workoutSession = workoutSessionService.updateWorkoutSessionSet(id, workoutSetId, workoutSet, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.update-set.successful")));
   }
 
   // todo add workout_exercise/set ?? by session id
