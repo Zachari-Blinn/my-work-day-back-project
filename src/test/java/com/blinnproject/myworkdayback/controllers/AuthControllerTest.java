@@ -24,6 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuthControllerTest extends AbstractIntegrationTest {
+
+  private static final String API_PATH = "/api/auth";
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -35,11 +38,11 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @DisplayName("Register a new user")
   void AuthController_Register_ReturnSavedUser() throws Exception {
     SignupRequest signupRequest = new SignupRequest();
-    signupRequest.setUsername("mocked-user");
+    signupRequest.setUsername("IcIaleaL");
     signupRequest.setPassword("Toto@123*");
     signupRequest.setEmail("mocked-user@email.fr");
 
-    mockMvc.perform(post("/api/auth/signup")
+    mockMvc.perform(post(API_PATH + "/signup")
       .contentType("application/json")
       .content(objectMapper.writeValueAsString(signupRequest)))
       .andExpect(status().isOk());
@@ -54,7 +57,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     signupRequest.setPassword("");
     signupRequest.setEmail("");
 
-    ResultActions result = mockMvc.perform(post("/api/auth/signup")
+    ResultActions result = mockMvc.perform(post(API_PATH + "/signup")
       .contentType("application/json")
       .content(objectMapper.writeValueAsString(signupRequest)))
       .andExpect(status().isBadRequest());
@@ -75,7 +78,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     signupRequest.setPassword("Toto@123*");
     signupRequest.setEmail("atopgeezaboardsignal@email.fr");
 
-    mockMvc.perform(post("/api/auth/signup")
+    mockMvc.perform(post(API_PATH + "/signup")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(signupRequest)))
         .andExpect(status().isOk());
@@ -84,7 +87,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setUsername("AvYinDna");
     loginRequest.setPassword("Toto@123*");
 
-    mockMvc.perform(post("/api/auth/signin")
+    mockMvc.perform(post(API_PATH + "/signin")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isOk())
@@ -107,7 +110,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     signupRequest.setPassword("Toto@123*");
     signupRequest.setEmail("atopalongsiderevenue@email.fr");
 
-    mockMvc.perform(post("/api/auth/signup")
+    mockMvc.perform(post(API_PATH + "/signup")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(signupRequest)))
         .andExpect(status().isOk());
@@ -116,7 +119,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setUsername("PSimheIn");
     loginRequest.setPassword("Wrong-password@123*");
 
-    mockMvc.perform(post("/api/auth/signin")
+    mockMvc.perform(post(API_PATH + "/signin")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isUnauthorized());
@@ -130,7 +133,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setUsername("");
     loginRequest.setPassword("");
 
-    ResultActions result = mockMvc.perform(post("/api/auth/signin")
+    ResultActions result = mockMvc.perform(post(API_PATH + "/signin")
       .contentType("application/json")
       .content(objectMapper.writeValueAsString(loginRequest)))
       .andExpect(status().isBadRequest());
@@ -149,7 +152,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     signupRequest.setEmail("rsenians@fake-email.com");
     signupRequest.setPassword("Toto@123*");
 
-    mockMvc.perform(post("/api/auth/signup")
+    mockMvc.perform(post(API_PATH + "/signup")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(signupRequest)))
         .andExpect(status().isOk());
@@ -158,7 +161,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
     loginRequest.setUsername("RseNianS");
     loginRequest.setPassword("Toto@123*");
 
-    ResultActions result = mockMvc.perform(post("/api/auth/signin")
+    ResultActions result = mockMvc.perform(post(API_PATH + "/signin")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(loginRequest)))
         .andExpect(status().isOk());
@@ -167,7 +170,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
 
     String refreshToken = objectMapper.readTree(responseContent).get("data").get("refreshToken").asText();
 
-    mockMvc.perform(post("/api/auth/refreshtoken")
+    mockMvc.perform(post(API_PATH + "/refreshtoken")
             .contentType("application/json")
             .content("{\"refreshToken\": \"" + refreshToken + "\"}"))
         .andExpect(status().isOk())
@@ -184,7 +187,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @Test
   @DisplayName("Get refresh token with invalid token")
   void AuthController_RefreshTokenWithInvalidToken_ReturnUnauthorizedError() throws Exception {
-    mockMvc.perform(post("/api/auth/refreshtoken")
+    mockMvc.perform(post(API_PATH + "/refreshtoken")
             .contentType("application/json")
             .content("{\"refreshToken\": \"invalid-token\"}"))
         .andExpect(status().isForbidden());
@@ -193,7 +196,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
   @Test
   @DisplayName("Get refresh token with blank token")
   void AuthController_RefreshTokenWithBlankToken_ReturnUnauthorizedError() throws Exception {
-    mockMvc.perform(post("/api/auth/refreshtoken")
+    mockMvc.perform(post(API_PATH + "/refreshtoken")
             .contentType("application/json")
             .content("{\"refreshToken\": \"\"}"))
         .andExpect(status().isBadRequest());

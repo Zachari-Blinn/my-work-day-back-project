@@ -30,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ExerciseControllerTest extends AbstractIntegrationTest {
+
+  private static final String API_PATH = "/api/exercise";
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -97,7 +100,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    mockMvc.perform(post("/api/exercise")
+    mockMvc.perform(post(API_PATH)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isBadRequest());
@@ -113,7 +116,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    MvcResult postResult = mockMvc.perform(post("/api/exercise")
+    MvcResult postResult = mockMvc.perform(post(API_PATH)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
@@ -126,7 +129,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     JsonNode jsonNode = objectMapper.readTree(response);
     Long exerciseId = jsonNode.at("/data/id").asLong();
 
-    mockMvc.perform(get("/api/exercise/{id}", exerciseId))
+    mockMvc.perform(get(API_PATH + "/{id}", exerciseId))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))
         .andExpect(jsonPath("$.data.createdBy").value(user.getId()));
@@ -137,7 +140,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
   @WithUserDetails("mocked-user")
   @DisplayName("Find Exercise with wrong id")
   void ExerciseController_findById_ReturnNotFound() throws Exception {
-    mockMvc.perform(get("/api/exercise/{id}", 999))
+    mockMvc.perform(get(API_PATH + "/{id}", 999))
         .andExpect(status().isNotFound());
   }
 
@@ -151,14 +154,14 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    mockMvc.perform(post("/api/exercise")
+    mockMvc.perform(post(API_PATH)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.data.name").value("mocked-exercise"))
         .andExpect(jsonPath("$.data.createdBy").value(user.getId()));
 
-    mockMvc.perform(get("/api/exercise"))
+    mockMvc.perform(get(API_PATH))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data[*].name", hasItem("mocked-exercise")));
   }
@@ -173,7 +176,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    MvcResult postResult = mockMvc.perform(post("/api/exercise")
+    MvcResult postResult = mockMvc.perform(post(API_PATH)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
@@ -191,7 +194,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    mockMvc.perform(put("/api/exercise/{id}", exerciseId)
+    mockMvc.perform(put(API_PATH + "/{id}", exerciseId)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(updatedExercise)))
         .andExpect(status().isOk())
@@ -209,7 +212,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    mockMvc.perform(put("/api/exercise/{id}", 999)
+    mockMvc.perform(put(API_PATH + "/{id}", 999)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(updatedExercise)))
         .andExpect(status().isNotFound());
@@ -225,7 +228,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
         null
     );
 
-    MvcResult postResult = mockMvc.perform(post("/api/exercise")
+    MvcResult postResult = mockMvc.perform(post(API_PATH)
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(exercise)))
         .andExpect(status().isCreated())
@@ -238,7 +241,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
     JsonNode jsonNode = objectMapper.readTree(response);
     Long exerciseId = jsonNode.at("/data/id").asLong();
 
-    mockMvc.perform(delete("/api/exercise/{id}", exerciseId))
+    mockMvc.perform(delete(API_PATH + "/{id}", exerciseId))
         .andExpect(status().isNoContent());
   }
 
@@ -247,7 +250,7 @@ class ExerciseControllerTest extends AbstractIntegrationTest {
   @WithUserDetails("mocked-user")
   @DisplayName("Delete Exercise with wrong id")
   void ExerciseController_delete_ReturnNotFound() throws Exception {
-    mockMvc.perform(delete("/api/exercise/{id}", 999))
+    mockMvc.perform(delete(API_PATH + "/{id}", 999))
         .andExpect(status().isNotFound());
   }
 }
