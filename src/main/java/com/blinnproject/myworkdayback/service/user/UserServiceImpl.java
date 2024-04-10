@@ -4,12 +4,15 @@ import com.blinnproject.myworkdayback.exception.*;
 import com.blinnproject.myworkdayback.model.entity.PasswordResetToken;
 import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.model.request.SignupRequest;
+import com.blinnproject.myworkdayback.model.request.UpdateUserPasswordDTO;
+import com.blinnproject.myworkdayback.model.request.UpdateUserProfileDTO;
 import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.repository.PasswordResetTokenRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.service.email.EmailService;
 import com.blinnproject.myworkdayback.service.password_reset_token.PasswordResetTokenService;
 import jakarta.mail.MessagingException;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,8 @@ import static com.blinnproject.myworkdayback.util.FormatUtil.generateSixNumbersR
 @Service
 public class UserServiceImpl implements UserService {
 
+  private final ModelMapper modelMapper;
+
   private final PasswordEncoder encoder;
 
   private final UserRepository userRepository;
@@ -29,7 +34,8 @@ public class UserServiceImpl implements UserService {
 
   private final EmailService emailService;
 
-  public UserServiceImpl(PasswordEncoder encoder, UserRepository userRepository, EmailService emailService, PasswordResetTokenService passwordResetTokenService) {
+  public UserServiceImpl(ModelMapper modelMapper, PasswordEncoder encoder, UserRepository userRepository, EmailService emailService, PasswordResetTokenService passwordResetTokenService) {
+    this.modelMapper = modelMapper;
     this.encoder = encoder;
     this.userRepository = userRepository;
     this.emailService = emailService;
@@ -124,5 +130,36 @@ public class UserServiceImpl implements UserService {
     if (!encoder.matches(String.valueOf(token), passwordResetToken.getToken())) {
       throw new ResetPasswordTokenInvalidException("Token invalid.");
     }
+  }
+
+  @Override
+  public UpdateUserProfileDTO updateProfile(UpdateUserProfileDTO updateUserProfileDTO, Long userId) {
+    User user = userRepository.findById(userId)
+      .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+    if (updateUserProfileDTO.getUsername() != null) {
+      user.setUsername(updateUserProfileDTO.getUsername());
+    }
+    if (updateUserProfileDTO.getEmail() != null) {
+      user.setEmail(updateUserProfileDTO.getEmail());
+    }
+    if (updateUserProfileDTO.getGender() != null) {
+      user.setGender(updateUserProfileDTO.getGender());
+    }
+
+    return modelMapper.map(userRepository.save(user), UpdateUserProfileDTO.class);
+  }
+
+  @Override
+  public void changePassword(UpdateUserPasswordDTO updateUserPasswordDTO, Long userId) {
+    User user = userRepository.findById(userId)
+      .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+    if (!encoder.matches(updateUserPasswordDTO.getOldPassword(), user.getPassword())) {
+      throw new InvalidPasswordException("Old password is incorrect.");
+    }
+
+    user.setPassword(encoder.encode(updateUserPasswordDTO.getNewPassword()));
+    userRepository.save(user);
   }
 }

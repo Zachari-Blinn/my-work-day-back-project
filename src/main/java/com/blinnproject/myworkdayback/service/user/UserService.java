@@ -2,6 +2,8 @@ package com.blinnproject.myworkdayback.service.user;
 
 import com.blinnproject.myworkdayback.model.entity.User;
 import com.blinnproject.myworkdayback.model.request.SignupRequest;
+import com.blinnproject.myworkdayback.model.request.UpdateUserPasswordDTO;
+import com.blinnproject.myworkdayback.model.request.UpdateUserProfileDTO;
 import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
 import jakarta.mail.MessagingException;
 
@@ -22,4 +24,8 @@ public interface UserService {
   void resetPassword(String email, int token, String newPassword);
 
   void checkResetPasswordToken(String email, String token);
+
+  UpdateUserProfileDTO updateProfile(UpdateUserProfileDTO updateUserProfileDTO, Long userId);
+
+  void changePassword(UpdateUserPasswordDTO updateUserPasswordDTO, Long userId);
 }

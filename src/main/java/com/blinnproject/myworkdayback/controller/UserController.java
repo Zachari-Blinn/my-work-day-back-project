@@ -1,9 +1,12 @@
 package com.blinnproject.myworkdayback.controller;
 
+import com.blinnproject.myworkdayback.model.request.UpdateUserPasswordDTO;
+import com.blinnproject.myworkdayback.model.request.UpdateUserProfileDTO;
 import com.blinnproject.myworkdayback.model.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
 import com.blinnproject.myworkdayback.service.profile_picture.ProfilePictureService;
+import com.blinnproject.myworkdayback.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -23,9 +26,11 @@ public class UserController {
 
   private final I18nService i18n;
   private final ProfilePictureService profilePictureService;
+  private final UserService userService;
 
-  public UserController(I18nService i18nService, ProfilePictureService profilePictureService) {
+  public UserController(I18nService i18nService, ProfilePictureService profilePictureService, UserService userService) {
     this.i18n = i18nService;
+    this.userService = userService;
     this.profilePictureService = profilePictureService;
   }
 
@@ -48,5 +53,27 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK)
       .contentType(MediaType.valueOf("image/png"))
       .body(image);
+  }
+
+  @Operation(summary = "Update user profile", description = "Updates the profile of the authenticated user.")
+  @PatchMapping(value = "profile", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<GenericResponse<UpdateUserProfileDTO>> updateProfile(
+      @RequestBody UpdateUserProfileDTO updateUserProfileDTO,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    UpdateUserProfileDTO updatedUserProfile = userService.updateProfile(updateUserProfileDTO, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(updatedUserProfile, i18n.translate("controller.user.update-profile.successful")));
+  }
+
+  @Operation(summary = "Change user password", description = "Changes the password of the authenticated user.")
+  @PatchMapping(value = "password", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<GenericResponse<Void>> changePassword(
+      @RequestBody UpdateUserPasswordDTO updateUserPasswordDTO,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    userService.changePassword(updateUserPasswordDTO, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.user.change-password.successful")));
   }
 }

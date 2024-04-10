@@ -183,4 +183,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.BAD_REQUEST)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({InvalidPasswordException.class})
+  public ResponseEntity<Object> handleInvalidPasswordException(InvalidPasswordException exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
 }

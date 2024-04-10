@@ -23,7 +23,7 @@ import java.util.Set;
     @UniqueConstraint(columnNames = "email")
   })
 public class User extends BaseEntityAudit {
-  @Column(nullable=false, length = 20)
+  @Column(nullable=false, length = 50)
   private String username;
 
   @Enumerated(EnumType.ORDINAL)
