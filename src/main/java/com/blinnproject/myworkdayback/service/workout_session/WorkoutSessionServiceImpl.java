@@ -12,6 +12,7 @@ import com.blinnproject.myworkdayback.repository.WorkoutSessionRepository;
 import com.blinnproject.myworkdayback.service.workout_exercise.WorkoutExerciseService;
 import com.blinnproject.myworkdayback.service.workout_model.WorkoutModelService;
 import com.blinnproject.myworkdayback.service.workout_set.WorkoutSetService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -104,7 +105,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     // Vérifier si tous les workout_set de workout_exercise ont isPerformed = true
     boolean allWorkoutSetPerformed = workoutExercise.getWorkoutSets().stream().allMatch(WorkoutSet::getIsPerformed);
     if (allWorkoutSetPerformed) {
-      workoutExercise.setPerformStatus(EPerformStatus.COMPLETED);
+      workoutExercise.setPerformStatus(EPerformStatus.PERFORMED);
     } else {
       workoutExercise.setPerformStatus(EPerformStatus.IN_PROGRESS);
     }
@@ -113,7 +114,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     // Vérifier si tous les workout_exercise ont performStatus = "COMPLETED"
     List<WorkoutExercise> workoutExercises = workoutExerciseService.findAllByWorkoutId(workoutExercise.getWorkout().getId(), createdBy);
     boolean allExerciseCompleted = workoutExercises.stream()
-      .allMatch(we -> we.getPerformStatus() == EPerformStatus.COMPLETED);
+      .allMatch(we -> we.getPerformStatus() == EPerformStatus.PERFORMED || we.getPerformStatus() == EPerformStatus.CANCELLED);
 
     // Mettre à jour le sessionStatus de la WorkoutSession
     if (allExerciseCompleted) {
@@ -124,5 +125,56 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
 
     return workoutSessionRepository.findByIdAndCreatedBy(workoutExercise.getWorkout().getId(), createdBy)
       .orElseThrow(ResourceNotFoundException::new);
+  }
+
+  @Override
+  public WorkoutSession createWorkoutSessionManually(
+    @NotNull LocalDateTime startedAt,
+    @NotNull LocalDateTime endedAt,
+    @NotNull Long workoutModelId,
+    @NotNull Long createdBy
+  ) {
+    WorkoutModel workoutModel = workoutModelService.findById(workoutModelId, createdBy).orElseThrow(ResourceNotFoundException::new);
+
+    // clone workout model and workout exercises associated with it
+    WorkoutSession workoutSession = new WorkoutSession();
+    workoutSession.setName(workoutModel.getName());
+    workoutSession.setDescription(null);
+    workoutSession.setWorkoutModel(workoutModel);
+    workoutSession.setSessionStatus(ESessionStatus.PERFORMED);
+    workoutSession.setStartedAt(startedAt);
+    workoutSession.setEndedAt(endedAt);
+    workoutSession.setCreatedBy(createdBy);
+
+    List<WorkoutExercise> workoutExercises = new ArrayList<>();
+    for (WorkoutExercise workoutExerciseIn : workoutModel.getWorkoutExerciseList()) {
+
+      WorkoutExercise workoutExercise = new WorkoutExercise();
+      workoutExercise.setExercise(workoutExerciseIn.getExercise());
+      workoutExercise.setWorkout(workoutSession);
+      workoutExercise.setPositionIndex(workoutExerciseIn.getPositionIndex());
+      workoutExercise.setPerformStatus(EPerformStatus.PERFORMED);
+      workoutExercise.setCreatedBy(createdBy);
+      workoutExercise.setNumberOfWarmUpSets(workoutExerciseIn.getNumberOfWarmUpSets());
+
+      List<WorkoutSet> workoutSets = new ArrayList<>();
+      for (WorkoutSet workoutSetIn : workoutExerciseIn.getWorkoutSets()) {
+        WorkoutSet workoutSet = new WorkoutSet();
+        workoutSet.setWeight(workoutSetIn.getWeight());
+        workoutSet.setCreatedBy(createdBy);
+        workoutSet.setRestTime(workoutSetIn.getRestTime());
+        workoutSet.setRepsCount(workoutSetIn.getRepsCount());
+        workoutSet.setIsPerformed(true);
+        workoutSet.setPositionIndex(workoutSetIn.getPositionIndex());
+
+        workoutSets.add(workoutSet);
+      }
+      workoutExercise.setWorkoutSets(workoutSets);
+
+      workoutExercises.add(workoutExercise);
+    }
+    workoutSession.setWorkoutExerciseList(workoutExercises);
+
+    return workoutSessionRepository.save(workoutSession);
   }
 }

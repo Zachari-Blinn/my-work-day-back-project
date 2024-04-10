@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +35,14 @@ public class WorkoutSessionController {
     this.csvService = csvService;
   }
 
-  @Operation(summary = "Create workout session", description = "Creates a workout session by workout model and date.")
+  @Operation(summary = "Start workout session", description = "Start a workout session by workout model and date.")
   @PostMapping(value = "/{startedAt}/workout-model/{workoutModelId}")
-  public ResponseEntity<GenericResponse<WorkoutSession>> createWorkoutSession(
+  public ResponseEntity<GenericResponse<WorkoutSession>> startWorkoutSession(
       @PathVariable("startedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startedAt,
       @PathVariable("workoutModelId") Long workoutModelId,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
+    // peut être saisir directement la date depuis le service
     WorkoutSession workoutSession = workoutSessionService.createWorkoutSession(startedAt, workoutModelId, userDetails.getId());
 
     return ResponseEntity
@@ -48,7 +50,7 @@ public class WorkoutSessionController {
         .body(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.create.successful")));
   }
 
-  @Operation(summary = "Get workout session details", description = "")
+  @Operation(summary = "Get workout session details", description = "Get workout session details by id.")
   @GetMapping(value = "/{id}")
   public ResponseEntity<GenericResponse<WorkoutSession>> getWorkoutSessionDetails(
     @PathVariable("id") Long id,
@@ -71,10 +73,25 @@ public class WorkoutSessionController {
     return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.update-set.successful")));
   }
 
-  // approve workout exercise sets by workout_exercise_id
-  // reset approval of workout exercise sets by workout_exercise_id
+  // todo route : approve workout exercise sets by workout_exercise_id
+  // todo route : reset approval of workout exercise sets by workout_exercise_id
 
-  // todo set manually session data (with data change with model)
+  @Operation(summary = "Create manually workout session by workout model", description = "Create a workout session manually by workout model.")
+  @PostMapping(value = "/{startedAt}/{endedAt}/workout-model/{workoutModelId}")
+  public ResponseEntity<GenericResponse<WorkoutSession>> createWorkoutSession(
+    @PathVariable("startedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startedAt,
+    @PathVariable("endedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endedAt,
+    @PathVariable("workoutModelId") Long workoutModelId,
+    @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    WorkoutSession workoutSessionIn = workoutSessionService.createWorkoutSessionManually(startedAt, endedAt, workoutModelId, userDetails.getId());
 
-  // todo check manually session (without data change with model)
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(GenericResponse.success(workoutSessionIn, i18n.translate("controller.workout.session.create.successful")));
+  }
+
+  // todo route : finish workout session by id or update workout session
+
+  // todo route : delete session by id
 }

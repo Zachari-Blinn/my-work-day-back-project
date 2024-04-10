@@ -169,7 +169,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   @Order(value = 2)
   @WithUserDetails("mocked-user")
   @DisplayName("Create workout session without body")
-  void workoutSessionController_createWorkoutSessionWithoutBody_ReturnOk() throws Exception {
+  void workoutSessionController_startWorkoutSessionWithoutBody_ReturnOk() throws Exception {
     // Seed data
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
@@ -201,7 +201,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   @Test
   @Order(value = 3)
   @DisplayName("Create workout session without auth")
-  void workoutSessionController_createWorkoutSessionWithoutAuth_ReturnUnauthorized() throws Exception {
+  void workoutSessionController_startWorkoutSessionWithoutAuth_ReturnUnauthorized() throws Exception {
     mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", 1L)
             .contentType("application/json"))
         .andExpect(status().isUnauthorized());
@@ -349,7 +349,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     JsonNode workoutExerciseListResult = objectMapper.readTree(result.getResponse().getContentAsString()).at("/data/workoutExerciseList");
     for (int i = 0; i < workoutExerciseListResult.size(); i++) {
       JsonNode exerciseNode = workoutExerciseListResult.get(i);
-      assertEquals(String.valueOf(EPerformStatus.COMPLETED), exerciseNode.at("/performStatus").asText());
+      assertEquals(String.valueOf(EPerformStatus.PERFORMED), exerciseNode.at("/performStatus").asText());
     }
   }
 

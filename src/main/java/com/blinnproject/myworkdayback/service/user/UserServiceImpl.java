@@ -8,6 +8,7 @@ import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.repository.PasswordResetTokenRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.service.email.EmailService;
+import com.blinnproject.myworkdayback.service.password_reset_token.PasswordResetTokenService;
 import jakarta.mail.MessagingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,15 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
 
-  private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final PasswordResetTokenService passwordResetTokenService;
 
   private final EmailService emailService;
 
-  public UserServiceImpl(PasswordEncoder encoder, UserRepository userRepository, PasswordResetTokenRepository passwordResetTokenRepository, EmailService emailService) {
+  public UserServiceImpl(PasswordEncoder encoder, UserRepository userRepository, EmailService emailService, PasswordResetTokenService passwordResetTokenService) {
     this.encoder = encoder;
     this.userRepository = userRepository;
-    this.passwordResetTokenRepository = passwordResetTokenRepository;
     this.emailService = emailService;
+    this.passwordResetTokenService = passwordResetTokenService;
   }
 
   public void throwExceptionIfUsernameIsAlreadyTaken(String username) {
@@ -67,35 +68,30 @@ public class UserServiceImpl implements UserService {
     // fail silently if user is not found for security reasons
     if (user.isPresent()) {
       // check if token already exists and delete it
-      passwordResetTokenRepository.findByUserEmail(email).ifPresent(passwordResetTokenRepository::delete);
+      passwordResetTokenService.findByUserEmail(email).ifPresent(passwordResetTokenService::delete);
 
       String token = generateSixNumbersRandomlyToken();
 
-      this.createPasswordResetTokenForUser(user.get(), encoder.encode(token));
+      passwordResetTokenService.create(user.get(), encoder.encode(token));
 
       this.emailService.sendForgotPasswordEmail(email, token, user.get());
     }
   }
 
-  private void createPasswordResetTokenForUser(User user, String token) {
-    PasswordResetToken myToken = new PasswordResetToken(token, user);
-    passwordResetTokenRepository.save(myToken);
-  }
-
   @Transactional
   public void resetPassword(String email, int token, String newPassword) {
-    PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserEmail(email)
+    PasswordResetToken passwordResetToken = passwordResetTokenService.findByUserEmail(email)
       .orElseThrow(() -> new TokenNotFoundException("Token not found with email: " + email));
 
     passwordResetToken.setAttempts(passwordResetToken.getAttempts() + 1);
 
     if (passwordResetToken.getAttempts() > 3) {
-      passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenService.delete(passwordResetToken);
       throw new ResetPasswordTokenAttemptsExceededException("Number of attempts exceeded.");
     }
 
     if (passwordResetToken.getExpiryDate().getTime() < System.currentTimeMillis()) {
-      passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenService.delete(passwordResetToken);
       throw new ResetPasswordTokenExpiredException("Token expired.");
     }
 
@@ -103,25 +99,25 @@ public class UserServiceImpl implements UserService {
       User user = passwordResetToken.getUser();
       user.setPassword(encoder.encode(newPassword));
       userRepository.save(user);
-      passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenService.delete(passwordResetToken);
       emailService.sendResetPasswordSuccessEmail(email);
     } else {
-      passwordResetTokenRepository.save(passwordResetToken);
+      passwordResetTokenService.create(passwordResetToken.getUser(), passwordResetToken.getToken());
       throw new ResetPasswordTokenInvalidException("Token invalid.");
     }
   }
 
   public void checkResetPasswordToken(String email, String token) {
-    PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByUserEmail(email)
+    PasswordResetToken passwordResetToken = passwordResetTokenService.findByUserEmail(email)
       .orElseThrow(() -> new TokenNotFoundException("Token not found with email: " + email));
 
     if (passwordResetToken.getAttempts() > 3) {
-      passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenService.delete(passwordResetToken);
       throw new ResetPasswordTokenAttemptsExceededException("Number of attempts exceeded.");
     }
 
     if (passwordResetToken.getExpiryDate().getTime() < System.currentTimeMillis()) {
-      passwordResetTokenRepository.delete(passwordResetToken);
+      passwordResetTokenService.delete(passwordResetToken);
       throw new ResetPasswordTokenExpiredException("Token expired.");
     }
 

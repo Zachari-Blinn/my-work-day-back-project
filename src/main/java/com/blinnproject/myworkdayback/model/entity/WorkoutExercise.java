@@ -61,6 +61,8 @@ public class WorkoutExercise  extends BaseEntityAudit {
     this.numberOfWarmUpSets = numberOfWarmUpSets;
   }
 
+  // lifecycle methods
+
   // methods
 
   public void addWorkoutSets(List<WorkoutSet> providedSetsList) {
