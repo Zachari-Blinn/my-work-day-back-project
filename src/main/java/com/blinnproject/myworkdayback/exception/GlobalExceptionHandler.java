@@ -176,4 +176,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.NOT_FOUND)
       .body(exception.getMessage());
   }
+
+  @ExceptionHandler({ProvidedResourceIsNotAnInstanceOf.class})
+  public ResponseEntity<Object> handleProvidedResourceIsNotAnInstanceOf(ProvidedResourceIsNotAnInstanceOf exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
 }

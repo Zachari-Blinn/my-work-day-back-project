@@ -17,10 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 @Tag(name="Workout Session", description = "Endpoints related to user workout sessions.")
 @RestController
@@ -63,23 +60,19 @@ public class WorkoutSessionController {
   }
 
   @Operation(summary = "Update set of workout session", description = "Updates a set of workout session by id.")
-  @PutMapping(value = "/{id}/workout-set/{workoutSetId}")
+  @PutMapping(value = "/workout-set/{workoutSetId}")
   public ResponseEntity<GenericResponse<WorkoutSession>> updateWorkoutSessionSet(
-    @PathVariable("id") Long id,
     @PathVariable("workoutSetId") Long workoutSetId,
     @Valid @RequestBody WorkoutSet workoutSet,
     @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    WorkoutSession workoutSession = workoutSessionService.updateWorkoutSessionSet(id, workoutSetId, workoutSet, userDetails.getId());
+    WorkoutSession workoutSession = workoutSessionService.updateWorkoutSessionSet(workoutSetId, workoutSet, userDetails.getId());
 
     return ResponseEntity.ok(GenericResponse.success(workoutSession, i18n.translate("controller.workout.session.update-set.successful")));
   }
 
-  // todo add workout_exercise/set ?? by session id
-
-  // todo update workout_exercise/set ?? by session id
-
-  // todo remove workout_exercise/set ?? by session id
+  // approve workout exercise sets by workout_exercise_id
+  // reset approval of workout exercise sets by workout_exercise_id
 
   // todo set manually session data (with data change with model)
 

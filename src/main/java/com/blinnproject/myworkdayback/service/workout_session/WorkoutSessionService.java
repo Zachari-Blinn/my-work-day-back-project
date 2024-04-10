@@ -13,5 +13,5 @@ public interface WorkoutSessionService {
 
   WorkoutSession find(Long id, Long createdBy);
 
-  WorkoutSession updateWorkoutSessionSet(Long id, Long workoutSetId, WorkoutSet workoutSet, Long createdBy);
+  WorkoutSession updateWorkoutSessionSet(Long workoutSetId, WorkoutSet workoutSet, Long createdBy);
 }

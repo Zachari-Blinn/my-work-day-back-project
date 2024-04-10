@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -16,5 +17,7 @@ public interface WorkoutExerciseRepository extends JpaRepository<WorkoutExercise
 
   ArrayList<WorkoutExercise> findAllByWorkoutIdAndCreatedBy(Long id, Long createdBy);
 
-  Optional<WorkoutExercise> findOneByWorkoutSetsId(Long workoutSetId);
+  List<WorkoutExercise> findByWorkoutId(Long id);
+
+  Optional<WorkoutExercise> findOneByWorkoutSetsIdAndCreatedBy(Long workoutSetId, Long createdBy);
 }

@@ -260,23 +260,137 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   @DisplayName("Update workout set of workout session")
   void workoutSessionController_updateWorkoutSet_returnOk() throws Exception {
     WorkoutModel workoutModel = createWorkoutModel();
-    List<WorkoutExercise> workoutExercises = createWorkoutExercises(workoutModel);
+    createWorkoutExercises(workoutModel);
 
     MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
 
-    long workoutSessionId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/id").asLong();
     long workoutSessionSetId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/workoutExerciseList/0/workoutSets/0/id").asLong();
 
-    MvcResult result = mockMvc.perform(put(API_PATH + "/{workoutSessionId}/workout-set/{workoutSetId}", workoutSessionId, workoutSessionSetId)
+    MvcResult result = mockMvc.perform(put(API_PATH + "/workout-set/{workoutSetId}", workoutSessionSetId)
         .contentType(MediaType.APPLICATION_JSON)
         .content("{\"isPerformed\": true}"))
       .andExpect(status().isOk())
       .andReturn();
 
+    // loop in entity values for check if result contain updated workout set (workoutSession is returned)
     JsonNode jsonNode = objectMapper.readTree(result.getResponse().getContentAsString());
-    // todo
+    JsonNode workoutExerciseList = jsonNode.at("/data/workoutExerciseList");
+    for (int i = 0; i < workoutExerciseList.size(); i++) {
+      JsonNode exerciseNode = workoutExerciseList.get(i);
+      JsonNode workoutSets = exerciseNode.at("/workoutSets");
+      for (int j = 0; j < workoutSets.size(); j++) {
+        JsonNode setNode = workoutSets.get(j);
+        if (setNode.at("/id").asLong() == workoutSessionSetId) {
+          assertEquals("true", setNode.at("/isPerformed").asText());
+        }
+      }
+    }
+  }
+
+  @Test
+  @Order(value = 8)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Update workout set of workout model")
+  void workoutSessionController_updateWorkoutSetOfWorkoutModel_returnIllegal() throws Exception {
+    WorkoutModel workoutModel = createWorkoutModel();
+    List<WorkoutExercise> workoutExercises = createWorkoutExercises(workoutModel);
+
+    mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+        .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    long workoutModelSetId = workoutExercises.getFirst().getWorkoutSets().getFirst().getId();
+
+    mockMvc.perform(put(API_PATH + "/workout-set/{workoutSetId}", workoutModelSetId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"isPerformed\": true}"))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @Order(value = 9)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Update all workout set of workout exercise of session return workout exercise status performed")
+  void workoutSessionController_updateAllWorkoutSet_returnOk() throws Exception {
+    WorkoutModel workoutModel = createWorkoutModel();
+    createWorkoutExercises(workoutModel);
+
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    // loop all workout set of first workout exercise and update all to performed
+    JsonNode jsonNode = objectMapper.readTree(postResult.getResponse().getContentAsString());
+    JsonNode workoutExerciseList = jsonNode.at("/data/workoutExerciseList");
+
+    for (int i = 0; i < workoutExerciseList.size(); i++) {
+      JsonNode exerciseNode = workoutExerciseList.get(i);
+      JsonNode workoutSets = exerciseNode.at("/workoutSets");
+      for (int j = 0; j < workoutSets.size(); j++) {
+        JsonNode setNode = workoutSets.get(j);
+        mockMvc.perform(put(API_PATH + "/workout-set/{workoutSetId}", setNode.at("/id").asLong())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content("{\"isPerformed\": true}"))
+          .andExpect(status().isOk());
+      }
+    }
+
+    // check if workout exercise status is performed
+    MvcResult result = mockMvc.perform(get(API_PATH + "/{id}", jsonNode.at("/data/id").asLong())
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    JsonNode workoutExerciseListResult = objectMapper.readTree(result.getResponse().getContentAsString()).at("/data/workoutExerciseList");
+    for (int i = 0; i < workoutExerciseListResult.size(); i++) {
+      JsonNode exerciseNode = workoutExerciseListResult.get(i);
+      assertEquals(String.valueOf(EPerformStatus.COMPLETED), exerciseNode.at("/performStatus").asText());
+    }
+  }
+
+  // update all workout exercise must return workout session status completed
+  @Test
+  @Order(value = 10)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Update all workout exercise of workout session return workout session status completed")
+  void workoutSessionController_updateAllWorkoutExercise_returnOk() throws Exception {
+    WorkoutModel workoutModel = createWorkoutModel();
+    createWorkoutExercises(workoutModel);
+
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    // loop all workout exercise and update all to performed
+    JsonNode jsonNode = objectMapper.readTree(postResult.getResponse().getContentAsString());
+    JsonNode workoutExerciseList = jsonNode.at("/data/workoutExerciseList");
+
+    // update all workout set of all workout exercise to performed
+    for (int i = 0; i < workoutExerciseList.size(); i++) {
+      JsonNode exerciseNode = workoutExerciseList.get(i);
+      JsonNode workoutSets = exerciseNode.at("/workoutSets");
+      for (int j = 0; j < workoutSets.size(); j++) {
+        JsonNode setNode = workoutSets.get(j);
+        mockMvc.perform(put(API_PATH + "/workout-set/{workoutSetId}", setNode.at("/id").asLong())
+          .contentType(MediaType.APPLICATION_JSON)
+          .content("{\"isPerformed\": true}"))
+          .andExpect(status().isOk());
+      }
+    }
+
+    // check if workout session status is completed
+    MvcResult result = mockMvc.perform(get(API_PATH + "/{id}", jsonNode.at("/data/id").asLong())
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isOk())
+      .andReturn();
+
+    JsonNode workoutSessionResult = objectMapper.readTree(result.getResponse().getContentAsString());
+    assertEquals(String.valueOf(ESessionStatus.PERFORMED), workoutSessionResult.at("/data/sessionStatus").asText());
   }
 }

@@ -44,4 +44,9 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
   public ArrayList<WorkoutExercise> findAllByWorkoutId(Long id, Long createdBy) {
     return workoutExerciseRepository.findAllByWorkoutIdAndCreatedBy(id, createdBy);
   }
+
+  @Override
+  public Optional<WorkoutExercise> findByWorkoutSetId(Long workoutSetId, Long createdBy) {
+    return workoutExerciseRepository.findOneByWorkoutSetsIdAndCreatedBy(workoutSetId, createdBy);
+  }
 }

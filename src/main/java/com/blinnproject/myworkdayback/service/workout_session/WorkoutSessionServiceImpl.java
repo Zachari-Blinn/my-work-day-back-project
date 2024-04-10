@@ -1,5 +1,6 @@
 package com.blinnproject.myworkdayback.service.workout_session;
 
+import com.blinnproject.myworkdayback.exception.ProvidedResourceIsNotAnInstanceOf;
 import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
@@ -7,30 +8,29 @@ import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import com.blinnproject.myworkdayback.model.enums.EPerformStatus;
 import com.blinnproject.myworkdayback.model.enums.ESessionStatus;
-import com.blinnproject.myworkdayback.repository.WorkoutExerciseRepository;
 import com.blinnproject.myworkdayback.repository.WorkoutSessionRepository;
-import com.blinnproject.myworkdayback.repository.WorkoutSetRepository;
+import com.blinnproject.myworkdayback.service.workout_exercise.WorkoutExerciseService;
 import com.blinnproject.myworkdayback.service.workout_model.WorkoutModelService;
+import com.blinnproject.myworkdayback.service.workout_set.WorkoutSetService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class WorkoutSessionServiceImpl implements WorkoutSessionService {
 
   private final WorkoutSessionRepository workoutSessionRepository;
   private final WorkoutModelService workoutModelService;
-  private final WorkoutSetRepository workoutSetRepository;
-  private final WorkoutExerciseRepository workoutExerciseRepository;
+  private final WorkoutSetService workoutSetService;
+  private final WorkoutExerciseService workoutExerciseService;
 
-  public WorkoutSessionServiceImpl(WorkoutSessionRepository workoutSessionRepository, WorkoutModelService workoutModelService, WorkoutSetRepository workoutSetRepository, WorkoutExerciseRepository workoutExerciseRepository) {
+  public WorkoutSessionServiceImpl(WorkoutSessionRepository workoutSessionRepository, WorkoutModelService workoutModelService, WorkoutSetService workoutSetService, WorkoutExerciseService workoutExerciseService) {
     this.workoutSessionRepository = workoutSessionRepository;
     this.workoutModelService = workoutModelService;
-    this.workoutSetRepository = workoutSetRepository;
-    this.workoutExerciseRepository = workoutExerciseRepository;
+    this.workoutSetService = workoutSetService;
+    this.workoutExerciseService = workoutExerciseService;
   }
 
   @Override
@@ -91,27 +91,38 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
   }
 
   @Override
-  public WorkoutSession updateWorkoutSessionSet(Long id, Long workoutSetId, WorkoutSet workoutSet, Long createdBy) {
-    WorkoutSet workoutSetIn = workoutSetRepository.findByIdAndCreatedBy(workoutSetId, createdBy).orElseThrow(() -> new ResourceNotFoundException("WorkoutSet", "id", workoutSetId));
+  public WorkoutSession updateWorkoutSessionSet(Long workoutSetId, WorkoutSet workoutSetData, Long createdBy) {
+    // check if workout set is associated with a workout exercise from a workout session
+    WorkoutExercise workoutExercise = workoutExerciseService.findByWorkoutSetId(workoutSetId, createdBy)
+      .orElseThrow(() -> new ResourceNotFoundException("WorkoutExercise", "id", workoutSetId));
+    if (workoutExercise.belongsToModel()) {
+      throw new ProvidedResourceIsNotAnInstanceOf("WorkoutSet", workoutSetId.toString(), "SESSION" );
+    }
 
-    workoutSetIn.setWeight(workoutSet.getWeight());
-    workoutSetIn.setRepsCount(workoutSet.getRepsCount());
-    workoutSetIn.setRestTime(workoutSet.getRestTime());
-    workoutSetIn.setIsPerformed(workoutSet.getIsPerformed());
-    workoutSetIn.setPositionIndex(workoutSet.getPositionIndex());
-    workoutSetRepository.saveAndFlush(workoutSetIn);
+    workoutSetService.update(workoutSetId, workoutSetData, createdBy);
 
-    WorkoutExercise workoutExercise = workoutExerciseRepository.findOneByWorkoutSetsId(workoutSetId).orElseThrow(() -> new ResourceNotFoundException("WorkoutExercise", "id", workoutSetId));
-
-    boolean isAllPerformed = workoutExercise.getWorkoutSets().stream().allMatch(WorkoutSet::getIsPerformed);
-
-    if (isAllPerformed) {
+    // Vérifier si tous les workout_set de workout_exercise ont isPerformed = true
+    boolean allWorkoutSetPerformed = workoutExercise.getWorkoutSets().stream().allMatch(WorkoutSet::getIsPerformed);
+    if (allWorkoutSetPerformed) {
       workoutExercise.setPerformStatus(EPerformStatus.COMPLETED);
     } else {
       workoutExercise.setPerformStatus(EPerformStatus.IN_PROGRESS);
     }
-    workoutExerciseRepository.saveAndFlush(workoutExercise);
+    workoutExerciseService.create(workoutExercise);
 
-    return workoutSessionRepository.findByIdAndCreatedBy(id, createdBy).orElseThrow(ResourceNotFoundException::new);
+    // Vérifier si tous les workout_exercise ont performStatus = "COMPLETED"
+    List<WorkoutExercise> workoutExercises = workoutExerciseService.findAllByWorkoutId(workoutExercise.getWorkout().getId(), createdBy);
+    boolean allExerciseCompleted = workoutExercises.stream()
+      .allMatch(we -> we.getPerformStatus() == EPerformStatus.COMPLETED);
+
+    // Mettre à jour le sessionStatus de la WorkoutSession
+    if (allExerciseCompleted) {
+      WorkoutSession workoutSession = (WorkoutSession) workoutExercise.getWorkout();
+      workoutSession.setSessionStatus(ESessionStatus.PERFORMED);
+      workoutSessionRepository.saveAndFlush(workoutSession);
+    }
+
+    return workoutSessionRepository.findByIdAndCreatedBy(workoutExercise.getWorkout().getId(), createdBy)
+      .orElseThrow(ResourceNotFoundException::new);
   }
 }
