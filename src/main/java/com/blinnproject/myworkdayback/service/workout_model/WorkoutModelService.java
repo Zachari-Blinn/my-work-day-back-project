@@ -28,4 +28,8 @@ public interface WorkoutModelService {
   Schedule addSchedule(Long workoutModelId, ScheduleCreateDTO scheduleCreateDTO, Long createdBy);
 
   void removeSchedule(Long scheduleId, Long createdBy);
+
+  Schedule updateSchedule(Long scheduleId, ScheduleCreateDTO scheduleCreateDTO, Long createdBy);
+
+  WorkoutExercise updateExercise(Long workoutExerciseId, WorkoutExerciseUpdateDTO workoutExerciseUpdateDTO, Long createdBy);
 }

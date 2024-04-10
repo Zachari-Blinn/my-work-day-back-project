@@ -15,4 +15,6 @@ public interface WorkoutExerciseService {
   ArrayList<WorkoutExercise> findAllByWorkoutId(Long id, Long createdBy);
 
   Optional<WorkoutExercise> findByWorkoutSetId(Long workoutSetId, Long createdBy);
+
+  WorkoutExercise update(Long workoutExerciseId, WorkoutExercise workoutExercise, Long createdBy);
 }

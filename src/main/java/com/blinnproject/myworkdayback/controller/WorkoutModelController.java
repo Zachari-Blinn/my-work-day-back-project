@@ -2,6 +2,7 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
+import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseUpdateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
@@ -131,6 +132,29 @@ public class WorkoutModelController {
     return ResponseEntity.ok(GenericResponse.success(null, i18n.translate("controller.workout.model.remove-schedule.successful")));
   }
 
-  // todo update schedule, update exercise, remove exercise, remove schedule
+  @Operation(summary = "Update schedule of workout model", description = "Update a schedule of a workout model.")
+  @PatchMapping("/schedule/{scheduleId}")
+  public ResponseEntity<GenericResponse<Schedule>> updateScheduleOfWorkoutModel(
+      @PathVariable("scheduleId") Long scheduleId,
+      @RequestBody ScheduleCreateDTO scheduleCreateDTO,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    Schedule updatedSchedule = this.workoutModelService.updateSchedule(scheduleId, scheduleCreateDTO, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(updatedSchedule, i18n.translate("controller.workout.model.update-schedule.successful")));
+  }
+
+  // update exercise
+  @Operation(summary = "Update exercise of workout model", description = "Update an exercise of a workout model.")
+  @PatchMapping("/exercise/{workoutExerciseId}")
+  public ResponseEntity<GenericResponse<WorkoutExercise>> updateExerciseOfWorkoutModel(
+      @PathVariable("workoutExerciseId") Long workoutExerciseId,
+      @RequestBody WorkoutExerciseUpdateDTO workoutExerciseUpdateDTO,
+      @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    WorkoutExercise updatedExercise = this.workoutModelService.updateExercise(workoutExerciseId, workoutExerciseUpdateDTO, userDetails.getId());
+
+    return ResponseEntity.ok(GenericResponse.success(updatedExercise, i18n.translate("controller.workout.model.update-exercise.successful")));
+  }
 
 }

@@ -39,7 +39,8 @@ class UserControllerTest extends AbstractIntegrationTest {
   @Autowired
   private UserRepository userRepository;
 
-  private User user;
+  private User user1;
+  private User user2;
 
   @Autowired
   private PasswordEncoder encoder;
@@ -50,26 +51,22 @@ class UserControllerTest extends AbstractIntegrationTest {
   }
 
   void createMockedUser() {
-    user = new User();
+    user1 = new User();
 
-    userRepository.findByUsername("mocked-user").ifPresent(data -> {
-      user = data;
-    });
+    user1.setUsername("mocked-user-to-update");
+    user1.setPassword("Toto@123*");
+    user1.setEmail("mocked-user-to-update@email.fr");
+    user1.setGender(EGender.MAN);
+    user1 = userRepository.save(user1);
 
-    if (user.getId() == null) {
-      user.setUsername("mocked-user");
-      user.setPassword("Toto@123*");
-      user.setEmail("mocked-user@email.fr");
-      user.setGender(EGender.MAN);
-      user = userRepository.save(user);
+    user2 = new User();
+    user2.setUsername("mocked-update-pwd-user");
+    String passwordEncoded = encoder.encode("Toto@123*");
+    user2.setPassword(passwordEncoded);
+    user2.setEmail("mocked-update-pwd-user@email.fr");
+    user2.setGender(EGender.MAN);
+    user2 = userRepository.save(user2);
 
-      user.setUsername("mocked-update-pwd-user");
-      String passwordEncoded = encoder.encode("Toto@123*");
-      user.setPassword(passwordEncoded);
-      user.setEmail("mocked-update-pwd-user@email.fr");
-      user.setGender(EGender.MAN);
-      user = userRepository.save(user);
-    }
   }
 
   @Test
@@ -81,7 +78,7 @@ class UserControllerTest extends AbstractIntegrationTest {
 
   @Test
   @Order(value = 2)
-  @WithUserDetails("mocked-user")
+  @WithUserDetails("mocked-user-to-update")
   @DisplayName("Update user profile")
   void updateUserProfile() throws Exception {
     User updatedUser = new User();

@@ -120,6 +120,18 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
     scheduleService.delete(scheduleId, createdBy);
   }
 
+  @Override
+  public Schedule updateSchedule(Long scheduleId, ScheduleCreateDTO scheduleCreateDTO, Long createdBy) {
+    Schedule schedule = modelMapper.map(scheduleCreateDTO, Schedule.class);
+    return scheduleService.update(scheduleId, schedule, createdBy);
+  }
+
+  @Override
+  public WorkoutExercise updateExercise(Long workoutExerciseId, WorkoutExerciseUpdateDTO workoutExerciseUpdateDTO, Long createdBy) {
+    WorkoutExercise workoutExercise = modelMapper.map(workoutExerciseUpdateDTO, WorkoutExercise.class);
+    return workoutExerciseService.update(workoutExerciseId, workoutExercise, createdBy);
+  }
+
   /**
    * PRIVATE METHODS
    */

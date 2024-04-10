@@ -1,6 +1,7 @@
 package com.blinnproject.myworkdayback.service.schedule;
 
 import com.blinnproject.myworkdayback.model.dto.WorkoutSessionsScheduleDTO;
+import com.blinnproject.myworkdayback.model.entity.Schedule;
 import com.blinnproject.myworkdayback.model.projection.CombinedWorkoutInfoView;
 import com.blinnproject.myworkdayback.model.projection.WorkoutScheduleView;
 import com.blinnproject.myworkdayback.repository.ScheduleRepository;
@@ -18,6 +19,17 @@ public class ScheduleServiceImpl implements ScheduleService {
   public ScheduleServiceImpl(ScheduleRepository scheduleRepository, I18nService i18n) {
     this.scheduleRepository = scheduleRepository;
     this.i18n = i18n;
+  }
+
+  @Override
+  public Schedule update(Long scheduleId, Schedule schedule, Long createdBy) {
+    return scheduleRepository.findByIdAndCreatedBy(scheduleId, createdBy)
+        .map(existingSchedule -> {
+          schedule.setId(existingSchedule.getId());
+          schedule.setCreatedBy(createdBy);
+          return scheduleRepository.save(schedule);
+        })
+        .orElseThrow(() -> new IllegalArgumentException(i18n.translate("validation.error.schedule-not-found")));
   }
 
   @Override

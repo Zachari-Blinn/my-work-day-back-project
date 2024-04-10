@@ -3,6 +3,7 @@ package com.blinnproject.myworkdayback.controllers;
 import com.blinnproject.myworkdayback.AbstractIntegrationTest;
 import com.blinnproject.myworkdayback.model.dto.ScheduleCreateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
+import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseUpdateDTO;
 import com.blinnproject.myworkdayback.model.dto.WorkoutModelCreateDTO;
 import com.blinnproject.myworkdayback.model.entity.Exercise;
 import com.blinnproject.myworkdayback.model.entity.User;
@@ -17,6 +18,7 @@ import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +36,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -62,6 +65,8 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
   private ExerciseRepository exerciseRepository;
 
   private User user;
+  @Autowired
+  private ModelMapper modelMapper;
 
   @BeforeAll
   void beforeAllTests() {
@@ -247,7 +252,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
 
     WorkoutExerciseCreateDTO workoutExercise = new WorkoutExerciseCreateDTO(
         1,
-        "Punching",
+        "New Punching",
         2,
         new ArrayList<>(Arrays.asList(workoutSet1, workoutSet2))
     );
@@ -597,5 +602,156 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
 
     mockMvc.perform(get(API_PATH + "/{id}", workoutModelId))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @Order(value = 17)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Update schedule of workout model")
+  void WorkoutModelController_updateScheduleOfWorkoutModel_ReturnsUpdatedSchedule() throws Exception {
+    WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
+        "Kung Fu",
+        "Martial Arts",
+        String.valueOf(ESport.MMA),
+        true,
+        true,
+        "icon_dumbbell",
+        "#0072db"
+    );
+
+    MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(workoutModel)))
+        .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
+
+    ScheduleCreateDTO schedule = new ScheduleCreateDTO(
+        LocalDate.parse("2023-12-01"),
+        LocalDate.parse("2023-12-01"),
+        LocalTime.parse("06:00:00"),
+        LocalTime.parse("07:00:00"),
+        EFrequency.WEEKLY,
+        true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    );
+
+    MvcResult scheduleAddedResult = mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/schedule")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(schedule)))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.data.monday").value(true))
+      .andExpect(jsonPath("$.data.friday").value(true))
+      .andExpect(jsonPath("$.data.frequency").value(EFrequency.WEEKLY.toString()))
+      .andReturn();
+
+    String response = scheduleAddedResult.getResponse().getContentAsString();
+    JsonNode jsonNode = objectMapper.readTree(response);
+    long scheduleId = jsonNode.at("/data/id").asLong();
+
+    ScheduleCreateDTO updatedSchedule = new ScheduleCreateDTO(
+        LocalDate.parse("2023-12-01"),
+        LocalDate.parse("2023-12-01"),
+        LocalTime.parse("06:00:00"),
+        LocalTime.parse("07:00:00"),
+        EFrequency.BIWEEKLY,
+        false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    );
+
+    mockMvc.perform(patch(API_PATH + "/schedule/" + scheduleId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(updatedSchedule)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.id").value(scheduleId))
+        .andExpect(jsonPath("$.data.monday").value(false))
+        .andExpect(jsonPath("$.data.friday").value(false))
+        .andExpect(jsonPath("$.data.frequency").value(EFrequency.BIWEEKLY.toString()));
+  }
+
+  @Test
+  @Order(value = 18)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Update exercise of workout model")
+  void WorkoutModelController_updateExerciseOfWorkoutModel_ReturnsUpdatedExercise() throws Exception {
+    WorkoutModelCreateDTO workoutModel = new WorkoutModelCreateDTO(
+      "New Rosurf",
+      "Rosurf",
+      String.valueOf(ESport.MMA),
+      true,
+      true,
+      "icon_dumbbell",
+      "#0072db"
+    );
+
+    MvcResult workoutModelResult = mockMvc.perform(post(API_PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(workoutModel)))
+      .andExpect(status().isCreated())
+      .andReturn();
+    long workoutModelId = objectMapper.readTree(workoutModelResult.getResponse().getContentAsString()).at("/data/id").asLong();
+
+    WorkoutSet workoutSet1 = new WorkoutSet(
+      1,
+      null,
+      10,
+      "10",
+      "10",
+      10
+    );
+
+    WorkoutSet workoutSet2 = new WorkoutSet(
+      2,
+      null,
+      10,
+      "10",
+      "10",
+      10
+    );
+
+    WorkoutExerciseCreateDTO workoutExercise = new WorkoutExerciseCreateDTO(
+      1,
+      "Punching",
+      2,
+      new ArrayList<>(Arrays.asList(workoutSet1, workoutSet2))
+    );
+
+    Exercise exercise = new Exercise(
+      "New Rosurf exercise",
+      null
+    );
+    Exercise savedExercise = exerciseRepository.saveAndFlush(exercise);
+
+    MvcResult workoutExerciseAddedResult = mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/exercise/" + savedExercise.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(workoutExercise)))
+      .andExpect(status().isOk())
+      .andReturn();
+    long workoutExerciseId = objectMapper.readTree(workoutExerciseAddedResult.getResponse().getContentAsString()).at("/data/id").asLong();
+
+    WorkoutExerciseUpdateDTO updatedWorkoutExercise = new WorkoutExerciseUpdateDTO (
+        2,
+        "Punching",
+        2
+    );
+
+    mockMvc.perform(patch(API_PATH + "/exercise/" + workoutExerciseId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(updatedWorkoutExercise)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.id").value(workoutExerciseId))
+        .andExpect(jsonPath("$.data.positionIndex").value(2))
+        .andExpect(jsonPath("$.data.notes").value("Punching"))
+        .andExpect(jsonPath("$.data.numberOfWarmUpSets").value(2));
   }
 }

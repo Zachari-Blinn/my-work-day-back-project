@@ -49,4 +49,15 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
   public Optional<WorkoutExercise> findByWorkoutSetId(Long workoutSetId, Long createdBy) {
     return workoutExerciseRepository.findOneByWorkoutSetsIdAndCreatedBy(workoutSetId, createdBy);
   }
+
+  @Override
+  public WorkoutExercise update(Long workoutExerciseId, WorkoutExercise workoutExercise, Long createdBy) {
+    return workoutExerciseRepository.findByIdAndCreatedBy(workoutExerciseId, createdBy)
+        .map(existingWorkoutExercise -> {
+          workoutExercise.setId(existingWorkoutExercise.getId());
+          workoutExercise.setCreatedBy(createdBy);
+          return workoutExerciseRepository.save(workoutExercise);
+        })
+        .orElseThrow(() -> new IllegalArgumentException("Workout exercise not found"));
+  }
 }

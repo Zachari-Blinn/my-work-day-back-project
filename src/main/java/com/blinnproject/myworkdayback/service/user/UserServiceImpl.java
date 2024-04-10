@@ -7,7 +7,6 @@ import com.blinnproject.myworkdayback.model.request.SignupRequest;
 import com.blinnproject.myworkdayback.model.request.UpdateUserPasswordDTO;
 import com.blinnproject.myworkdayback.model.request.UpdateUserProfileDTO;
 import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
-import com.blinnproject.myworkdayback.repository.PasswordResetTokenRepository;
 import com.blinnproject.myworkdayback.repository.UserRepository;
 import com.blinnproject.myworkdayback.service.email.EmailService;
 import com.blinnproject.myworkdayback.service.password_reset_token.PasswordResetTokenService;
