@@ -1,6 +1,5 @@
 package com.blinnproject.myworkdayback.util;
 
-import com.blinnproject.myworkdayback.payload.query.TrainingCalendarDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,10 +11,10 @@ public class FormatUtil {
     throw new IllegalStateException("Utility class");
   }
 
-  public static List<TrainingCalendarDTO.TrainingDTO> convertJsonToList(String jsonString) throws Exception {
-    ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.readValue(jsonString, new TypeReference<>() {});
-  }
+//  public static List<TrainingCalendarDTO.TrainingDTO> convertJsonToList(String jsonString) throws Exception {
+//    ObjectMapper objectMapper = new ObjectMapper();
+//    return objectMapper.readValue(jsonString, new TypeReference<>() {});
+//  }
 
   public static String generateSixNumbersRandomlyToken() {
     return String.format("%06d", new Random().nextInt(1000000));

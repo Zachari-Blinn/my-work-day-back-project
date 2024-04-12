@@ -91,7 +91,6 @@ public class WebSecurityConfig {
         );
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(PathRequest.toH2Console()).permitAll()
             .requestMatchers(SWAGGER_REQUEST_WHITE_LIST).permitAll()
             .requestMatchers(API_REQUEST_WHITE_LIST).permitAll()
             .anyRequest().authenticated()

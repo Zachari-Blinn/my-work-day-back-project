@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.exception;
 
-import com.blinnproject.myworkdayback.payload.response.ErrorDetails;
+import com.blinnproject.myworkdayback.model.response.ErrorDetails;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -167,6 +167,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleTrainingSessionTemplateNotFoundException(TrainingSessionTemplateNotFoundException exception) {
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({WorkoutModelWithCurrentUserNotFound.class})
+  public ResponseEntity<Object> handleWorkoutModelWithCurrentUserNotFound(WorkoutModelWithCurrentUserNotFound exception) {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({ProvidedResourceIsNotAnInstanceOf.class})
+  public ResponseEntity<Object> handleProvidedResourceIsNotAnInstanceOf(ProvidedResourceIsNotAnInstanceOf exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(exception.getMessage());
+  }
+
+  @ExceptionHandler({InvalidPasswordException.class})
+  public ResponseEntity<Object> handleInvalidPasswordException(InvalidPasswordException exception) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
       .body(exception.getMessage());
   }
 }

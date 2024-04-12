@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "exercise")
+@Table(name = "EXERCISE")
 public class Exercise extends BaseEntityAudit {
 
   @Column(name = "name", length = 150, nullable = false)
@@ -20,6 +20,6 @@ public class Exercise extends BaseEntityAudit {
   @ElementCollection(targetClass = EMuscle.class)
   @CollectionTable(name = "exercise_muscle", joinColumns = @JoinColumn(name = "exercise_id"))
   @Enumerated(EnumType.STRING)
-  @Column(name = "muscle_name")
+  @Column(name = "muscle_used")
   private Set <EMuscle> musclesUsed;
 }

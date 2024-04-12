@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "roles")
+@Table(name = "ROLES")
 public class Role implements Serializable {
   @Serial
   private static final long serialVersionUID = 1L;
@@ -22,6 +22,6 @@ public class Role implements Serializable {
   private Integer id;
 
   @Enumerated(EnumType.STRING)
-  @Column(length = 20)
+  @Column(length = 50)
   private ERole name;
 }

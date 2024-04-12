@@ -1,8 +1,8 @@
 package com.blinnproject.myworkdayback.seed;
 
 import com.blinnproject.myworkdayback.seed.models.ExerciseData;
-import com.blinnproject.myworkdayback.seed.models.TrainingData;
 import com.blinnproject.myworkdayback.seed.models.UserData;
+import com.blinnproject.myworkdayback.seed.models.WorkoutModelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -19,12 +19,12 @@ public class DataLoader implements CommandLineRunner {
 
   private final ExerciseData exerciseData;
 
-  private final TrainingData trainingData;
+  private final WorkoutModelData workoutModelData;
 
-  public DataLoader(UserData userData, ExerciseData exerciseData, TrainingData trainingData) {
+  public DataLoader(UserData userData, ExerciseData exerciseData, WorkoutModelData workoutModelData) {
     this.userData = userData;
     this.exerciseData = exerciseData;
-    this.trainingData = trainingData;
+    this.workoutModelData = workoutModelData;
   }
 
   @Override
@@ -33,6 +33,6 @@ public class DataLoader implements CommandLineRunner {
 
     userData.load();
     exerciseData.load();
-    trainingData.load();
+    workoutModelData.load();
   }
 }

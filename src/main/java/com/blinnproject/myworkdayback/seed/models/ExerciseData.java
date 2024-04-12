@@ -43,7 +43,7 @@ public class ExerciseData {
 
       Exercise militaryPressExercise = new Exercise();
       militaryPressExercise.setName("Military Press");
-      militaryPressExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.DELTOID)));
+      militaryPressExercise.setMusclesUsed(new HashSet<>(List.of(EMuscle.DELTOID)));
       militaryPressExercise.setCreatedBy(user1.getId());
       this.exerciseList.add(militaryPressExercise);
 
@@ -53,6 +53,18 @@ public class ExerciseData {
       squatExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
       squatExercise.setCreatedBy(user1.getId());
       this.exerciseList.add(squatExercise);
+
+      Exercise tanTuiCrossingExercise = new Exercise();
+      tanTuiCrossingExercise.setName("Tan Tui Crossing");
+      tanTuiCrossingExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
+      tanTuiCrossingExercise.setCreatedBy(user1.getId());
+      this.exerciseList.add(tanTuiCrossingExercise);
+
+      Exercise waiBaiTuiCrossingExercise = new Exercise();
+      waiBaiTuiCrossingExercise.setName("Wai Bai Tui Crossing");
+      waiBaiTuiCrossingExercise.setMusclesUsed(new HashSet<>(Arrays.asList(EMuscle.QUADRICEPS, EMuscle.DELTOID)));
+      waiBaiTuiCrossingExercise.setCreatedBy(user1.getId());
+      this.exerciseList.add(waiBaiTuiCrossingExercise);
 
       exerciseRepository.saveAll(this.exerciseList);
       logger.info("{} exercise successfully loaded!", exerciseRepository.count());

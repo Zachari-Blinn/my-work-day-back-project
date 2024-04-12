@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "profile_picture")
+@Table(name = "PROFILE_PICTURE")
 public class ProfilePicture implements Serializable {
   @Serial
   private static final long serialVersionUID = 1L;
@@ -29,7 +29,6 @@ public class ProfilePicture implements Serializable {
   @Column
   private String type;
 
-  @Lob
   @Column(length = 1000)
   private byte[] fileData;
 }

@@ -2,11 +2,11 @@ package com.blinnproject.myworkdayback.controller;
 
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.entity.RefreshToken;
-import com.blinnproject.myworkdayback.payload.request.*;
-import com.blinnproject.myworkdayback.payload.response.GenericResponse;
-import com.blinnproject.myworkdayback.payload.response.JwtResponse;
-import com.blinnproject.myworkdayback.payload.response.TokenRefreshResponse;
-import com.blinnproject.myworkdayback.payload.response.UserInfoResponse;
+import com.blinnproject.myworkdayback.model.request.*;
+import com.blinnproject.myworkdayback.model.response.GenericResponse;
+import com.blinnproject.myworkdayback.model.response.JwtResponse;
+import com.blinnproject.myworkdayback.model.response.TokenRefreshResponse;
+import com.blinnproject.myworkdayback.model.response.UserInfoResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.security.jwt.JwtUtils;
 import com.blinnproject.myworkdayback.security.services.RefreshTokenService;
@@ -26,15 +26,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name="Authentication", description = "Endpoints related to user authentication and authorization.")
 @RestController
-@RequestMapping("/api/auth/")
+@RequestMapping(value = "/api/auth/", produces="application/json")
 public class AuthController {
 
   private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
   private final I18nService i18n;
   private final AuthenticationManager authenticationManager;
   private final JwtUtils jwtUtils;
@@ -69,8 +70,15 @@ public class AuthController {
 
     RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-    return ResponseEntity.ok(GenericResponse.success(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-      userDetails.getUsername(), userDetails.getEmail(), roles), i18n.translate("controller.auth.login.successful")));
+    return ResponseEntity.ok(GenericResponse.success(new JwtResponse(
+      jwt,
+      refreshToken.getToken(),
+      refreshToken.getExpiryDate(),
+      userDetails.getId(),
+      userDetails.getUsername(),
+      userDetails.getEmail(),
+      roles
+    ), i18n.translate("controller.auth.login.successful")));
   }
 
   @Operation(summary = "Register User", description = "Registers a new user account.")
@@ -103,10 +111,10 @@ public class AuthController {
 
     return refreshTokenService.findByToken(requestRefreshToken)
       .map(refreshTokenService::verifyExpiration)
-      .map(RefreshToken::getUser)
-      .map(user -> {
-        String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-        return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+      .map(refreshToken -> {
+        String token = jwtUtils.generateTokenFromUsername(refreshToken.getUser().getUsername());
+        Instant expirationDate = refreshToken.getExpiryDate();
+        return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken, expirationDate));
       })
       .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, i18n.translate("refreshToken.error.notFound")));
   }

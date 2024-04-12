@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "password_reset_token")
+@Table(name = "PASSWORD_RESET_TOKEN")
 public class PasswordResetToken {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

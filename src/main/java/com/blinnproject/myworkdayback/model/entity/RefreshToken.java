@@ -10,7 +10,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "refresh_token")
+@Table(name = "REFRESH_TOKEN")
 public class RefreshToken {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
