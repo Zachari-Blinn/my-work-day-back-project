@@ -35,11 +35,6 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
   }
 
   @Override
-  public List<Object[]> findAllByDate(LocalDateTime startedAt, Long createdBy) {
-    return workoutSessionRepository.findAllSessionByDate(2, startedAt, createdBy);
-  }
-
-  @Override
   public WorkoutSession createWorkoutSession(LocalDateTime startedAt, Long workoutModelId, Long createdBy) {
     // check if workout model exists with user id and get it
     WorkoutModel workoutModel = workoutModelService.findById(workoutModelId, createdBy).orElseThrow(ResourceNotFoundException::new);
@@ -176,5 +171,11 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     workoutSession.setWorkoutExerciseList(workoutExercises);
 
     return workoutSessionRepository.save(workoutSession);
+  }
+
+  @Override
+  public void delete(Long id, Long createdBy) {
+    WorkoutSession workoutSession = workoutSessionRepository.findByIdAndCreatedBy(id, createdBy).orElseThrow(ResourceNotFoundException::new);
+    workoutSessionRepository.delete(workoutSession);
   }
 }

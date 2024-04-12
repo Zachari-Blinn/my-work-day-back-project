@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -93,5 +92,16 @@ public class WorkoutSessionController {
 
   // todo route : finish workout session by id or update workout session
 
-  // todo route : delete session by id
+  @Operation(summary = "Delete workout session", description = "Delete a workout session by id.")
+  @DeleteMapping(value = "/{id}")
+  public ResponseEntity<GenericResponse<WorkoutSession>> deleteWorkoutSession(
+    @PathVariable("id") Long id,
+    @AuthenticationPrincipal UserDetailsImpl userDetails
+  ) {
+    workoutSessionService.delete(id, userDetails.getId());
+
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .body(GenericResponse.success(null, i18n.translate("controller.workout.session.delete.successful")));
+  }
 }

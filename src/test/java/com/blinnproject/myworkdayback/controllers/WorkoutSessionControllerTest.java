@@ -52,6 +52,9 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   private WorkoutExerciseRepository workoutExerciseRepository;
 
   @Autowired
+  private WorkoutSessionRepository workoutSessionRepository;
+
+  @Autowired
   private ExerciseRepository exerciseRepository;
 
   @Autowired
@@ -392,5 +395,27 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
 
     JsonNode workoutSessionResult = objectMapper.readTree(result.getResponse().getContentAsString());
     assertEquals(String.valueOf(ESessionStatus.PERFORMED), workoutSessionResult.at("/data/sessionStatus").asText());
+  }
+
+  @Test
+  @Order(value = 11)
+  @WithUserDetails("mocked-user")
+  @DisplayName("Delete workout session")
+  void workoutSessionController_deleteWorkoutSession_returnNoContent() throws Exception {
+    WorkoutModel workoutModel = createWorkoutModel();
+    createWorkoutExercises(workoutModel);
+
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    long workoutSessionId = objectMapper.readTree(postResult.getResponse().getContentAsString()).at("/data/id").asLong();
+
+    mockMvc.perform(delete(API_PATH + "/{id}", workoutSessionId)
+      .contentType(MediaType.APPLICATION_JSON))
+      .andExpect(status().isNoContent());
+
+    Assertions.assertFalse(workoutSessionRepository.findById(workoutSessionId).isPresent());
   }
 }

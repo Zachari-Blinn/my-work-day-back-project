@@ -4,11 +4,8 @@ import com.blinnproject.myworkdayback.model.entity.WorkoutSession;
 import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface WorkoutSessionService {
-  List<Object[]> findAllByDate(LocalDateTime startedAt, Long createdBy);
-
   WorkoutSession createWorkoutSession(LocalDateTime startedAt, Long workoutModelId, Long createdBy);
 
   WorkoutSession find(Long id, Long createdBy);
@@ -16,4 +13,6 @@ public interface WorkoutSessionService {
   WorkoutSession updateWorkoutSessionSet(Long workoutSetId, WorkoutSet workoutSet, Long createdBy);
 
   WorkoutSession createWorkoutSessionManually(LocalDateTime startedAt, LocalDateTime endedAt, Long workoutModelId, Long createdBy);
+
+  void delete(Long id, Long createdBy);
 }
