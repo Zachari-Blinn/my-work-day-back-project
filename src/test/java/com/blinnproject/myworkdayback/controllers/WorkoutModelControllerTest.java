@@ -719,18 +719,18 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
       10
     );
 
+    Exercise exercise = new Exercise(
+      "New Rosurf exercise",
+      null
+    );
+    Exercise savedExercise = exerciseRepository.saveAndFlush(exercise);
+
     WorkoutExerciseCreateDTO workoutExercise = new WorkoutExerciseCreateDTO(
       1,
       "Punching",
       2,
       new ArrayList<>(Arrays.asList(workoutSet1, workoutSet2))
     );
-
-    Exercise exercise = new Exercise(
-      "New Rosurf exercise",
-      null
-    );
-    Exercise savedExercise = exerciseRepository.saveAndFlush(exercise);
 
     MvcResult workoutExerciseAddedResult = mockMvc.perform(post(API_PATH + "/" + workoutModelId + "/exercise/" + savedExercise.getId())
         .contentType(MediaType.APPLICATION_JSON)
@@ -741,7 +741,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
 
     WorkoutExerciseUpdateDTO updatedWorkoutExercise = new WorkoutExerciseUpdateDTO (
         2,
-        "Punching",
+        "Updated Punching",
         2
     );
 
@@ -751,7 +751,7 @@ class WorkoutModelControllerTest extends AbstractIntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id").value(workoutExerciseId))
         .andExpect(jsonPath("$.data.positionIndex").value(2))
-        .andExpect(jsonPath("$.data.notes").value("Punching"))
+        .andExpect(jsonPath("$.data.notes").value("Updated Punching"))
         .andExpect(jsonPath("$.data.numberOfWarmUpSets").value(2));
   }
 }

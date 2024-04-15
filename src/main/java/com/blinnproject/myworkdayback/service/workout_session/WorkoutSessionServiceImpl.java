@@ -35,7 +35,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
   }
 
   @Override
-  public WorkoutSession createWorkoutSession(LocalDateTime startedAt, Long workoutModelId, Long createdBy) {
+  public WorkoutSession createWorkoutSession(Long workoutModelId, Long createdBy) {
     // check if workout model exists with user id and get it
     WorkoutModel workoutModel = workoutModelService.findById(workoutModelId, createdBy).orElseThrow(ResourceNotFoundException::new);
 
@@ -44,7 +44,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     workoutSession.setName(workoutModel.getName());
     workoutSession.setWorkoutModel(workoutModel);
     workoutSession.setSessionStatus(ESessionStatus.IN_PROGRESS);
-    workoutSession.setStartedAt(startedAt);
+    workoutSession.setStartedAt(LocalDateTime.now());
 
     List<WorkoutExercise> workoutExercises = new ArrayList<>();
     for (WorkoutExercise workoutExerciseIn : workoutModel.getWorkoutExerciseList()) {
