@@ -1,6 +1,6 @@
 package com.blinnproject.myworkdayback.service.workout_session;
 
-import com.blinnproject.myworkdayback.exception.ProvidedResourceIsNotAnInstanceOf;
+import com.blinnproject.myworkdayback.exception.ProvidedResourceIsNotAnInstanceOfException;
 import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
@@ -92,7 +92,7 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     WorkoutExercise workoutExercise = workoutExerciseService.findByWorkoutSetId(workoutSetId, createdBy)
       .orElseThrow(() -> new ResourceNotFoundException("WorkoutExercise", "id", workoutSetId));
     if (workoutExercise.belongsToModel()) {
-      throw new ProvidedResourceIsNotAnInstanceOf("WorkoutSet", workoutSetId.toString(), "SESSION" );
+      throw new ProvidedResourceIsNotAnInstanceOfException("WorkoutSet", workoutSetId.toString(), "SESSION" );
     }
 
     workoutSetService.update(workoutSetId, workoutSetData, createdBy);

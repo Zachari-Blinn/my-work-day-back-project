@@ -1,7 +1,7 @@
 package com.blinnproject.myworkdayback.service.workout_model;
 
 import com.blinnproject.myworkdayback.exception.ResourceNotFoundException;
-import com.blinnproject.myworkdayback.exception.WorkoutModelWithCurrentUserNotFound;
+import com.blinnproject.myworkdayback.exception.WorkoutModelWithCurrentUserNotFoundException;
 import com.blinnproject.myworkdayback.model.dto.*;
 import com.blinnproject.myworkdayback.model.entity.Exercise;
 import com.blinnproject.myworkdayback.model.entity.Schedule;
@@ -9,7 +9,6 @@ import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
 import com.blinnproject.myworkdayback.repository.WorkoutModelRepository;
 import com.blinnproject.myworkdayback.service.exercise.ExerciseService;
-import com.blinnproject.myworkdayback.service.mapper.WorkoutModelMapper;
 import com.blinnproject.myworkdayback.service.schedule.ScheduleService;
 import com.blinnproject.myworkdayback.service.workout_exercise.WorkoutExerciseService;
 import org.modelmapper.ModelMapper;
@@ -22,15 +21,13 @@ import java.util.Optional;
 public class WorkoutModelServiceImpl implements WorkoutModelService {
 
   private final WorkoutModelRepository workoutModelRepository;
-  private final WorkoutModelMapper workoutModelMapper;
   private final ExerciseService exerciseService;
   private final WorkoutExerciseService workoutExerciseService;
   private final ScheduleService scheduleService;
   private final ModelMapper modelMapper;
 
-  public WorkoutModelServiceImpl(WorkoutModelRepository workoutModelRepository, WorkoutModelMapper workoutModelMapper, ExerciseService exerciseService, WorkoutExerciseService workoutExerciseService, ScheduleService scheduleService, ModelMapper modelMapper) {
+  public WorkoutModelServiceImpl(WorkoutModelRepository workoutModelRepository, ExerciseService exerciseService, WorkoutExerciseService workoutExerciseService, ScheduleService scheduleService, ModelMapper modelMapper) {
     this.workoutModelRepository = workoutModelRepository;
-    this.workoutModelMapper = workoutModelMapper;
     this.exerciseService = exerciseService;
     this.workoutExerciseService = workoutExerciseService;
     this.scheduleService = scheduleService;
@@ -39,7 +36,7 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
 
   @Override
   public WorkoutModel create(WorkoutModelCreateDTO workoutModelCreateDTO, Long createdBy) {
-    WorkoutModel workoutModel = workoutModelMapper.toEntity(workoutModelCreateDTO);
+    WorkoutModel workoutModel = modelMapper.map(workoutModelCreateDTO, WorkoutModel.class);
     workoutModel.setCreatedBy(createdBy);
 
     return workoutModelRepository.save(workoutModel);
@@ -91,7 +88,7 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
     Optional<WorkoutModel> workoutModelData = workoutModelRepository.findByIdAndCreatedBy(id, createdBy);
 
     return workoutModelData.map(workoutModel -> {
-      workoutModelMapper.updateEntityFromDTO(workoutModelCreateDTO, workoutModel);
+      modelMapper.map(workoutModelCreateDTO, workoutModel);
       return Optional.of(workoutModelRepository.save(workoutModel));
     }).orElse(Optional.empty());
   }
@@ -138,7 +135,7 @@ public class WorkoutModelServiceImpl implements WorkoutModelService {
 
   private WorkoutModel getWorkoutModelOrThrowError(Long workoutModelId, Long createdBy) {
     return workoutModelRepository.findByIdAndCreatedBy(workoutModelId, createdBy)
-        .orElseThrow(() -> new WorkoutModelWithCurrentUserNotFound("Workout model with id " + workoutModelId + " does not belong to current user"));
+        .orElseThrow(() -> new WorkoutModelWithCurrentUserNotFoundException("Workout model with id " + workoutModelId + " does not belong to current user"));
   }
 
 }

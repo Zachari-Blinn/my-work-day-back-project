@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.blinnproject.myworkdayback.exception.TokenRefreshException;
 import com.blinnproject.myworkdayback.model.entity.RefreshToken;
 import com.blinnproject.myworkdayback.repository.RefreshTokenRepository;
-import com.blinnproject.myworkdayback.repository.UserRepository;
+import com.blinnproject.myworkdayback.service.user.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +18,11 @@ public class RefreshTokenService {
 
   private final RefreshTokenRepository refreshTokenRepository;
 
-  private final UserRepository userRepository;
+  private final UserService userService;
 
-  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
+  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository, UserService userService) {
     this.refreshTokenRepository = refreshTokenRepository;
-    this.userRepository = userRepository;
+    this.userService = userService;
   }
 
   @Transactional(readOnly = true)
@@ -41,7 +41,7 @@ public class RefreshTokenService {
 
     } else {
       refreshToken = new RefreshToken();
-      refreshToken.setUser(userRepository.findById(userId).orElse(null));
+      refreshToken.setUser(userService.findById(userId).orElse(null));
     }
 
     refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
@@ -62,6 +62,6 @@ public class RefreshTokenService {
 
   @Transactional
   public void deleteByUserId(Long userId) {
-    refreshTokenRepository.deleteByUser(userRepository.findById(userId).orElse(null));
+    refreshTokenRepository.deleteByUser(userService.findById(userId).orElse(null));
   }
 }

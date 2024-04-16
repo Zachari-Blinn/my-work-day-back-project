@@ -93,8 +93,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 
-  @ExceptionHandler({TrainingWithCurrentUserNotFound.class})
-  public ResponseEntity<Object> handleTrainingWithCurrentUserNotFound(TrainingWithCurrentUserNotFound exception) {
+  @ExceptionHandler({TrainingWithCurrentUserNotFoundException.class})
+  public ResponseEntity<Object> handleTrainingWithCurrentUserNotFound(TrainingWithCurrentUserNotFoundException exception) {
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
       .body(exception.getMessage());
@@ -149,8 +149,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .body(exception.getMessage());
   }
 
-  @ExceptionHandler({InvalidDayOfWeekProvidedForTraining.class})
-  public ResponseEntity<Object> handleInvalidDayOfWeekProvidedForTraining(InvalidDayOfWeekProvidedForTraining exception) {
+  @ExceptionHandler({InvalidDayOfWeekProvidedForTrainingException.class})
+  public ResponseEntity<Object> handleInvalidDayOfWeekProvidedForTraining(InvalidDayOfWeekProvidedForTrainingException exception) {
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(exception.getMessage());
@@ -170,15 +170,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       .body(exception.getMessage());
   }
 
-  @ExceptionHandler({WorkoutModelWithCurrentUserNotFound.class})
-  public ResponseEntity<Object> handleWorkoutModelWithCurrentUserNotFound(WorkoutModelWithCurrentUserNotFound exception) {
+  @ExceptionHandler({WorkoutModelWithCurrentUserNotFoundException.class})
+  public ResponseEntity<Object> handleWorkoutModelWithCurrentUserNotFound(WorkoutModelWithCurrentUserNotFoundException exception) {
     return ResponseEntity
       .status(HttpStatus.NOT_FOUND)
       .body(exception.getMessage());
   }
 
-  @ExceptionHandler({ProvidedResourceIsNotAnInstanceOf.class})
-  public ResponseEntity<Object> handleProvidedResourceIsNotAnInstanceOf(ProvidedResourceIsNotAnInstanceOf exception) {
+  @ExceptionHandler({ProvidedResourceIsNotAnInstanceOfException.class})
+  public ResponseEntity<Object> handleProvidedResourceIsNotAnInstanceOf(ProvidedResourceIsNotAnInstanceOfException exception) {
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(exception.getMessage());
