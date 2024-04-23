@@ -178,7 +178,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     createWorkoutExercises(workoutModel);
 
     // Test request
-    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isCreated())
         .andReturn();
@@ -205,7 +205,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
   @Order(value = 3)
   @DisplayName("Create workout session without auth")
   void workoutSessionController_startWorkoutSessionWithoutAuth_ReturnUnauthorized() throws Exception {
-    mockMvc.perform(post("/api/workout-session/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", 1L)
+    mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", 1L)
             .contentType("application/json"))
         .andExpect(status().isUnauthorized());
   }
@@ -218,7 +218,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
 
-    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
@@ -265,7 +265,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
 
-    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
@@ -301,7 +301,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     WorkoutModel workoutModel = createWorkoutModel();
     List<WorkoutExercise> workoutExercises = createWorkoutExercises(workoutModel);
 
-    mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
         .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
@@ -322,7 +322,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
 
-    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
@@ -365,7 +365,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
 
-    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();
@@ -405,7 +405,7 @@ class WorkoutSessionControllerTest extends AbstractIntegrationTest {
     WorkoutModel workoutModel = createWorkoutModel();
     createWorkoutExercises(workoutModel);
 
-    MvcResult postResult = mockMvc.perform(post(API_PATH + "/{startedAt}/workout-model/{workoutModelId}", "2021-09-03 18:15:00", workoutModel.getId())
+    MvcResult postResult = mockMvc.perform(post(API_PATH + "/workout-model/{workoutModelId}", workoutModel.getId())
       .contentType(MediaType.APPLICATION_JSON))
       .andExpect(status().isCreated())
       .andReturn();

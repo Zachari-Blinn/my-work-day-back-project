@@ -6,7 +6,7 @@ import com.blinnproject.myworkdayback.model.entity.WorkoutSet;
 import java.time.LocalDateTime;
 
 public interface WorkoutSessionService {
-  WorkoutSession createWorkoutSession(LocalDateTime startedAt, Long workoutModelId, Long createdBy);
+  WorkoutSession createWorkoutSession(Long workoutModelId, Long createdBy);
 
   WorkoutSession find(Long id, Long createdBy);
 

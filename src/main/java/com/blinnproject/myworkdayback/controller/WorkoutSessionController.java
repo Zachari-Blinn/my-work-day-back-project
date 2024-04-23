@@ -35,14 +35,12 @@ public class WorkoutSessionController {
   }
 
   @Operation(summary = "Start workout session", description = "Start a workout session by workout model and date.")
-  @PostMapping(value = "/{startedAt}/workout-model/{workoutModelId}")
+  @PostMapping(value = "/workout-model/{workoutModelId}")
   public ResponseEntity<GenericResponse<WorkoutSession>> startWorkoutSession(
-      @PathVariable("startedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startedAt,
       @PathVariable("workoutModelId") Long workoutModelId,
       @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    // peut être saisir directement la date depuis le service
-    WorkoutSession workoutSession = workoutSessionService.createWorkoutSession(startedAt, workoutModelId, userDetails.getId());
+    WorkoutSession workoutSession = workoutSessionService.createWorkoutSession(workoutModelId, userDetails.getId());
 
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -75,7 +73,7 @@ public class WorkoutSessionController {
   // todo route : approve workout exercise sets by workout_exercise_id
   // todo route : reset approval of workout exercise sets by workout_exercise_id
 
-  @Operation(summary = "Create manually workout session by workout model", description = "Create a workout session manually by workout model.")
+  @Operation(summary = "Create manually workout session by workout model", description = "Create a workout session manually by workout model directly without started session.")
   @PostMapping(value = "/{startedAt}/{endedAt}/workout-model/{workoutModelId}")
   public ResponseEntity<GenericResponse<WorkoutSession>> createWorkoutSession(
     @PathVariable("startedAt") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startedAt,

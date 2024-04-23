@@ -10,7 +10,6 @@ import com.blinnproject.myworkdayback.model.entity.WorkoutModel;
 import com.blinnproject.myworkdayback.model.response.GenericResponse;
 import com.blinnproject.myworkdayback.security.UserDetailsImpl;
 import com.blinnproject.myworkdayback.service.i18n.I18nService;
-import com.blinnproject.myworkdayback.service.mapper.WorkoutModelMapper;
 import com.blinnproject.myworkdayback.service.workout_model.WorkoutModelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +32,7 @@ public class WorkoutModelController {
   private final I18nService i18n;
   private final WorkoutModelService workoutModelService;
 
-  public WorkoutModelController(I18nService i18nService, WorkoutModelService workoutModelService, WorkoutModelMapper workoutModelMapper) {
+  public WorkoutModelController(I18nService i18nService, WorkoutModelService workoutModelService) {
     this.i18n = i18nService;
     this.workoutModelService = workoutModelService;
   }

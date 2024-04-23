@@ -1,11 +1,7 @@
 package com.blinnproject.myworkdayback.service.workout_exercise;
 
-import com.blinnproject.myworkdayback.model.dto.WorkoutExerciseCreateDTO;
-import com.blinnproject.myworkdayback.model.entity.Exercise;
-import com.blinnproject.myworkdayback.model.entity.Workout;
 import com.blinnproject.myworkdayback.model.entity.WorkoutExercise;
 import com.blinnproject.myworkdayback.repository.WorkoutExerciseRepository;
-import com.blinnproject.myworkdayback.service.mapper.WorkoutExerciseMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,11 +10,9 @@ import java.util.Optional;
 @Service
 public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
   private final WorkoutExerciseRepository workoutExerciseRepository;
-  private final WorkoutExerciseMapper workoutExerciseMapper;
 
-  public WorkoutExerciseServiceImpl(WorkoutExerciseRepository workoutExerciseRepository, WorkoutExerciseMapper workoutExerciseMapper) {
+  public WorkoutExerciseServiceImpl(WorkoutExerciseRepository workoutExerciseRepository) {
     this.workoutExerciseRepository = workoutExerciseRepository;
-    this.workoutExerciseMapper = workoutExerciseMapper;
   }
 
   @Override
