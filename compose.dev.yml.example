@@ -1,0 +1,32 @@
+services:
+  database:
+    container_name: ${COMPOSE_PROJECT_NAME}-database
+    image: postgres:16.1-alpine3.19
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  java:
+    container_name: ${COMPOSE_PROJECT_NAME}
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - database
+
+  mailhog:
+    container_name: ${COMPOSE_PROJECT_NAME}-mailhog
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  db_data:
