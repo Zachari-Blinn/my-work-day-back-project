@@ -1,0 +1,21 @@
+services:
+  database:
+    container_name: ${COMPOSE_PROJECT_NAME}-database
+    image: postgres:16.1-alpine3.19
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  java:
+    container_name: ${COMPOSE_PROJECT_NAME}
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - database
+
+volumes:
+  db_data:
